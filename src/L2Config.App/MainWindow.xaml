@@ -1,0 +1,574 @@
+<Window x:Class="L2Config.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:infra="clr-namespace:L2Config.App.Infrastructure"
+        xmlns:vm="clr-namespace:L2Config.App.ViewModels"
+        Title="L2Everdream Config"
+        Width="1280" Height="820" MinWidth="980" MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None" ResizeMode="CanResize"
+        Background="{StaticResource DeepBrush}"
+        FontFamily="{StaticResource UiFont}"
+        Foreground="{StaticResource StarlightBrush}"
+        TextOptions.TextFormattingMode="Display">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="64" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <infra:VisibleWhenConverter x:Key="VisibleWhen" />
+
+        <!-- ===== Editors ===================================================================== -->
+        <DataTemplate x:Key="ToggleEditor" DataType="{x:Type vm:SettingViewModel}">
+            <ToggleButton Style="{StaticResource SwitchToggle}" IsChecked="{Binding BoolValue, Mode=TwoWay}" HorizontalAlignment="Left"
+                          AutomationProperties.Name="{Binding Name}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="NumberEditor" DataType="{x:Type vm:SettingViewModel}">
+            <StackPanel Orientation="Horizontal">
+                <TextBox Style="{StaticResource FieldTextBox}" Width="150" TextAlignment="Right" FontFamily="{StaticResource MonoFont}"
+                         infra:NumericInput.ValueType="{Binding Definition.ValueType}"
+                         Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                         AutomationProperties.Name="{Binding Name}" />
+                <TextBlock Text="{Binding Unit}" Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource LabelBrush}" FontSize="12.5" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SliderEditor" DataType="{x:Type vm:SettingViewModel}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Slider Minimum="{Binding Definition.Min}" Maximum="{Binding Definition.Max}" Value="{Binding NumberValue, Mode=TwoWay}"
+                        SmallChange="1" LargeChange="10" IsSnapToTickEnabled="False" VerticalAlignment="Center"
+                        AutomationProperties.Name="{Binding Name}" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="12,0,0,0">
+                    <TextBox Style="{StaticResource FieldTextBox}" Width="70" TextAlignment="Right" FontFamily="{StaticResource MonoFont}"
+                             infra:NumericInput.ValueType="{Binding Definition.ValueType}"
+                             Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Text="{Binding Unit}" Margin="6,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource LabelBrush}" />
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ChoiceEditor" DataType="{x:Type vm:SettingViewModel}">
+            <ComboBox ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}" DisplayMemberPath="Label"
+                      AutomationProperties.Name="{Binding Name}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="TextEditor" DataType="{x:Type vm:SettingViewModel}">
+            <StackPanel Orientation="Horizontal">
+                <TextBox Style="{StaticResource FieldTextBox}" MinWidth="220" MaxWidth="340" TextWrapping="Wrap"
+                         Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{Binding Name}" />
+                <TextBlock Text="{Binding Unit}" Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource LabelBrush}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SecretEditor" DataType="{x:Type vm:SettingViewModel}">
+            <PasswordBox Width="220" HorizontalAlignment="Left" infra:PasswordBinding.Value="{Binding Value, Mode=TwoWay}"
+                         AutomationProperties.Name="{Binding Name}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="ReadOnlyEditor" DataType="{x:Type vm:SettingViewModel}">
+            <StackPanel>
+                <TextBlock Text="{Binding Value}" FontFamily="{StaticResource MonoFont}" FontSize="12.5" Foreground="{StaticResource LabelBrush}"
+                           TextWrapping="Wrap" Visibility="{Binding IsMissing, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
+                <TextBlock Text="{Binding MissingText}" Style="{StaticResource CaptionText}" Foreground="{StaticResource LanternBrush}"
+                           Visibility="{Binding MissingText, Converter={StaticResource VisibleWhen}}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <infra:SettingEditorSelector x:Key="EditorSelector"
+                                     Toggle="{StaticResource ToggleEditor}" Number="{StaticResource NumberEditor}"
+                                     Slider="{StaticResource SliderEditor}" Choice="{StaticResource ChoiceEditor}"
+                                     Text="{StaticResource TextEditor}" Secret="{StaticResource SecretEditor}"
+                                     ReadOnly="{StaticResource ReadOnlyEditor}" />
+
+        <!-- ===== A setting row ================================================================ -->
+        <DataTemplate DataType="{x:Type vm:SettingViewModel}">
+            <Border x:Name="Card" Margin="0,0,14,8" Padding="16,12" CornerRadius="12" Background="{StaticResource CardBrush}"
+                    BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" MinWidth="260" />
+                        <ColumnDefinition Width="24" />
+                        <ColumnDefinition Width="380" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel>
+                        <WrapPanel>
+                            <TextBlock Text="{Binding Name}" FontSize="14.5" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}"
+                                       TextWrapping="Wrap" VerticalAlignment="Center" />
+                            <Border x:Name="StateBadge" Style="{StaticResource Badge}" Background="{StaticResource ArcaneWashBrush}"
+                                    BorderBrush="#739D8CF0" Visibility="{Binding StateWord, Converter={StaticResource VisibleWhen}}">
+                                <TextBlock x:Name="StateText" Text="{Binding StateWord}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource ArcaneBrush}" />
+                            </Border>
+                            <Border Style="{StaticResource Badge}" Background="{StaticResource LanternWashBrush}" BorderBrush="{StaticResource LanternHairBrush}"
+                                    Visibility="{Binding IsManaged, Converter={StaticResource VisibleWhen}}"
+                                    ToolTip="{Binding Definition.ManagedReason}">
+                                <TextBlock Text="🔒 Set by the launcher" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource EmberBrush}" />
+                            </Border>
+                            <Border Style="{StaticResource Badge}" Background="Transparent" BorderBrush="#4D7C6FB0"
+                                    Visibility="{Binding Definition.Advanced, Converter={StaticResource VisibleWhen}}">
+                                <TextBlock Text="Advanced" FontSize="10" Foreground="{StaticResource DimLabelBrush}" />
+                            </Border>
+                        </WrapPanel>
+
+                        <TextBlock Text="{Binding Description}" Style="{StaticResource CaptionText}" Margin="0,4,0,0" LineHeight="17"
+                                   Visibility="{Binding HasDescription, Converter={StaticResource VisibleWhen}}" />
+                        <TextBlock Text="{Binding Definition.ManagedReason}" Style="{StaticResource CaptionText}" Margin="0,4,0,0"
+                                   Foreground="{StaticResource EmberBrush}" Visibility="{Binding IsManaged, Converter={StaticResource VisibleWhen}}" />
+
+                        <WrapPanel Margin="0,8,0,0">
+                            <Border CornerRadius="6" Background="#40100E22" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1" Padding="7,2"
+                                    ToolTip="The real file and setting name this value is saved to.">
+                                <TextBlock Text="{Binding Location}" Style="{StaticResource MonoChipText}" />
+                            </Border>
+                            <TextBlock Text="{Binding DefaultText}" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="11.5"
+                                       Foreground="{StaticResource DimLabelBrush}" />
+                            <TextBlock Text="{Binding RangeText}" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="11.5"
+                                       Foreground="{StaticResource DimLabelBrush}" Visibility="{Binding RangeText, Converter={StaticResource VisibleWhen}}" />
+                        </WrapPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                        <ContentControl Content="{Binding}" ContentTemplateSelector="{StaticResource EditorSelector}" Focusable="False" />
+                        <TextBlock Text="{Binding Error}" Margin="0,5,0,0" FontSize="12" Foreground="{StaticResource LanternBrush}" TextWrapping="Wrap"
+                                   Visibility="{Binding HasError, Converter={StaticResource VisibleWhen}}" />
+                        <StackPanel Orientation="Horizontal" Margin="-4,4,0,0">
+                            <Button Style="{StaticResource LinkButton}" Content="↶ Undo" Command="{Binding UndoCommand}" ToolTip="Put back the value that is in the file" />
+                            <Button Style="{StaticResource LinkButton}" Content="↺ Reset to default" Command="{Binding ResetToDefaultCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsDirty}" Value="True">
+                    <Setter TargetName="Card" Property="BorderBrush" Value="{StaticResource LanternHairBrush}" />
+                    <Setter TargetName="Card" Property="Background" Value="#662A2350" />
+                    <Setter TargetName="StateBadge" Property="Background" Value="{StaticResource LanternWashBrush}" />
+                    <Setter TargetName="StateBadge" Property="BorderBrush" Value="{StaticResource LanternHairBrush}" />
+                    <Setter TargetName="StateText" Property="Foreground" Value="{StaticResource EmberBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding HasError}" Value="True">
+                    <Setter TargetName="Card" Property="BorderBrush" Value="{StaticResource LanternBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <!-- ===== A group heading in the settings list ======================================== -->
+        <DataTemplate DataType="{x:Type vm:GroupHeaderRow}">
+            <StackPanel Margin="2,18,14,10">
+                <TextBlock Text="{Binding Breadcrumb}" Style="{StaticResource KickerText}" Margin="0,0,0,2"
+                           Visibility="{Binding Breadcrumb, Converter={StaticResource VisibleWhen}}" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Title}" FontFamily="{StaticResource DisplayFont}" FontSize="20" FontWeight="SemiBold"
+                               Foreground="{StaticResource StarlightBrush}" />
+                    <TextBlock Text="{Binding Count, StringFormat={}{0} settings}" Margin="12,0,0,2" VerticalAlignment="Bottom" FontSize="11.5"
+                               Foreground="{StaticResource DimLabelBrush}" />
+                </StackPanel>
+                <Border Height="1" Margin="0,8,0,0" Background="{StaticResource SoftVioletHairBrush}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- ===== Custom Config tab (read-only) ================================================ -->
+        <Style x:Key="FilterRadio" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{StaticResource LabelBrush}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Chrome" Background="{StaticResource ArcaneWashBrush}" BorderBrush="#4D7C6FB0" BorderThickness="1" CornerRadius="9" Padding="11,5">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource VioletHairHoverBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource SelectedWashBrush}" />
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource ArcaneBrush}" />
+                                <Setter Property="Foreground" Value="{StaticResource StarlightBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="ValueColumn">
+            <StackPanel Margin="0,0,22,0">
+                <TextBlock Text="{Binding Label}" Style="{StaticResource KickerText}" />
+                <TextBlock Text="{Binding Value}" FontFamily="{StaticResource MonoFont}" FontSize="13" Margin="0,3,0,0" TextWrapping="Wrap" MaxWidth="260"
+                           Foreground="{Binding Brush}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:CustomChangeViewModel}">
+            <Border Margin="0,0,14,10" Padding="18,14" CornerRadius="12" Background="{StaticResource CardBrush}"
+                    BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <WrapPanel>
+                            <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" VerticalAlignment="Center" />
+                            <Border x:Name="KindBadge" Style="{StaticResource Badge}" Background="{StaticResource ArcaneWashBrush}" BorderBrush="#739D8CF0">
+                                <TextBlock x:Name="KindText" Text="{Binding KindWord}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource ArcaneBrush}" />
+                            </Border>
+                        </WrapPanel>
+                        <Border CornerRadius="6" Background="#40100E22" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1" Padding="7,2"
+                                Margin="0,6,0,0" HorizontalAlignment="Left">
+                            <TextBlock Text="{Binding Location}" Style="{StaticResource MonoChipText}" />
+                        </Border>
+                        <TextBlock Text="{Binding Note}" Style="{StaticResource CaptionText}" FontSize="13" LineHeight="19" Margin="0,10,0,0"
+                                   Foreground="{StaticResource BodyTextBrush}" Visibility="{Binding Note, Converter={StaticResource VisibleWhen}}" />
+                        <WrapPanel Margin="0,12,0,0">
+                            <StackPanel Margin="0,0,26,0">
+                                <TextBlock Text="STOCK L2J MOBIUS" Style="{StaticResource KickerText}" />
+                                <TextBlock Text="{Binding StockText}" FontFamily="{StaticResource MonoFont}" FontSize="13" Margin="0,3,0,0" MaxWidth="280" TextWrapping="Wrap"
+                                           Foreground="{StaticResource CaptionBrush}" />
+                            </StackPanel>
+                            <TextBlock Text="→" FontSize="16" Foreground="{StaticResource DimLabelBrush}" VerticalAlignment="Bottom" Margin="0,0,26,0" />
+                            <StackPanel Margin="0,0,26,0">
+                                <TextBlock Text="L2EVERDREAM SHIPS" Style="{StaticResource KickerText}" />
+                                <TextBlock Text="{Binding ShippedText}" FontFamily="{StaticResource MonoFont}" FontSize="13" Margin="0,3,0,0" MaxWidth="280" TextWrapping="Wrap"
+                                           Foreground="{StaticResource EmberBrush}" />
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="YOUR FILE NOW" Style="{StaticResource KickerText}" />
+                                <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+                                    <TextBlock Text="{Binding CurrentText}" FontFamily="{StaticResource MonoFont}" FontSize="13" MaxWidth="280" TextWrapping="Wrap"
+                                               Foreground="{StaticResource StarlightBrush}" />
+                                    <TextBlock Text="  (you changed this)" FontSize="12" Foreground="{StaticResource ArcaneBrush}"
+                                               Visibility="{Binding DiffersFromShipped, Converter={StaticResource VisibleWhen}}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </WrapPanel>
+                    </StackPanel>
+                    <Button Grid.Column="1" Style="{StaticResource GhostButton}" Content="Show in editor" Padding="12,6" FontSize="12"
+                            VerticalAlignment="Top" Margin="16,0,0,0" Command="{Binding ShowCommand}" />
+                </Grid>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsAdded}" Value="True">
+                    <Setter TargetName="KindBadge" Property="Background" Value="{StaticResource LanternWashBrush}" />
+                    <Setter TargetName="KindBadge" Property="BorderBrush" Value="{StaticResource LanternHairBrush}" />
+                    <Setter TargetName="KindText" Property="Foreground" Value="{StaticResource EmberBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:CustomConfigViewModel}">
+            <Grid Margin="24,0,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Margin="2,0,24,12">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="✎" FontSize="22" Foreground="{StaticResource ArcaneBrush}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                        <TextBlock Text="{Binding Title}" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
+                        <Border Style="{StaticResource Badge}" Margin="12,6,0,0" Background="Transparent" BorderBrush="#4D7C6FB0">
+                            <TextBlock Text="Read-only" FontSize="10.5" Foreground="{StaticResource LabelBrush}" />
+                        </Border>
+                    </StackPanel>
+                    <TextBlock Text="{Binding Intro}" Style="{StaticResource CaptionText}" FontSize="13" Margin="0,4,0,0" LineHeight="19" />
+                </StackPanel>
+
+                <WrapPanel Grid.Row="1" Margin="2,0,0,12">
+                    <RadioButton Style="{StaticResource FilterRadio}" GroupName="CustomFilter" IsChecked="True" Command="{Binding FilterCommand}" CommandParameter="all">
+                        <TextBlock Text="{Binding AllCount, StringFormat=All differences ({0})}" />
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource FilterRadio}" GroupName="CustomFilter" Command="{Binding FilterCommand}" CommandParameter="added">
+                        <TextBlock Text="{Binding AddedCount, StringFormat=New settings ({0})}" />
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource FilterRadio}" GroupName="CustomFilter" Command="{Binding FilterCommand}" CommandParameter="changed">
+                        <TextBlock Text="{Binding ChangedCount, StringFormat=Changed values ({0})}" />
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource FilterRadio}" GroupName="CustomFilter" Command="{Binding FilterCommand}" CommandParameter="noted">
+                        <TextBlock Text="{Binding NotedCount, StringFormat=Documented ({0})}" />
+                    </RadioButton>
+                </WrapPanel>
+
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <ItemsControl ItemsSource="{Binding Items}" />
+                        <StackPanel Visibility="{Binding HasFiles, Converter={StaticResource VisibleWhen}}" Margin="2,10,14,20">
+                            <TextBlock Text="Whole files that differ" FontFamily="{StaticResource DisplayFont}" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
+                            <Border Height="1" Margin="0,8,0,10" Background="{StaticResource SoftVioletHairBrush}" />
+                            <ItemsControl ItemsSource="{Binding Files}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Margin="0,0,0,8" Padding="16,10" CornerRadius="12" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding File}" FontFamily="{StaticResource MonoFont}" FontSize="13" Foreground="{StaticResource StarlightBrush}" />
+                                                <TextBlock Text="{Binding Summary}" Style="{StaticResource CaptionText}" Margin="0,3,0,0" />
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </DataTemplate>
+
+        <!-- ===== A whole tab ================================================================= -->        <DataTemplate DataType="{x:Type vm:TabViewModel}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Folder bar -->
+                <Border Margin="24,0,24,12" Padding="14,9" CornerRadius="12" Background="{StaticResource CardBrush}"
+                        BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1"
+                        Visibility="{Binding FolderPath, Converter={StaticResource VisibleWhen}}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding FolderKicker}" Style="{StaticResource KickerText}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding FolderPath}" FontFamily="{StaticResource MonoFont}" FontSize="12" Foreground="{StaticResource SoftTextBrush}"
+                                       TextTrimming="CharacterEllipsis" ToolTip="{Binding FolderPath}" />
+                            <TextBlock Text="{Binding FolderProblem}" FontSize="12" Foreground="{StaticResource LanternBrush}" Margin="0,2,0,0"
+                                       Visibility="{Binding FolderProblem, Converter={StaticResource VisibleWhen}}" />
+                            <TextBlock Text="{Binding RuntimeNotice}" FontSize="12" Foreground="{StaticResource EmberBrush}" Margin="0,2,0,0" TextWrapping="Wrap"
+                                       Visibility="{Binding RuntimeNotice, Converter={StaticResource VisibleWhen}}" />
+                        </StackPanel>
+                        <Button Grid.Column="2" Style="{StaticResource GhostButton}" Padding="12,5" FontSize="12" Content="Change folder…"
+                                Command="{Binding ChooseFolderCommand}" Margin="12,0,0,0" />
+                    </Grid>
+                </Border>
+
+                <!-- No folder yet: the one lit action is choosing it -->
+                <Border Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="540" Padding="36,30" CornerRadius="16"
+                        Background="{StaticResource CardGradientBrush}" BorderBrush="{StaticResource VioletHairBrush}" BorderThickness="1"
+                        Visibility="{Binding HasFolder, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding FolderKicker}" Style="{StaticResource KickerText}" HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding EmptyTitle}" FontFamily="{StaticResource DisplayFont}" FontSize="26" FontWeight="SemiBold"
+                                   Foreground="{StaticResource StarlightBrush}" TextAlignment="Center" TextWrapping="Wrap" Margin="0,6,0,10" />
+                        <TextBlock Text="{Binding EmptyText}" Style="{StaticResource CaptionText}" FontSize="13" TextAlignment="Center" LineHeight="19" />
+                        <Button Style="{StaticResource PrimaryButton}" Content="{Binding ChooseFolderText}" Command="{Binding ChooseFolderCommand}"
+                                HorizontalAlignment="Center" Margin="0,22,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Section list + settings -->
+                <Grid Grid.Row="1" Visibility="{Binding HasFolder, Converter={StaticResource VisibleWhen}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="290" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Margin="24,0,12,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Grid>
+                            <TextBox x:Name="Search" Style="{StaticResource SearchBox}" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=150}"
+                                     AutomationProperties.Name="Search settings" />
+                            <TextBlock Text="⌕" Margin="11,0,0,1" VerticalAlignment="Center" FontSize="15" Foreground="{StaticResource LabelBrush}" IsHitTestVisible="False" />
+                            <TextBlock Text="Search settings or real names…" Margin="32,0,0,0" VerticalAlignment="Center" FontSize="13" IsHitTestVisible="False"
+                                       Foreground="{StaticResource DimLabelBrush}"
+                                       Visibility="{Binding Text, ElementName=Search, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
+                            <Button Style="{StaticResource ChromeButton}" Content="✕" FontSize="11" Width="24" Height="24" HorizontalAlignment="Right" Margin="0,0,4,0"
+                                    Command="{Binding ClearSearchCommand}" ToolTip="Clear search"
+                                    Visibility="{Binding IsSearching, Converter={StaticResource VisibleWhen}}" />
+                        </Grid>
+
+                        <WrapPanel Grid.Row="1" Margin="0,10,0,10">
+                            <ToggleButton Style="{StaticResource FilterChip}" Content="Changed only" IsChecked="{Binding ChangedOnly}" Margin="0,0,6,0"
+                                          ToolTip="Only settings that differ from their default, or that you have edited" />
+                            <ToggleButton Style="{StaticResource FilterChip}" Content="Advanced"
+                                          IsChecked="{Binding DataContext.ShowAdvanced, RelativeSource={RelativeSource AncestorType=Window}}"
+                                          ToolTip="Also show technical settings most people never need" />
+                        </WrapPanel>
+
+                        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Padding="0,0,6,12">
+                            <ItemsControl ItemsSource="{Binding Categories}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type vm:CategoryNode}">
+                                        <StackPanel Margin="0,0,0,2">
+                                            <Button Style="{StaticResource NavCategoryButton}" Command="{Binding DataContext.SelectCategoryCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    CommandParameter="{Binding}" ToolTip="{Binding Description}">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="24" />
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{Binding Glyph}" FontSize="14" Foreground="{StaticResource ArcaneBrush}" VerticalAlignment="Center" />
+                                                    <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="13.5" FontWeight="SemiBold"
+                                                               Foreground="{StaticResource StarlightBrush}" VerticalAlignment="Center" />
+                                                    <TextBlock Grid.Column="2" Text="{Binding Count}" FontSize="11" Foreground="{StaticResource DimLabelBrush}" VerticalAlignment="Center" />
+                                                </Grid>
+                                            </Button>
+                                            <ItemsControl ItemsSource="{Binding Groups}" Visibility="{Binding IsExpanded, Converter={StaticResource VisibleWhen}}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate DataType="{x:Type vm:GroupNode}">
+                                                        <Button Style="{StaticResource NavGroupButton}" Visibility="{Binding Count, Converter={StaticResource VisibleWhen}}"
+                                                                Command="{Binding DataContext.SelectGroupCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                                                                CommandParameter="{Binding}">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock Text="{Binding Name}" FontSize="12.5" TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock Grid.Column="1" Text="{Binding Count}" FontSize="10.5" Margin="8,0,0,0"
+                                                                           Foreground="{StaticResource DimLabelBrush}" VerticalAlignment="Center" />
+                                                            </Grid>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+
+                    <Grid Grid.Column="1" Margin="12,0,10,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <StackPanel Margin="2,0,24,4">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding PageGlyph}" FontSize="22" Foreground="{StaticResource ArcaneBrush}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                                <TextBlock Text="{Binding PageTitle}" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="SemiBold"
+                                           Foreground="{StaticResource StarlightBrush}" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding PageDescription}" Style="{StaticResource CaptionText}" FontSize="13" Margin="0,2,0,0" />
+                        </StackPanel>
+
+                        <ListBox x:Name="RowsList" Grid.Row="1" ItemsSource="{Binding Rows}" Background="Transparent" BorderThickness="0"
+                                 ItemContainerStyle="{StaticResource PlainListItem}"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 ScrollViewer.CanContentScroll="True"
+                                 VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
+                                 VirtualizingPanel.ScrollUnit="Pixel"
+                                 KeyboardNavigation.TabNavigation="Continue"
+                                 Visibility="{Binding HasRows, Converter={StaticResource VisibleWhen}}" />
+                        <TextBlock Grid.Row="1" Text="{Binding EmptyListText}" Style="{StaticResource CaptionText}" FontSize="13.5" Margin="2,30,24,0"
+                                   Visibility="{Binding HasRows, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
+                    </Grid>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Rectangle Fill="{StaticResource WindowGroundBrush}" />
+        <Rectangle Fill="{StaticResource WindowGlowBrush}" />
+        <Border BorderBrush="{StaticResource HairBrush}" BorderThickness="1" />
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="84" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- ===== Top bar: wordmark · tabs · chrome ===== -->
+            <Grid Margin="24,0,10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock VerticalAlignment="Center" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold">
+                        <Run Text="L2" FontSize="22" Foreground="{StaticResource LanternBrush}" /><Run Text="Ever" FontSize="34" Foreground="#F5F6FF" /><Run Text="dream" FontSize="34" Foreground="{StaticResource DreamGradientBrush}" />
+                    </TextBlock>
+                    <Border Margin="14,6,0,0" VerticalAlignment="Center" CornerRadius="999" Padding="8,2" BorderThickness="1"
+                            BorderBrush="{StaticResource LanternHairBrush}" Background="{StaticResource LanternWashBrush}">
+                        <TextBlock Text="CONFIG" FontSize="10.5" FontWeight="SemiBold" Foreground="{StaticResource EmberBrush}" />
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsServerTab, Mode=OneWay}"
+                                 Command="{Binding SelectTabCommand}" CommandParameter="server" WindowChrome.IsHitTestVisibleInChrome="True" Margin="0,0,8,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Server" />
+                            <Border Margin="8,0,0,0" CornerRadius="999" Padding="6,0" Background="{StaticResource LanternWashStrongBrush}"
+                                    Visibility="{Binding ServerTab.DirtyCount, Converter={StaticResource VisibleWhen}}">
+                                <TextBlock Text="{Binding ServerTab.DirtyCount}" FontSize="11" Foreground="{StaticResource EmberBrush}" />
+                            </Border>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsClientTab, Mode=OneWay}"
+                                 Command="{Binding SelectTabCommand}" CommandParameter="client" WindowChrome.IsHitTestVisibleInChrome="True">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Client" />
+                            <Border Margin="8,0,0,0" CornerRadius="999" Padding="6,0" Background="{StaticResource LanternWashStrongBrush}"
+                                    Visibility="{Binding ClientTab.DirtyCount, Converter={StaticResource VisibleWhen}}">
+                                <TextBlock Text="{Binding ClientTab.DirtyCount}" FontSize="11" Foreground="{StaticResource EmberBrush}" />
+                            </Border>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsCustomTab, Mode=OneWay}" Margin="8,0,0,0"
+                                 Command="{Binding SelectTabCommand}" CommandParameter="custom" WindowChrome.IsHitTestVisibleInChrome="True"
+                                 Visibility="{Binding HasCustomTab, Converter={StaticResource VisibleWhen}}"
+                                 ToolTip="What L2Everdream changed compared with stock L2J Mobius">
+                        <TextBlock Text="Custom Config" />
+                    </RadioButton>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,10,0,0">
+                    <Button Style="{StaticResource ChromeButton}" Content="–" Click="OnMinimize" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Minimize" />
+                    <Button Style="{StaticResource ChromeButton}" Content="▢" FontSize="12" Click="OnMaximize" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Maximize" />
+                    <Button Style="{StaticResource ChromeButton}" Content="✕" Click="OnClose" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Close" />
+                </StackPanel>
+            </Grid>
+
+            <!-- ===== The selected tab ===== -->
+            <ContentControl x:Name="TabHost" Grid.Row="1" Content="{Binding SelectedTab}" Focusable="False" />
+
+            <!-- ===== Save bar ===== -->
+            <Border Grid.Row="2" BorderBrush="{StaticResource HairBrush}" BorderThickness="0,1,0,0" Padding="24,12" Background="#590C0A16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{Binding StatusMessage}" FontSize="12.5" Foreground="{StaticResource VerdanceBrush}" TextWrapping="Wrap"
+                                   Visibility="{Binding StatusMessage, Converter={StaticResource VisibleWhen}}" />
+                        <TextBlock FontSize="11.5" Foreground="{StaticResource DimLabelBrush}" Margin="0,2,0,0">
+                            <Run Text="Every save backs up the files it changes first." />
+                            <Hyperlink Command="{Binding OpenBackupsCommand}" Foreground="{StaticResource LabelBrush}">Open backups</Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding PendingText}" VerticalAlignment="Center" Margin="0,0,16,0" FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{StaticResource LabelBrush}" />
+                        <Button Style="{StaticResource GhostButton}" Content="Discard" Command="{Binding DiscardCommand}" Margin="0,0,10,0" />
+                        <Button Style="{StaticResource PrimaryButton}" Content="Save changes" Command="{Binding SaveCommand}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

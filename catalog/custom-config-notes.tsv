@@ -1,0 +1,26 @@
+# Plain summaries of each way L2Everdream's shipped config differs from stock L2J Mobius.
+# Shown in the Custom Config tab. Pipe-separated. Keep them neutral and never name anyone.
+# Run python catalog/build_custom_config.py after editing; it warns about differences with no summary here.
+target|file|key|summary
+server-game|Rates.ini|RateTeleportFee|New setting added by L2Everdream (it needed a server code change). Scales the price of normal town gatekeeper teleports; shipped at 0.5 (half price). It does not affect dungeon, clan hall or noblesse teleport lists.
+server-game|Rates.ini|RateXp|Offline worlds ship at 15× experience instead of retail 1×. The public L2Everdream worlds run at 1×.
+server-game|Rates.ini|RateSp|Offline worlds ship at 15× skill points instead of retail 1×.
+server-game|Rates.ini|RatePartyXp|Party experience bonus shipped at 15× to match the experience rate.
+server-game|Rates.ini|RatePartySp|Party skill point bonus shipped at 15× to match the skill point rate.
+server-game|Rates.ini|RateDropManor|Manor harvests shipped at 15× to match the other rates.
+server-game|Player.ini|MaxFreeTeleportLevel|Teleports are never free. Stock Mobius makes them free up to level 40, a rule from a later chronicle; retail Interlude charged every level.
+server-game|Player.ini|AltLeavePartyLeader|When a party leader leaves, leadership passes to another member instead of the party breaking up, so sims recruited into a party keep hunting.
+server-game|Player.ini|AltNewCharAlwaysIsNewbie|Every new character counts as a newbie, not only the first one on an account, so each gets the newbie buffs and help.
+server-game|General.ini|AutoDestroyDroppedItemAfter|Dropped rewards stay on the ground for an hour instead of ten minutes. Herbs still disappear after their own 60 seconds.
+server-game|General.ini|AllowCursedWeapons|Cursed weapons (Zariche and Akamanah) are turned off until the mechanic is fully supported in L2Everdream.
+server-game|NPC.ini|AggroDistanceCheckEnabled|Monsters give up and return home when pulled too far from where they spawned, instead of chasing forever (which dragged monsters into towns).
+server-game|NPC.ini|AltGameViewNpc|Players can Shift+click monsters to see their stats and drop and spoil lists. Shipped on as a trial.
+server-game|GeoEngine.ini|PathFindBuffers|Larger and more numerous pathfinding buffers, so sims can find long routes across towns and many can path at once without walking into walls. Uses a little more memory.
+server-game|Network.ini|BufferPool.AutoExpandCapacity|Network buffer pools can no longer grow without limit. Part of a security protection; if network speed ever seems off, this is the first thing to review.
+server-game|Network.ini|BufferPool.Huge.Size|Security protection added by L2Everdream: one pool that covers the largest possible network packet, which stops oversized packets from permanently using up server memory. Keep it together with the buffer size line below.
+server-game|Network.ini|BufferPool.Huge.BufferSize|Buffer size for the security pool above (65536 covers every possible packet size). Only works together with the “how many” line.
+server-login|Network.ini|BufferPool.AutoExpandCapacity|Same protection as the game server: login server buffer pools can no longer grow without limit.
+server-login|Network.ini|BufferPool.Huge.Size|Same security protection as the game server, for the login server’s port.
+server-login|Network.ini|BufferPool.Huge.BufferSize|Buffer size for the login server’s security pool (65536 covers every possible packet size).
+server-login|Interface.ini|EnableGUI|The login server runs without its own window; the L2Everdream launcher starts it in the background.
+server-login|Server.ini|AutoCreateAccounts|Unchanged value, but the release documents it: accounts are created automatically on first login, which suits a world on your own PC. A server open to the internet should turn this off.

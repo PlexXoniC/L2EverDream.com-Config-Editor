@@ -1,0 +1,861 @@
+# Friendly names for server settings. Pipe-separated; edit freely, then run: python catalog/build_catalog.py
+# target      = server-game or server-login
+# file        = path under config/ exactly as on disk
+# key         = the real setting name in the file (never change this column)
+# name        = what the config manager shows
+# unit        = optional unit shown beside the value (×, %, seconds, ms, minutes, hours, days, adena, ...)
+# description = optional; replaces the file's own comment when the comment is unhelpful
+target|file|key|name|unit|description
+# ---------------------------------------------------------------- Rates.ini
+server-game|Rates.ini|RateXp|Experience (XP) rate|times|How fast characters gain experience from monsters. 1 = retail.
+server-game|Rates.ini|RateSp|Skill point (SP) rate|times|How fast characters gain skill points from monsters. 1 = retail.
+server-game|Rates.ini|RatePartyXp|Party experience rate|times|Multiplies the extra experience a party gets. Bigger parties feel this more.
+server-game|Rates.ini|RatePartySp|Party skill point rate|times|Multiplies the extra skill points a party gets.
+server-game|Rates.ini|RateDropManor|Manor crop harvest rate|times|
+server-game|Rates.ini|RateKarmaLost|Karma lost per death or kill|times|
+server-game|Rates.ini|RateKarmaExpLost|Experience lost while carrying karma|times|
+server-game|Rates.ini|RateSiegeGuardsPrice|Siege guard hiring price|times|
+server-game|Rates.ini|RateExtractable|Rewards from opening boxes and extractable items|times|
+server-game|Rates.ini|RateTeleportFee|Gatekeeper teleport price|times|Scales the adena price of normal town gatekeeper teleports. 1 = retail prices, 0.5 = half price.
+server-game|Rates.ini|QuestItemDropAmountMultiplier|Quest item drop amount|times|
+server-game|Rates.ini|RateQuestRewardXP|Quest reward experience|times|
+server-game|Rates.ini|RateQuestRewardSP|Quest reward skill points|times|
+server-game|Rates.ini|RateQuestRewardAdena|Quest reward adena|times|
+server-game|Rates.ini|UseQuestRewardMultipliers|Use separate quest reward multipliers per item type||
+server-game|Rates.ini|RateQuestReward|Quest reward items (general)|times|
+server-game|Rates.ini|RateQuestRewardPotion|Quest reward potions|times|
+server-game|Rates.ini|RateQuestRewardScroll|Quest reward scrolls|times|
+server-game|Rates.ini|RateQuestRewardRecipe|Quest reward recipes|times|
+server-game|Rates.ini|RateQuestRewardMaterial|Quest reward materials|times|
+server-game|Rates.ini|MonsterExpMaxLevelDifference|No experience from monsters more than this many levels below you|levels|
+server-game|Rates.ini|DeathDropAmountMultiplier|Drop amount|times|How many items a monster drops when killed.
+server-game|Rates.ini|DeathDropChanceMultiplier|Drop chance|times|How likely a monster is to drop each item. Combined with drop amount, 5 × 5 = 25× drops.
+server-game|Rates.ini|SpoilDropAmountMultiplier|Spoil amount|times|
+server-game|Rates.ini|SpoilDropChanceMultiplier|Spoil chance|times|
+server-game|Rates.ini|HerbDropAmountMultiplier|Herb drop amount|times|
+server-game|Rates.ini|HerbDropChanceMultiplier|Herb drop chance|times|
+server-game|Rates.ini|RaidDropAmountMultiplier|Raid boss drop amount|times|
+server-game|Rates.ini|RaidDropChanceMultiplier|Raid boss drop chance|times|
+server-game|Rates.ini|DropAmountMultiplierByItemId|Drop amount for specific items (adena is item 57)||Format: itemId,multiplier;itemId,multiplier. Overrides the general drop amount for those items.
+server-game|Rates.ini|DropChanceMultiplierByItemId|Drop chance for specific items (adena is item 57)||Format: itemId,multiplier;itemId,multiplier.
+server-game|Rates.ini|DropMaxOccurrencesNormal|Most different items a normal monster can drop at once||
+server-game|Rates.ini|DropMaxOccurrencesRaidboss|Most different items a raid boss can drop at once||
+server-game|Rates.ini|DropAdenaMinLevelDifference|Adena starts dropping less when you are this many levels above the monster|levels|
+server-game|Rates.ini|DropAdenaMaxLevelDifference|Adena drop reaches its lowest at this many levels above the monster|levels|
+server-game|Rates.ini|DropAdenaMinLevelGapChance|Lowest adena drop chance when far above the monster|%|
+server-game|Rates.ini|DropItemMinLevelDifference|Items start dropping less when you are this many levels above the monster|levels|
+server-game|Rates.ini|DropItemMaxLevelDifference|Item drop reaches its lowest at this many levels above the monster|levels|
+server-game|Rates.ini|DropItemMinLevelGapChance|Lowest item drop chance when far above the monster|%|
+server-game|Rates.ini|EventItemMaxLevelDifference|Event items stop dropping beyond this level difference|levels|
+server-game|Rates.ini|RateVitalityGain|Vitality gained|times|
+server-game|Rates.ini|RateVitalityLost|Vitality used up per kill|times|
+server-game|Rates.ini|RateRecoveryPeaceZone|Vitality recovery speed in towns|times|
+server-game|Rates.ini|RateRecoveryOnReconnect|Vitality recovery speed while offline|times|
+server-game|Rates.ini|PlayerDropLimit|Most items a normal player can lose on death||
+server-game|Rates.ini|PlayerRateDrop|Chance a normal player drops something on death|%|
+server-game|Rates.ini|PlayerRateDropItem|…of which is an inventory item|%|
+server-game|Rates.ini|PlayerRateDropEquip|…of which is worn equipment|%|
+server-game|Rates.ini|PlayerRateDropEquipWeapon|…of which is the weapon|%|
+server-game|Rates.ini|KarmaDropLimit|Most items a player with karma can lose on death||
+server-game|Rates.ini|KarmaRateDrop|Chance a player with karma drops something on death|%|
+server-game|Rates.ini|KarmaRateDropItem|…of which is an inventory item (karma)|%|
+server-game|Rates.ini|KarmaRateDropEquip|…of which is worn equipment (karma)|%|
+server-game|Rates.ini|KarmaRateDropEquipWeapon|…of which is the weapon (karma)|%|
+server-game|Rates.ini|PetXpRate|Pet experience rate|times|
+server-game|Rates.ini|PetFoodRate|Pet food consumption|times|
+server-game|Rates.ini|SinEaterXpRate|Sin Eater experience rate|times|
+server-game|Rates.ini|BossDropEnable|Give extra drops from raid bosses||
+server-game|Rates.ini|BossDropMinLevel|Extra drops: lowest raid boss level||
+server-game|Rates.ini|BossDropMaxLevel|Extra drops: highest raid boss level||
+server-game|Rates.ini|BossDropList|Extra drops: item list||Format: itemId,minAmount,maxAmount,chance;itemId,...
+# ---------------------------------------------------------------- Player.ini
+server-game|Player.ini|Delevel|Lose levels when experience drops below the level||
+server-game|Player.ini|DecreaseSkillOnDelevel|Lower skill levels after losing a level||
+server-game|Player.ini|AltWeightLimit|Carrying capacity|times|
+server-game|Player.ini|RunSpeedBoost|Extra running speed for everyone||
+server-game|Player.ini|DeathPenaltyChance|Chance of Death Penalty debuff when killed by a monster|%|
+server-game|Player.ini|RespawnRestoreCP|CP restored on revival|%|
+server-game|Player.ini|RespawnRestoreHP|HP restored on revival|%|
+server-game|Player.ini|RespawnRestoreMP|MP restored on revival|%|
+server-game|Player.ini|HpRegenMultiplier|HP regeneration speed|%|
+server-game|Player.ini|MpRegenMultiplier|MP regeneration speed|%|
+server-game|Player.ini|CpRegenMultiplier|CP regeneration speed|%|
+server-game|Player.ini|EnableModifySkillDuration|Use custom buff durations||
+server-game|Player.ini|SkillDurationList|Custom buff durations||Format: skillId,seconds;skillId,seconds. Only used when custom buff durations are on.
+server-game|Player.ini|EnableModifySkillReuse|Use custom skill cooldowns||
+server-game|Player.ini|SkillReuseList|Custom skill cooldowns||Format: skillId,milliseconds;skillId,milliseconds.
+server-game|Player.ini|AutoLearnSkills|Learn class skills automatically||
+server-game|Player.ini|AutoLearnSkillsWithoutItems|Also auto-learn skills that normally need a book||
+server-game|Player.ini|AutoLearnForgottenScrollSkills|Also auto-learn Forgotten Scroll skills||
+server-game|Player.ini|ShowEffectMessagesOnLogin|Show buff messages in chat on login||
+server-game|Player.ini|MaxBuffAmount|Buff slots||Divine Inspiration adds up to 4 more.
+server-game|Player.ini|MaxDanceAmount|Song and dance slots||
+server-game|Player.ini|DanceCancelBuff|Let players cancel songs/dances with Alt+click||
+server-game|Player.ini|DanceConsumeAdditionalMP|Songs and dances cost extra MP when stacked||
+server-game|Player.ini|AltStoreDances|Keep songs and dances after logging out||
+server-game|Player.ini|AltStoreToggles|Keep toggle skills after logging out||
+server-game|Player.ini|AutoLearnDivineInspiration|Learn Divine Inspiration automatically||
+server-game|Player.ini|AltGameCancelByHit|Getting hit interrupts||
+server-game|Player.ini|MagicFailures|Spells can miss||
+server-game|Player.ini|PlayerFakeDeathUpProtection|Protection from monsters after standing up from Fake Death|seconds|
+server-game|Player.ini|StoreSkillCooltime|Keep buffs and cooldowns after logging out||
+server-game|Player.ini|SubclassStoreSkillCooltime|Keep buffs and cooldowns when switching subclass||
+server-game|Player.ini|AltShieldBlocks|Alternative shield block formula||
+server-game|Player.ini|AltPerfectShieldBlockRate|Perfect shield block chance|%|
+server-game|Player.ini|EffectTickRatio|Over-time effect tick length|ms|
+server-game|Player.ini|FakeDeathUntarget|Fake Death removes you from monsters' target||
+server-game|Player.ini|FakeDeathDamageStand|Taking damage ends Fake Death||
+server-game|Player.ini|CalculateMagicSuccessBySkillMagicLevel|Debuff success uses the skill's magic level||
+server-game|Player.ini|DistanceBowDamage|Bow damage depends on distance||
+server-game|Player.ini|LifeCrystalNeeded|Clan skills require Life Crystals||
+server-game|Player.ini|EnchantSkillSpBookNeeded|Skill enchanting requires Giant's Codex books||
+server-game|Player.ini|DivineInspirationSpBookNeeded|Divine Inspiration requires its book||
+server-game|Player.ini|AltGameSkillLearn|Any class can learn any skill (at extra SP cost)||
+server-game|Player.ini|AltSubClassWithoutQuests|Subclasses without doing the quests||
+server-game|Player.ini|AltSubclassEverywhere|Add or change subclass at any village master||
+server-game|Player.ini|FeeDeleteTransferSkills|Price to remove transfer skills|adena|
+server-game|Player.ini|SummonStoreSkillCooltime|Pets and summons keep buffs after logging out||
+server-game|Player.ini|RestoreServitorOnReconnect|Re-summon servitors on login||
+server-game|Player.ini|RestorePetOnReconnect|Re-summon pets on login||
+server-game|Player.ini|EnableVitality|Enable the vitality system||
+server-game|Player.ini|RecoverVitalityOnReconnect|Recover vitality while offline||
+server-game|Player.ini|StartingVitalityPoints|Vitality points for new characters||
+server-game|Player.ini|RaidbossUseVitality|Raid boss kills use vitality||
+server-game|Player.ini|MaxExpBonus|Highest total experience bonus|times|
+server-game|Player.ini|MaxSpBonus|Highest total skill point bonus|times|
+server-game|Player.ini|MaxRunSpeed|Highest running speed||
+server-game|Player.ini|MaxPAtk|Highest P. Atk.||
+server-game|Player.ini|MaxMAtk|Highest M. Atk.||
+server-game|Player.ini|MaxPCritRate|Highest physical critical rate||10 = 1%.
+server-game|Player.ini|MaxMCritRate|Highest magic critical rate||10 = 1%.
+server-game|Player.ini|MaxPAtkSpeed|Highest attack speed||
+server-game|Player.ini|MaxMAtkSpeed|Highest casting speed||
+server-game|Player.ini|MaxEvasion|Highest evasion||
+server-game|Player.ini|MinAbnormalStateSuccessRate|Lowest debuff success chance|%|
+server-game|Player.ini|MaxAbnormalStateSuccessRate|Highest debuff success chance|%|
+server-game|Player.ini|MaxSp|Most skill points a character can hold||
+server-game|Player.ini|MaximumPlayerLevel|Maximum character level||Cannot be higher than the experience table allows (80 in Interlude).
+server-game|Player.ini|MaxSubclass|Number of subclasses allowed||
+server-game|Player.ini|BaseSubclassLevel|Level a new subclass starts at||
+server-game|Player.ini|MaxSubclassLevel|Maximum subclass level||
+server-game|Player.ini|MaxPvtStoreSellSlotsDwarf|Private sell store slots (dwarves)||
+server-game|Player.ini|MaxPvtStoreSellSlotsOther|Private sell store slots (other races)||
+server-game|Player.ini|MaxPvtStoreBuySlotsDwarf|Private buy store slots (dwarves)||
+server-game|Player.ini|MaxPvtStoreBuySlotsOther|Private buy store slots (other races)||
+server-game|Player.ini|MaximumSlotsForNoDwarf|Inventory slots (other races)||
+server-game|Player.ini|MaximumSlotsForDwarf|Inventory slots (dwarves)||
+server-game|Player.ini|MaximumSlotsForGMPlayer|Inventory slots (Game Masters)||
+server-game|Player.ini|MaximumWarehouseSlotsForDwarf|Warehouse slots (dwarves)||Must stay below 300 or the client crashes.
+server-game|Player.ini|MaximumWarehouseSlotsForNoDwarf|Warehouse slots (other races)||Must stay below 300 or the client crashes.
+server-game|Player.ini|MaximumWarehouseSlotsForClan|Clan warehouse slots||Must stay below 300 or the client crashes.
+server-game|Player.ini|MaximumFreightSlots|Freight slots||
+server-game|Player.ini|FreightPrice|Freight price per item|adena|
+server-game|Player.ini|NpcTalkBlockingTime|Can't move for this long after talking to an NPC|seconds|
+server-game|Player.ini|EnchantBlackList|Items that can never be enchanted||Comma-separated item IDs.
+server-game|Player.ini|DisableOverEnchanting|Stop enchanting at the maximum instead of breaking rules||
+server-game|Player.ini|OverEnchantProtection|Punish players found with over-enchanted items||
+server-game|Player.ini|OverEnchantPunishment|Punishment for over-enchanted items||
+server-game|Player.ini|AugmentationNGSkillChance|Skill chance: no-grade life stone|%|
+server-game|Player.ini|AugmentationMidSkillChance|Skill chance: mid-grade life stone|%|
+server-game|Player.ini|AugmentationHighSkillChance|Skill chance: high-grade life stone|%|
+server-game|Player.ini|AugmentationTopSkillChance|Skill chance: top-grade life stone|%|
+server-game|Player.ini|AugmentationBaseStatChance|Chance of a base stat bonus|%|
+server-game|Player.ini|AugmentationNGGlowChance|Glow chance: no-grade life stone|%|
+server-game|Player.ini|AugmentationMidGlowChance|Glow chance: mid-grade life stone|%|
+server-game|Player.ini|AugmentationHighGlowChance|Glow chance: high-grade life stone|%|
+server-game|Player.ini|AugmentationTopGlowChance|Glow chance: top-grade life stone|%|
+server-game|Player.ini|RetailLikeAugmentation|Retail-like augmentation colors||
+server-game|Player.ini|RetailLikeAugmentationNoGradeChance|Color odds: no-grade life stone||Yellow, blue, purple, red — must add up to 100.
+server-game|Player.ini|RetailLikeAugmentationMidGradeChance|Color odds: mid-grade life stone||Yellow, blue, purple, red — must add up to 100.
+server-game|Player.ini|RetailLikeAugmentationHighGradeChance|Color odds: high-grade life stone||Yellow, blue, purple, red — must add up to 100.
+server-game|Player.ini|RetailLikeAugmentationTopGradeChance|Color odds: top-grade life stone||Yellow, blue, purple, red — must add up to 100.
+server-game|Player.ini|AugmentationBlackList|Items that can never be augmented||Comma-separated item IDs.
+server-game|Player.ini|AltAllowAugmentPvPItems|Allow augmenting PvP items||
+server-game|Player.ini|AltAllowAugmentTrade|Allow trading augmented items||
+server-game|Player.ini|AltAllowAugmentDestroy|Allow destroying augmented items||
+server-game|Player.ini|SoulCrystalChanceMultiplier|Soul crystal leveling chance|times|
+server-game|Player.ini|AltKarmaPlayerCanBeKilledInPeaceZone|Players with karma can be killed in towns||
+server-game|Player.ini|AltKarmaPlayerCanUseGK|Players with karma can use gatekeepers||
+server-game|Player.ini|AltKarmaPlayerCanTeleport|Players with karma can use escape and recall||
+server-game|Player.ini|AltKarmaPlayerCanShop|Players with karma can use shops||
+server-game|Player.ini|AltKarmaPlayerCanTrade|Players with karma can trade||
+server-game|Player.ini|AltKarmaPlayerCanUseWareHouse|Players with karma can use the warehouse||
+server-game|Player.ini|EnableFameSystem|Enable fame||
+server-game|Player.ini|MaxPersonalFamePoints|Most fame a player can have||
+server-game|Player.ini|FortressZoneFameTaskFrequency|Fortress siege: fame every|seconds|
+server-game|Player.ini|FortressZoneFameAquirePoints|Fortress siege: fame gained||
+server-game|Player.ini|CastleZoneFameTaskFrequency|Castle siege: fame every|seconds|
+server-game|Player.ini|CastleZoneFameAquirePoints|Castle siege: fame gained||
+server-game|Player.ini|FameForDeadPlayers|Dead players still earn fame||
+server-game|Player.ini|CraftingEnabled|Allow crafting||
+server-game|Player.ini|DwarfRecipeLimit|Dwarven recipe book size||
+server-game|Player.ini|CommonRecipeLimit|Common recipe book size||
+server-game|Player.ini|AltGameCreation|Crafting takes time and gives experience||
+server-game|Player.ini|AltGameCreationSpeed|Crafting time|times|
+server-game|Player.ini|AltGameCreationXpRate|Crafting experience|times|
+server-game|Player.ini|AltGameCreationSpRate|Crafting skill points|times|
+server-game|Player.ini|AltBlacksmithUseRecipes|Blacksmiths use up recipes||
+server-game|Player.ini|StoreRecipeShopList|Remember private workshop lists after logout||
+server-game|Player.ini|AltClanLeaderInstantActivation|Clan leader changes happen instantly||
+server-game|Player.ini|DaysBeforeJoinAClan|Wait before joining another clan|days|
+server-game|Player.ini|DaysBeforeCreateAClan|Wait before creating a new clan|days|
+server-game|Player.ini|DaysToPassToDissolveAClan|Time to dissolve a clan|days|
+server-game|Player.ini|DaysBeforeJoinAllyWhenLeaved|Wait before joining an alliance after leaving one|days|
+server-game|Player.ini|DaysBeforeJoinAllyWhenDismissed|Wait before joining an alliance after being dismissed|days|
+server-game|Player.ini|DaysBeforeAcceptNewClanWhenDismissed|Wait before an alliance accepts a new clan after dismissing one|days|
+server-game|Player.ini|DaysBeforeCreateNewAllyWhenDissolved|Wait before creating an alliance after dissolving one|days|
+server-game|Player.ini|AltMaxNumOfClansInAlly|Clans per alliance||
+server-game|Player.ini|AltMembersCanWithdrawFromClanWH|Clan members can take items from the clan warehouse||
+server-game|Player.ini|RemoveCastleCirclets|Remove castle circlets when the castle is lost||
+server-game|Player.ini|AltClanMembersForWar|Clan members needed to declare war||
+server-game|Player.ini|AltNewCharAlwaysIsNewbie|Every new character on an account counts as a newbie||
+server-game|Player.ini|AltPartyRange|Party reward range||Party members farther than this from the kill get no share.
+server-game|Player.ini|AltLeavePartyLeader|When the leader leaves, pass leadership instead of disbanding||
+server-game|Player.ini|StartingAdena|Starting adena|adena|
+server-game|Player.ini|StartingLevel|Starting level||
+server-game|Player.ini|StartingSP|Starting skill points||
+server-game|Player.ini|MaxAdena|Most adena a character can hold|adena|
+server-game|Player.ini|AutoLootHerbs|Pick up herbs automatically||
+server-game|Player.ini|AutoLoot|Pick up monster drops automatically||
+server-game|Player.ini|AutoLootRaids|Pick up raid boss drops automatically||
+server-game|Player.ini|AutoLootSlotLimit|Drop to the ground when the inventory is full||
+server-game|Player.ini|RaidLootRightsInterval|Raid loot priority time for command channels|seconds|
+server-game|Player.ini|RaidLootRightsCCSize|Command channel size needed for raid loot priority||
+server-game|Player.ini|AutoLootItemIds|Always auto-pick these items||Comma-separated item IDs. 0 = none.
+server-game|Player.ini|KeyboardMovement|Allow moving with the keyboard||
+server-game|Player.ini|UnstuckInterval|/unstuck casting time|seconds|
+server-game|Player.ini|TeleportWatchdogTimeout|Force a stuck teleport to finish after|seconds|
+server-game|Player.ini|PlayerSpawnProtection|Protection after entering the world|seconds|
+server-game|Player.ini|PlayerTeleportProtection|Protection after teleporting|seconds|
+server-game|Player.ini|RandomRespawnInTownEnabled|Respawn at random spots in town||
+server-game|Player.ini|OffsetOnTeleportEnabled|Scatter teleport arrival points slightly||
+server-game|Player.ini|MaxOffsetOnTeleport|Teleport scatter distance||
+server-game|Player.ini|TeleportWhileSiegeInProgress|Allow teleporting into a siege||
+server-game|Player.ini|PetitioningAllowed|Allow petitions to GMs||
+server-game|Player.ini|MaxPetitionsPerPlayer|Petitions per player||
+server-game|Player.ini|MaxPetitionsPending|Petitions waiting in total||
+server-game|Player.ini|MaxFreeTeleportLevel|Teleports are free up to level||0 = teleports always cost adena.
+server-game|Player.ini|AltRecommend|Recommend the same player more than once a day||
+server-game|Player.ini|DeleteCharAfterDays|Character deletion waiting time|days|0 = characters cannot be deleted.
+server-game|Player.ini|DisconnectAfterDeath|Disconnect players who stay dead for an hour||
+server-game|Player.ini|PartyXpCutoffMethod|Party experience sharing rule||
+server-game|Player.ini|PartyXpCutoffPercent|Sharing rule "percentage": cutoff|%|
+server-game|Player.ini|PartyXpCutoffLevel|Sharing rule "level": level gap cutoff|levels|
+server-game|Player.ini|PartyXpCutoffGaps|Sharing rule "highfive": level gap ranges||
+server-game|Player.ini|PartyXpCutoffGapPercent|Sharing rule "highfive": XP percent per range||
+server-game|Player.ini|DisableTutorial|Turn off the newbie tutorial||
+server-game|Player.ini|ExpertisePenalty|Penalty for wearing gear above your grade||
+server-game|Player.ini|ForbiddenNames|Words not allowed in character names||Comma-separated.
+server-game|Player.ini|SilenceModeExclude|Messaging someone lets them reply while you are in silence mode||
+server-game|Player.ini|AltValidateTriggerSkills|Triggered PvP skills never hit unflagged players||
+server-game|Player.ini|RandomizeAutoAttackDamage|Random damage variation on normal attacks||
+server-game|Player.ini|RandomizePhysicalSkillDamage|Random damage variation on physical skills||
+server-game|Player.ini|RandomizeMagicalSkillDamage|Random damage variation on magic skills||
+# ---------------------------------------------------------------- General.ini
+server-game|General.ini|EverybodyHasAdminRights|Every new character is an administrator||Do not turn this on unless you really mean it.
+server-game|General.ini|ServerGMOnly|Only Game Masters can log in||
+server-game|General.ini|GMHeroAura|GMs glow with the hero aura||
+server-game|General.ini|GMStartupBuilderHide|GMs log in hidden in builder mode||
+server-game|General.ini|GMStartupInvulnerable|GMs log in invulnerable||
+server-game|General.ini|GMStartupInvisible|GMs log in invisible||
+server-game|General.ini|GMStartupSilence|GMs log in blocking private messages||
+server-game|General.ini|GMStartupAutoList|GMs appear in /gmlist on login||
+server-game|General.ini|GMStartupDietMode|GMs log in without weight penalty||
+server-game|General.ini|GMItemRestriction|Item restrictions apply to GMs||
+server-game|General.ini|GMSkillRestriction|Skill restrictions apply to GMs||
+server-game|General.ini|GMTradeRestrictedItems|GMs can trade or drop untradable items||
+server-game|General.ini|GMRestartFighting|GMs can restart or exit while fighting||
+server-game|General.ini|GMShowAnnouncerName|Show the GM's name after announcements||
+server-game|General.ini|GMShowCritAnnouncerName|Show the GM's name before critical announcements||
+server-game|General.ini|GMGiveSpecialSkills|Give GMs the special GM skills||
+server-game|General.ini|GMGiveSpecialAuraSkills|Give GMs the special aura skills||
+server-game|General.ini|GMDebugHtmlPaths|Show HTML file paths to GMs||
+server-game|General.ini|UseSuperHasteAsGMSpeed|Use the old Super Haste for //gmspeed||
+server-game|General.ini|LogChat|Log all chat||
+server-game|General.ini|LogItems|Log item movement||
+server-game|General.ini|LogItemsSmallLog|Item log: only adena and equipment||
+server-game|General.ini|LogItemsIdsOnly|Item log: only the listed items||
+server-game|General.ini|LogItemsIdsList|Item log: item IDs to log||
+server-game|General.ini|LogItemEnchants|Log item enchanting||
+server-game|General.ini|LogSkillEnchants|Log skill enchanting||
+server-game|General.ini|GMAudit|Log GM actions||
+server-game|General.ini|SkillCheckEnable|Check players for skills they should not have||
+server-game|General.ini|SkillCheckRemove|Remove skills players should not have||
+server-game|General.ini|SkillCheckGM|Also check Game Masters' skills||
+server-game|General.ini|AllowDiscardItem|Players can drop items on the ground||
+server-game|General.ini|AutoDestroyDroppedItemAfter|Remove dropped items after|seconds|0 = never.
+server-game|General.ini|AutoDestroyHerbTime|Remove dropped herbs after|seconds|
+server-game|General.ini|ListOfProtectedItems|Items never removed from the ground||Comma-separated item IDs.
+server-game|General.ini|CharacterDataStoreInterval|Save characters every|minutes|0 = only on logout.
+server-game|General.ini|LazyItemsUpdate|Save items only with the character||Faster, but items can be lost if the server crashes.
+server-game|General.ini|UpdateItemsOnCharStore|Always save items when saving the character||
+server-game|General.ini|DestroyPlayerDroppedItem|Also remove items dropped by players||
+server-game|General.ini|DestroyEquipableItem|Also remove equipment dropped by players||
+server-game|General.ini|DestroyAllItems|Players can destroy any item||
+server-game|General.ini|SaveDroppedItem|Keep items on the ground through restarts||
+server-game|General.ini|EmptyDroppedItemTableAfterLoad|Clear saved ground items after loading them||
+server-game|General.ini|SaveDroppedItemInterval|Save ground items every|minutes|
+server-game|General.ini|ClearDroppedItemTable|Delete all saved ground items on next start||
+server-game|General.ini|AutoDeleteInvalidQuestData|Delete broken quest data from characters||
+server-game|General.ini|MultipleItemDrop|Allow dropping several non-stackable items at once||
+server-game|General.ini|HtmCache|Load all NPC dialogs at startup||
+server-game|General.ini|CheckHtmlEncoding|Warn about non-English characters in NPC dialogs||
+server-game|General.ini|MinNpcAnimation|NPC idle animation: shortest delay|seconds|
+server-game|General.ini|MaxNpcAnimation|NPC idle animation: longest delay|seconds|
+server-game|General.ini|MinMonsterAnimation|Monster idle animation: shortest delay|seconds|
+server-game|General.ini|MaxMonsterAnimation|Monster idle animation: longest delay|seconds|
+server-game|General.ini|GridsAlwaysOn|Keep every world region active||Uses much more CPU. Not recommended.
+server-game|General.ini|GridNeighborTurnOnTime|Wake nearby regions after|seconds|
+server-game|General.ini|GridNeighborTurnOffTime|Sleep empty regions after|seconds|
+server-game|General.ini|CorrectPrices|Fix shop prices that are below the sell price||
+server-game|General.ini|MultisellAmountLimit|Most items per multisell exchange||
+server-game|General.ini|EnableFallingDamage|Falling damage||
+server-game|General.ini|DebuffDurationUsesResists|Resistances shorten debuffs||
+server-game|General.ini|PeaceZoneMode|Town PvP rules||
+server-game|General.ini|GlobalChat|Shout chat (!)||
+server-game|General.ini|TradeChat|Trade chat (+)||
+server-game|General.ini|MinimumChatLevel|Level needed to chat||0 = no limit.
+server-game|General.ini|AllowWarehouse|Allow warehouses||
+server-game|General.ini|AllowRefund|Allow selling back to NPC shops (refund)||
+server-game|General.ini|AllowWear|Allow trying on gear in shops||
+server-game|General.ini|WearDelay|Try-on lasts|seconds|
+server-game|General.ini|WearPrice|Try-on price|adena|
+server-game|General.ini|AltVillagesRepQuestReward|No bonus adena for turning in 10+ items to village quests||
+server-game|General.ini|RestorePlayerInstance|Return players to their instance on login||
+server-game|General.ini|AllowSummonInInstance|Summon friends into instances||
+server-game|General.ini|EjectDeadPlayerTime|Remove dead players from an instance after|seconds|
+server-game|General.ini|DefaultFinishTime|Close a finished instance after|seconds|
+server-game|General.ini|AllowRace|Allow monster races||
+server-game|General.ini|AllowWater|Allow swimming||
+server-game|General.ini|AllowFishing|Allow fishing||
+server-game|General.ini|AllowBoat|Allow boats||
+server-game|General.ini|BoatBroadcastRadius|Boat announcement range||
+server-game|General.ini|AllowCursedWeapons|Enable cursed weapons (Zariche, Akamanah)||The two cursed swords that can drop from monsters and make their holder very powerful.
+server-game|General.ini|AllowPartyInSameEvent|Allow parties inside the same event||
+server-game|General.ini|ShowServerNews|Show server news on login||
+server-game|General.ini|EnableCommunityBoard|Enable the Community Board (Alt+B)||
+server-game|General.ini|BBSDefault|Community Board start page||
+server-game|General.ini|UseChatFilter|Filter bad words in chat||
+server-game|General.ini|ChatFilterChars|Replace filtered words with||
+server-game|General.ini|BanChatChannels|Channels blocked by a chat ban||Separate channel names with ;
+server-game|General.ini|AllowManor|Enable the manor||
+server-game|General.ini|AltManorRefreshTime|Manor refresh hour|hour|
+server-game|General.ini|AltManorRefreshMin|Manor refresh minute|minute|
+server-game|General.ini|AltManorApproveTime|Manor approval hour|hour|
+server-game|General.ini|AltManorApproveMin|Manor approval minute|minute|
+server-game|General.ini|AltManorMaintenanceMin|Manor maintenance length|minutes|
+server-game|General.ini|AltManorSaveAllActions|Save the manor after every action||
+server-game|General.ini|AltManorSavePeriodRate|Save the manor every|hours|
+server-game|General.ini|AllowLottery|Enable the lottery||
+server-game|General.ini|AltLotteryPrize|Starting jackpot|adena|
+server-game|General.ini|AltLotteryTicketPrice|Ticket price|adena|
+server-game|General.ini|AltLottery5NumberRate|Share of jackpot for 5 numbers||0.6 = 60%.
+server-game|General.ini|AltLottery4NumberRate|Share of jackpot for 4 numbers||
+server-game|General.ini|AltLottery3NumberRate|Share of jackpot for 3 numbers||
+server-game|General.ini|AltLottery2and1NumberPrize|Prize for 2 or fewer numbers|adena|
+server-game|General.ini|AltFishChampionshipEnabled|Enable the fishing championship||
+server-game|General.ini|AltFishChampionshipRewardItemId|Prize item ID||57 = adena.
+server-game|General.ini|AltFishChampionshipReward1|1st place prize||
+server-game|General.ini|AltFishChampionshipReward2|2nd place prize||
+server-game|General.ini|AltFishChampionshipReward3|3rd place prize||
+server-game|General.ini|AltFishChampionshipReward4|4th place prize||
+server-game|General.ini|AltFishChampionshipReward5|5th place prize||
+server-game|General.ini|AltItemAuctionEnabled|Enable the item auction||
+server-game|General.ini|AltItemAuctionExpiredAfter|Delete finished auctions after|days|
+server-game|General.ini|AltItemAuctionTimeExtendsOnBid|Extend an auction on each new bid by|seconds|
+server-game|General.ini|RiftMinPartySize|Smallest party allowed in the rift||
+server-game|General.ini|MaxRiftJumps|Room jumps before being sent back||
+server-game|General.ini|RiftSpawnDelay|Monsters appear after entering a room|ms|
+server-game|General.ini|AutoJumpsDelayMin|Automatic jump: shortest wait|seconds|
+server-game|General.ini|AutoJumpsDelayMax|Automatic jump: longest wait|seconds|
+server-game|General.ini|BossRoomTimeMultiply|Extra time in the boss room|times|
+server-game|General.ini|RecruitCost|Entry cost: Recruit rift||Dimensional fragments per party member.
+server-game|General.ini|SoldierCost|Entry cost: Soldier rift||
+server-game|General.ini|OfficerCost|Entry cost: Officer rift||
+server-game|General.ini|CaptainCost|Entry cost: Captain rift||
+server-game|General.ini|CommanderCost|Entry cost: Commander rift||
+server-game|General.ini|HeroCost|Entry cost: Hero rift||
+server-game|General.ini|DefaultPunish|Punishment for illegal actions||
+server-game|General.ini|DefaultPunishParam|Punishment length||0 = permanent.
+server-game|General.ini|OnlyGMItemsFree|Punish buying items for zero adena||
+server-game|General.ini|JailIsPvp|Jail is a PvP zone||
+server-game|General.ini|JailDisableChat|Block chat in jail||
+server-game|General.ini|JailDisableTransaction|Block trading in jail||
+server-game|General.ini|NormalEnchantCostMultipiler|Skill enchant cost|times|
+server-game|General.ini|SafeEnchantCostMultipiler|Safe skill enchant cost|times|
+server-game|General.ini|CustomNpcData|Load custom NPCs||
+server-game|General.ini|CustomTeleportTable|Load custom teleports||
+server-game|General.ini|CustomSkillsLoad|Load custom skills||
+server-game|General.ini|CustomItemsLoad|Load custom items||
+server-game|General.ini|CustomMultisellLoad|Load custom multisells||
+server-game|General.ini|CustomBuyListLoad|Load custom NPC shop lists||
+# ---------------------------------------------------------------- Server.ini (game)
+server-game|Server.ini|LoginHost|Login server address||
+server-game|Server.ini|LoginPort|Port for talking to the login server||
+server-game|Server.ini|GameserverHostname|Game server listens on||0.0.0.0 = every network adapter.
+server-game|Server.ini|GameserverPort|Game server port||The port the client connects to (7777).
+server-game|Server.ini|PacketEncryption|Encrypt network traffic||
+server-game|Server.ini|RequestServerID|Server ID to request||1 = Bartz.
+server-game|Server.ini|AcceptAlternateID|Accept a different server ID if taken||
+server-game|Server.ini|DatapackRoot|Game data folder||
+server-game|Server.ini|ScriptRoot|Scripts folder||
+server-game|Server.ini|MaximumOnlineUsers|Most players online at once||
+server-game|Server.ini|AllowedProtocolRevisions|Allowed client protocol versions||Interlude is 746. Changing this breaks the client connection.
+server-game|Server.ini|ServerListType|Server type label on the server list||
+server-game|Server.ini|ServerListAge|Age rating on the server list||
+server-game|Server.ini|ServerListBrackets|Show [ ] around the server name||
+server-game|Server.ini|DeadlockWatcher|Watch for server freezes||
+server-game|Server.ini|DeadlockCheckInterval|Check for freezes every|seconds|
+server-game|Server.ini|RestartOnDeadlock|Restart the server after a freeze||
+server-game|Server.ini|EnableHardwareInfo|Read hardware ID from the client||Needs a modified client.
+server-game|Server.ini|KickMissingHWID|Kick clients without a hardware ID||
+server-game|Server.ini|MaxPlayersPerHWID|Characters per computer||0 = unlimited.
+server-game|Server.ini|CnameTemplate|Allowed character names (pattern)||A regular expression. .* allows anything.
+server-game|Server.ini|PetNameTemplate|Allowed pet names (pattern)||
+server-game|Server.ini|ClanNameTemplate|Allowed clan names (pattern)||
+server-game|Server.ini|CharMaxNumber|Characters per account||The client shows at most 7.
+server-game|Server.ini|PrecautionaryRestartEnabled|Restart when the computer is overloaded||
+server-game|Server.ini|PrecautionaryRestartCpu|Overload check: CPU||
+server-game|Server.ini|PrecautionaryRestartMemory|Overload check: memory||
+server-game|Server.ini|PrecautionaryRestartChecks|Don't restart during sieges, Olympiad or raids||
+server-game|Server.ini|PrecautionaryRestartPercentage|Overloaded above|%|
+server-game|Server.ini|PrecautionaryRestartDelay|Overload check every|seconds|
+server-game|Server.ini|ServerRestartScheduleEnabled|Restart on a schedule||
+server-game|Server.ini|ServerRestartScheduleMessage|Tell players about the next restart when they log in||
+server-game|Server.ini|ServerRestartScheduleCountdown|Restart countdown|seconds|
+server-game|Server.ini|ServerRestartSchedule|Restart times||Example: 12:00, 00:00
+server-game|Server.ini|ServerRestartDays|Restart days||1 = Sunday … 7 = Saturday, comma-separated.
+# ---------------------------------------------------------------- Server.ini (login)
+server-login|Server.ini|LoginserverHostname|Login server listens on||
+server-login|Server.ini|LoginserverPort|Login server port for players||The client connects here (2106).
+server-login|Server.ini|LoginHostname|Address game servers connect to||
+server-login|Server.ini|LoginPort|Port game servers connect to||
+server-login|Server.ini|LoginTryBeforeBan|Wrong passwords before an IP is blocked||
+server-login|Server.ini|LoginBlockAfterBan|Block wrong-password IPs for|seconds|
+server-login|Server.ini|AcceptNewGameServer|Accept new game servers||
+server-login|Server.ini|EnableFloodProtection|Login flood protection||
+server-login|Server.ini|FastConnectionLimit|Fast connections allowed||
+server-login|Server.ini|NormalConnectionTime|Normal connection time|ms|
+server-login|Server.ini|FastConnectionTime|Fast connection time|ms|
+server-login|Server.ini|MaxConnectionPerIP|Connections per IP||
+server-login|Server.ini|ShowLicence|Show the license screen after login||
+server-login|Server.ini|AutoCreateAccounts|Create an account automatically on first login||Any new account name and password typed at the login screen becomes a new account.
+server-login|Server.ini|DatapackRoot|Data folder||
+server-login|Server.ini|LoginRestartSchedule|Restart the login server on a schedule||
+server-login|Server.ini|LoginRestartTime|Restart the login server every|hours|
+# ---------------------------------------------------------------- NPC.ini
+server-game|NPC.ini|AnnounceMammonSpawn|Announce where Mammon's merchants appear||
+server-game|NPC.ini|AltMobAgroInPeaceZone|Aggressive monsters attack in peace zones||
+server-game|NPC.ini|AltAttackableNpcs|NPCs can be attacked||
+server-game|NPC.ini|AltGameViewNpc|Show NPC details on Shift+click||
+server-game|NPC.ini|ShowNpcLevel|Show monster levels||
+server-game|NPC.ini|ShowNpcAggression|Mark aggressive monsters||
+server-game|NPC.ini|AttackablesCampPlayerCorpses|Monsters stay near players they killed||
+server-game|NPC.ini|ShowCrestWithoutQuest|Show clan crests on NPCs without the quest||
+server-game|NPC.ini|EnableRandomEnchantEffect|NPC weapons glow with random enchant effects||
+server-game|NPC.ini|DecayTimeTask|Corpse decay check interval|ms|
+server-game|NPC.ini|DefaultCorpseTime|Monster corpses stay for|seconds|
+server-game|NPC.ini|SpoiledCorpseExtendTime|Spoiled corpses stay extra|seconds|
+server-game|NPC.ini|CorpseConsumeSkillAllowedTimeBeforeDecay|Corpse skills can be used until decay minus|ms|
+server-game|NPC.ini|MaxAggroRange|Monsters chase players for up to||
+server-game|NPC.ini|MaxDriftRange|Monsters wander up to||
+server-game|NPC.ini|AggroDistanceCheckEnabled|Monsters give up when pulled too far||
+server-game|NPC.ini|AggroDistanceCheckRange|…give-up distance||
+server-game|NPC.ini|AggroDistanceCheckRaids|…also applies to raid bosses||
+server-game|NPC.ini|AggroDistanceCheckRaidRange|…raid boss give-up distance||
+server-game|NPC.ini|AggroDistanceCheckInstances|…also applies inside instances||
+server-game|NPC.ini|AggroDistanceCheckRestoreLife|…monsters heal fully when they give up||
+server-game|NPC.ini|GuardAttackAggroMob|Guards attack aggressive monsters||
+server-game|NPC.ini|AllowWyvernUpgrader|Allow the wyvern upgrade NPC||
+server-game|NPC.ini|MaximumSlotsForPet|Pet inventory slots||
+server-game|NPC.ini|PetHpRegenMultiplier|Pet HP regeneration|%|
+server-game|NPC.ini|PetMpRegenMultiplier|Pet MP regeneration|%|
+server-game|NPC.ini|RaidHpRegenMultiplier|Raid boss HP regeneration|%|
+server-game|NPC.ini|RaidMpRegenMultiplier|Raid boss MP regeneration|%|
+server-game|NPC.ini|RaidPDefenceMultiplier|Raid boss P. Def.|%|
+server-game|NPC.ini|RaidMDefenceMultiplier|Raid boss M. Def.|%|
+server-game|NPC.ini|RaidPAttackMultiplier|Raid boss P. Atk.|%|
+server-game|NPC.ini|RaidMAttackMultiplier|Raid boss M. Atk.|%|
+server-game|NPC.ini|RaidMinRespawnMultiplier|Raid boss shortest respawn|times|
+server-game|NPC.ini|RaidMaxRespawnMultiplier|Raid boss longest respawn|times|
+server-game|NPC.ini|RaidMinionRespawnTime|Raid minions respawn after|ms|
+server-game|NPC.ini|CustomMinionsRespawnTime|Custom minion respawn times||Format: npcId,seconds;npcId,seconds
+server-game|NPC.ini|ForceDeleteMinions|Remove minions when their boss dies||
+server-game|NPC.ini|DisableRaidCurse|Turn off the raid curse (Raid Fear/Silence on high-level players)||
+server-game|NPC.ini|RaidChaosTime|Raid bosses switch targets after|seconds|
+server-game|NPC.ini|GrandChaosTime|Grand bosses switch targets after|seconds|
+server-game|NPC.ini|MinionChaosTime|Minions switch targets after|seconds|
+# ---------------------------------------------------------------- PVP.ini
+server-game|PVP.ini|CanGMDropEquipment|GMs can drop equipment on death||
+server-game|PVP.ini|ListOfPetItems|Pet items that never drop||
+server-game|PVP.ini|ListOfNonDroppableItems|Items that never drop on death||
+server-game|PVP.ini|MinimumPKRequiredToDrop|Player kills needed before items can drop||
+server-game|PVP.ini|AntiFeedEnable|Block feeding kills||
+server-game|PVP.ini|AntiFeedDualbox|Kills between the same computer don't count||
+server-game|PVP.ini|AntiFeedDisconnectedAsDualbox|Kills of disconnected players don't count||
+server-game|PVP.ini|AntiFeedInterval|Killing the same player again counts after|seconds|
+server-game|PVP.ini|AwardPKKillPVPPoint|Player kills also count as PvP kills||
+server-game|PVP.ini|PvPVsNormalTime|Purple (PvP) flag lasts after attacking|ms|
+server-game|PVP.ini|PvPVsPvPTime|Purple flag lasts after fighting a flagged player|ms|
+# ---------------------------------------------------------------- Olympiad.ini
+server-game|Olympiad.ini|OlympiadEnabled|Enable the Olympiad||
+server-game|Olympiad.ini|OlympiadStartTime|Daily start hour|hour|
+server-game|Olympiad.ini|OlympiadMin|Daily start minute|minute|
+server-game|Olympiad.ini|OlympiadCPeriod|Competition period length|ms|
+server-game|Olympiad.ini|OlympiadBattle|Match length|ms|
+server-game|Olympiad.ini|OlympiadWPeriod|Weekly point bonus every|ms|
+server-game|Olympiad.ini|OlympiadVPeriod|Validation period length|ms|
+server-game|Olympiad.ini|OlympiadStartPoints|Starting Olympiad points||
+server-game|Olympiad.ini|OlympiadWeeklyPoints|Points added each week||
+server-game|Olympiad.ini|OlympiadClassedParticipants|Players needed for class matches||
+server-game|Olympiad.ini|OlympiadNonClassedParticipants|Players needed for open matches||
+server-game|Olympiad.ini|OlympiadRegistrationDisplayNumber|Registration count shown to players||
+server-game|Olympiad.ini|OlympiadBattleRewItem|Match reward item ID||
+server-game|Olympiad.ini|OlympiadClassedRewItemCount|Class match reward amount||
+server-game|Olympiad.ini|OlympiadNonClassedRewItemCount|Open match reward amount||
+server-game|Olympiad.ini|OlympiadCompRewItem|Point exchange reward item ID||
+server-game|Olympiad.ini|OlympiadGPPerPoint|Reward items per Olympiad point||
+server-game|Olympiad.ini|OlympiadHeroPoints|Bonus points for heroes||
+server-game|Olympiad.ini|OlympiadMaxPoints|Most points a player can gain||
+server-game|Olympiad.ini|OlympiadShowMonthlyWinners|Show monthly winners in the ranking||
+server-game|Olympiad.ini|OlympiadAnnounceGames|Announce matches||
+server-game|Olympiad.ini|OlympiadRestrictedItems|Items not allowed in the Olympiad||
+server-game|Olympiad.ini|OlympiadDisableBlessedSpiritShots|Block Blessed Spiritshots in the Olympiad||
+server-game|Olympiad.ini|OlympiadEnchantLimit|Enchant level limit in the Olympiad||-1 = no limit.
+server-game|Olympiad.ini|OlympiadLogFights|Log Olympiad fights||
+server-game|Olympiad.ini|OlympiadWaitTime|Wait before a match starts|seconds|
+server-game|Olympiad.ini|OlympiadUseCustomPeriodSettings|Use a custom Olympiad period||
+server-game|Olympiad.ini|OlympiadPeriod|Custom period unit||
+server-game|Olympiad.ini|OlympiadPeriodMultiplier|Custom period length||
+server-game|Olympiad.ini|OlympiadCompetitionDays|Competition days||1 = Sunday … 7 = Saturday.
+# ---------------------------------------------------------------- Siege.ini / Feature.ini (non-pattern)
+server-game|Siege.ini|SiegeCycle|Weeks between castle sieges|weeks|
+server-game|Siege.ini|SiegeLength|Siege length|minutes|
+server-game|Siege.ini|MaxFlags|Headquarters flags per clan||
+server-game|Siege.ini|SiegeClanMinLevel|Clan level needed to join a siege||
+server-game|Siege.ini|AttackerMaxClans|Most attacking clans||
+server-game|Siege.ini|DefenderMaxClans|Most defending clans||
+server-game|Siege.ini|AttackerRespawn|Attacker respawn delay|ms|
+server-game|Siege.ini|BloodAllianceReward|Blood Alliance reward for a successful defense||
+server-game|Feature.ini|SiegeHourList|Hours a siege may start||Comma-separated hours.
+server-game|Feature.ini|AltClanHallMpBuffFree|Clan hall buffs cost no MP||
+server-game|Feature.ini|FortressPeriodicUpdateFrequency|Fortress reward interval|minutes|
+server-game|Feature.ini|FortressBloodOathCount|Blood Oaths per fortress reward||
+server-game|Feature.ini|FortressMaxSupplyLevel|Fortress supply level cap||
+server-game|Feature.ini|FortressFeeForCastle|Fortress tax paid to the castle|adena|
+server-game|Feature.ini|FortressMaximumOwnTime|Longest a clan can hold a fortress|hours|
+server-game|Feature.ini|AltOpenCatacumbs|Catacombs and necropolises always open||
+server-game|Feature.ini|AltOpenNecropolis|Necropolises always open||
+server-game|Feature.ini|AltRequireClanCastle|Only castle-owning clans can join Seven Signs||
+server-game|Feature.ini|AltCastleForDawn|Joining Dawn requires a castle||
+server-game|Feature.ini|AltCastleForDusk|Joining Dusk requires no castle||
+server-game|Feature.ini|AltFestivalMinPlayer|Festival of Darkness: minimum party||
+server-game|Feature.ini|AltMaxPlayerContrib|Most seal stones a player can contribute||
+server-game|Feature.ini|AltFestivalManagerStart|Festival: signup opens after|ms|
+server-game|Feature.ini|AltFestivalLength|Festival length|ms|
+server-game|Feature.ini|AltFestivalCycleLength|Festival cycle length|ms|
+server-game|Feature.ini|AltFestivalFirstSpawn|Festival: first monsters after|ms|
+server-game|Feature.ini|AltFestivalFirstSwarm|Festival: first swarm after|ms|
+server-game|Feature.ini|AltFestivalSecondSpawn|Festival: second monsters after|ms|
+server-game|Feature.ini|AltFestivalSecondSwarm|Festival: second swarm after|ms|
+server-game|Feature.ini|AltFestivalChestSpawn|Festival: chests appear after|ms|
+server-game|Feature.ini|AltDawnGatesPdefMult|Dawn castle gate P. Def.|times|
+server-game|Feature.ini|AltDuskGatesPdefMult|Dusk castle gate P. Def.|times|
+server-game|Feature.ini|AltDawnGatesMdefMult|Dawn castle gate M. Def.|times|
+server-game|Feature.ini|AltDuskGatesMdefMult|Dusk castle gate M. Def.|times|
+server-game|Feature.ini|StrictSevenSigns|Retail Seven Signs restrictions||
+server-game|Feature.ini|AltSevenSignsLazyUpdate|Save Seven Signs data less often||
+server-game|Feature.ini|SevenSignsDawnTicketQuantity|Lord of Dawn tickets available||
+server-game|Feature.ini|SevenSignsDawnTicketPrice|Lord of Dawn ticket price|adena|
+server-game|Feature.ini|SevenSignsDawnTicketBundle|Lord of Dawn tickets per bundle||
+server-game|Feature.ini|SevenSignsManorsAgreementId|Manor agreement item ID||
+server-game|Feature.ini|SevenSignsJoinDawnFee|Fee to join Dawn|adena|
+server-game|Feature.ini|TakeFortPoints|Reputation for taking a fortress||
+server-game|Feature.ini|TakeCastlePoints|Reputation for taking a castle||
+server-game|Feature.ini|CastleDefendedPoints|Reputation for defending a castle||
+server-game|Feature.ini|FestivalOfDarknessWin|Reputation for winning the Festival of Darkness||
+server-game|Feature.ini|HeroPoints|Reputation when a member becomes a hero||
+server-game|Feature.ini|CompleteAcademyMinPoints|Reputation for an academy graduate (lowest)||
+server-game|Feature.ini|CompleteAcademyMaxPoints|Reputation for an academy graduate (highest)||
+server-game|Feature.ini|KillBallistaPoints|Reputation for destroying a ballista||
+server-game|Feature.ini|BloodAlliancePoints|Reputation per Blood Alliance||
+server-game|Feature.ini|BloodOathPoints|Reputation per Blood Oath||
+server-game|Feature.ini|KnightsEpaulettePoints|Reputation per Knight's Epaulette||
+server-game|Feature.ini|ReputationScorePerKill|Reputation per clan war kill||
+server-game|Feature.ini|LooseFortPoints|Reputation lost when a fortress falls||
+server-game|Feature.ini|LooseCastlePoints|Reputation lost when a castle falls||
+server-game|Feature.ini|CreateRoyalGuardCost|Reputation cost: create Royal Guard||
+server-game|Feature.ini|CreateKnightUnitCost|Reputation cost: create Order of Knights||
+server-game|Feature.ini|ReinforceKnightUnitCost|Reputation cost: expand Order of Knights||
+server-game|Feature.ini|AllowRideWyvernAlways|Wyverns can be ridden anywhere||
+server-game|Feature.ini|AllowRideWyvernDuringSiege|Wyverns can be ridden during sieges||
+server-game|Feature.ini|AllowRideMountsDuringSiege|Mounts can be ridden during sieges||
+# ---------------------------------------------------------------- Custom/
+server-game|Custom/AllowedPlayerRaces.ini|AllowHuman|Humans can be created||
+server-game|Custom/AllowedPlayerRaces.ini|AllowElf|Elves can be created||
+server-game|Custom/AllowedPlayerRaces.ini|AllowDarkElf|Dark Elves can be created||
+server-game|Custom/AllowedPlayerRaces.ini|AllowOrc|Orcs can be created||
+server-game|Custom/AllowedPlayerRaces.ini|AllowDwarf|Dwarves can be created||
+server-game|Custom/StartingLocation.ini|CustomStartingLocation|Start new characters at a custom location||
+server-game|Custom/StartingLocation.ini|CustomStartingLocX|Custom start: X||
+server-game|Custom/StartingLocation.ini|CustomStartingLocY|Custom start: Y||
+server-game|Custom/StartingLocation.ini|CustomStartingLocZ|Custom start: Z||
+server-game|Custom/StartingTitle.ini|EnableStartingTitle|Give new characters a title||
+server-game|Custom/StartingTitle.ini|StartingTitle|Starting title||
+server-game|Custom/AutoPlay.ini|EnableAutoPlay|Enable auto play||
+server-game|Custom/AutoPlay.ini|EnableAutoPotion|Auto play uses potions||
+server-game|Custom/AutoPlay.ini|EnableAutoSkill|Auto play uses skills||
+server-game|Custom/AutoPlay.ini|EnableAutoItem|Auto play uses items||
+server-game|Custom/AutoPlay.ini|ResumeAutoPlay|Resume auto play after logging back in||
+server-game|Custom/AutoPlay.ini|AssistLeader|Auto play assists the party leader||
+server-game|Custom/AutoPlay.ini|ShortRange|Auto play short range||
+server-game|Custom/AutoPlay.ini|LongRange|Auto play long range||
+server-game|Custom/AutoPlay.ini|AutoPlayPremium|Auto play is premium-only||
+server-game|Custom/AutoPlay.ini|DisabledSkillIds|Skills auto play never uses||
+server-game|Custom/AutoPlay.ini|DisabledItemIds|Items auto play never uses||
+server-game|Custom/AutoPlay.ini|IgnoredAutoPickItems|Items auto play never picks up||
+server-game|Custom/AutoPlay.ini|AutoPlayLoginMessage|Auto play login message||
+server-game|Custom/AutoPotions.ini|AutoPotionsEnabled|Enable auto potions (.apon)||
+server-game|Custom/AutoPotions.ini|AutoPotionsInOlympiad|Allow auto potions in the Olympiad||
+server-game|Custom/AutoPotions.ini|AutoPotionMinimumLevel|Level needed for auto potions||
+server-game|Custom/AutoPotions.ini|AutoCpEnabled|Auto CP potions||
+server-game|Custom/AutoPotions.ini|AutoCpPercentage|Use CP potion below|%|
+server-game|Custom/AutoPotions.ini|AutoCpItemIds|CP potion item IDs||
+server-game|Custom/AutoPotions.ini|AutoHpEnabled|Auto HP potions||
+server-game|Custom/AutoPotions.ini|AutoHpPercentage|Use HP potion below|%|
+server-game|Custom/AutoPotions.ini|AutoHpItemIds|HP potion item IDs||
+server-game|Custom/AutoPotions.ini|AutoMpEnabled|Auto MP potions||
+server-game|Custom/AutoPotions.ini|AutoMpPercentage|Use MP potion below|%|
+server-game|Custom/AutoPotions.ini|AutoMpItemIds|MP potion item IDs||
+server-game|Custom/Banking.ini|BankingEnabled|Enable banking (.deposit / .withdraw)||
+server-game|Custom/Banking.ini|BankingGoldbarCount|Gold bars per exchange||
+server-game|Custom/Banking.ini|BankingAdenaCount|Adena per exchange|adena|
+server-game|Custom/BossAnnouncements.ini|RaidBossSpawnAnnouncements|Announce raid boss spawns||
+server-game|Custom/BossAnnouncements.ini|RaidBossDefeatAnnouncements|Announce raid boss kills||
+server-game|Custom/BossAnnouncements.ini|RaidBossInstanceAnnouncements|Also announce raid bosses in instances||
+server-game|Custom/BossAnnouncements.ini|GrandBossSpawnAnnouncements|Announce grand boss spawns||
+server-game|Custom/BossAnnouncements.ini|GrandBossDefeatAnnouncements|Announce grand boss kills||
+server-game|Custom/BossAnnouncements.ini|GrandBossInstanceAnnouncements|Also announce grand bosses in instances||
+server-game|Custom/BossAnnouncements.ini|RaidbossExcludedFromSpawnAnnouncements|Bosses never announced when they spawn||
+server-game|Custom/BossAnnouncements.ini|RaidbossExcludedFromDefeatAnnouncements|Bosses never announced when killed||
+server-game|Custom/CancelReturn.ini|CancelReturn|Return cancelled buffs||
+server-game|Custom/CancelReturn.ini|ReturnMonster|…when cancelled by monsters||
+server-game|Custom/CancelReturn.ini|ReturnPlayer|…when cancelled by players||
+server-game|Custom/CancelReturn.ini|ReturnPlayerOlys|…when cancelled in the Olympiad||
+server-game|Custom/CancelReturn.ini|TimeToReturn|Buffs come back after|seconds|
+server-game|Custom/Captcha.ini|EnableCaptcha|Ask farmers to solve a captcha||
+server-game|Custom/Captcha.ini|KillCounter|Monster kills before a captcha||
+server-game|Custom/Captcha.ini|KillCounterRandomization|Random extra kills before a captcha||
+server-game|Custom/Captcha.ini|KillCounterReset|Reset the kill count over time||
+server-game|Custom/Captcha.ini|KillCounterResetTime|Reset the kill count after|minutes|
+server-game|Custom/Captcha.ini|ValidationTime|Time to answer the captcha|seconds|
+server-game|Custom/Captcha.ini|CaptchaAttempts|Captcha attempts||
+server-game|Custom/Captcha.ini|Punishment|Captcha: punishment for failing||
+server-game|Custom/Captcha.ini|JailTime|Captcha: jail time|minutes|
+server-game|Custom/Captcha.ini|DoubleJailTime|Captcha: double jail time for repeat offenders||
+server-game|Custom/ChampionMonsters.ini|ChampionEnable|Enable champion monsters||
+server-game|Custom/ChampionMonsters.ini|ChampionPassive|Champions can be passive monsters||
+server-game|Custom/ChampionMonsters.ini|ChampionFrequency|Chance a monster is a champion|%|
+server-game|Custom/ChampionMonsters.ini|ChampionTitle|Champion title||
+server-game|Custom/ChampionMonsters.ini|ChampionAura|Champions glow||
+server-game|Custom/ChampionMonsters.ini|ChampionMinLevel|Lowest champion level||
+server-game|Custom/ChampionMonsters.ini|ChampionMaxLevel|Highest champion level||
+server-game|Custom/ChampionMonsters.ini|ChampionHp|Champion HP|times|
+server-game|Custom/ChampionMonsters.ini|ChampionHpRegen|Champion HP regeneration|times|
+server-game|Custom/ChampionMonsters.ini|ChampionRewardsExpSp|Champion experience and SP|times|
+server-game|Custom/ChampionMonsters.ini|ChampionRewardsChance|Champion drop chance|times|
+server-game|Custom/ChampionMonsters.ini|ChampionRewardsAmount|Champion drop amount|times|
+server-game|Custom/ChampionMonsters.ini|ChampionAdenasRewardsChance|Champion adena chance|times|
+server-game|Custom/ChampionMonsters.ini|ChampionAdenasRewardsAmount|Champion adena amount|times|
+server-game|Custom/ChampionMonsters.ini|ChampionAtk|Champion attack|times|
+server-game|Custom/ChampionMonsters.ini|ChampionSpdAtk|Champion attack speed|times|
+server-game|Custom/ChampionMonsters.ini|ChampionRewardItems|Champion bonus items||
+server-game|Custom/ChampionMonsters.ini|ChampionRewardLowerLvlItemChance|Bonus item chance when the player is lower level|%|
+server-game|Custom/ChampionMonsters.ini|ChampionRewardHigherLvlItemChance|Bonus item chance when the player is higher level|%|
+server-game|Custom/ChampionMonsters.ini|ChampionEnableVitality|Champion kills use vitality||
+server-game|Custom/ChampionMonsters.ini|ChampionEnableInInstances|Champions inside instances||
+server-game|Custom/ChatModeration.ini|ChatAdmin|Enable GM chat moderation commands||
+server-game|Custom/CommunityBoard.ini|CustomCommunityBoard|Use the custom Community Board||
+server-game|Custom/CommunityBoard.ini|CommunityCurrencyId|Community Board currency item ID||57 = adena.
+server-game|Custom/CommunityBoard.ini|CommunityEnableMultisells|Community Board shops||
+server-game|Custom/CommunityBoard.ini|CommunityEnableTeleports|Community Board teleports||
+server-game|Custom/CommunityBoard.ini|CommunityEnableBuffs|Community Board buffs||
+server-game|Custom/CommunityBoard.ini|CommunityEnableHeal|Community Board healing||
+server-game|Custom/CommunityBoard.ini|CommunityEnableDelevel|Community Board delevel||
+server-game|Custom/CommunityBoard.ini|CommunityTeleportPrice|Teleport price||
+server-game|Custom/CommunityBoard.ini|CommunityBuffPrice|Buff price||
+server-game|Custom/CommunityBoard.ini|CommunityHealPrice|Heal price||
+server-game|Custom/CommunityBoard.ini|CommunityDelevelPrice|Delevel price||
+server-game|Custom/CommunityBoard.ini|CommunityBoardPeaceOnly|Only usable in peace zones||
+server-game|Custom/CommunityBoard.ini|CommunityCombatDisabled|Not usable while in combat||
+server-game|Custom/CommunityBoard.ini|CommunityKarmaDisabled|Not usable with karma||
+server-game|Custom/CommunityBoard.ini|CommunityCastAnimations|Show cast animations for board buffs||
+server-game|Custom/CommunityBoard.ini|CommunityPremiumSystem|Sell premium on the Community Board||
+server-game|Custom/CommunityBoard.ini|CommunityPremiumBuyCoinId|Premium price item ID||
+server-game|Custom/CommunityBoard.ini|CommunityPremiumPricePerDay|Premium price per day||
+server-game|Custom/CommunityBoard.ini|CommunityAvailableBuffs|Buffs offered on the board||
+server-game|Custom/CommunityBoard.ini|CommunityTeleportList|Teleports offered on the board||
+server-game|Custom/CustomMailManager.ini|CustomMailManagerEnabled|Send mail from the database||
+server-game|Custom/CustomMailManager.ini|DatabaseQueryDelay|Check for new mail every|seconds|
+server-game|Custom/DelevelManager.ini|Enabled|Delevel NPC: enabled||
+server-game|Custom/DelevelManager.ini|NpcId|Delevel NPC: NPC ID||
+server-game|Custom/DelevelManager.ini|RequiredItemId|Delevel NPC: price item ID||
+server-game|Custom/DelevelManager.ini|RequiredItemCount|Delevel NPC: price amount||
+server-game|Custom/DelevelManager.ini|MimimumDelevel|Delevel NPC: lowest level||
+server-game|Custom/NoblessMaster.ini|Enabled|Noblesse NPC: enabled||
+server-game|Custom/NoblessMaster.ini|NpcId|Noblesse NPC: NPC ID||
+server-game|Custom/NoblessMaster.ini|LevelRequirement|Noblesse NPC: level required||
+server-game|Custom/NoblessMaster.ini|ItemId|Noblesse NPC: price item ID||
+server-game|Custom/NoblessMaster.ini|ItemCount|Noblesse NPC: price amount||
+server-game|Custom/NoblessMaster.ini|RewardTiara|Noblesse NPC: also give the Noblesse Tiara||
+server-game|Custom/DualboxCheck.ini|DualboxCheckMaxPlayersPerIP|Characters online per IP||0 = unlimited.
+server-game|Custom/DualboxCheck.ini|DualboxCheckMaxOlympiadParticipantsPerIP|Olympiad players per IP||
+server-game|Custom/DualboxCheck.ini|DualboxCheckMaxL2EventParticipantsPerIP|Event players per IP||
+server-game|Custom/DualboxCheck.ini|DualboxCheckMaxOfflinePlayPerIP|Offline auto play characters per IP||
+server-game|Custom/DualboxCheck.ini|DualboxCheckMaxOfflinePlayPremiumPerIP|Offline auto play characters per IP (premium)||
+server-game|Custom/DualboxCheck.ini|DualboxCountOfflineTraders|Offline traders count toward the limit||
+server-game|Custom/DualboxCheck.ini|DualboxCheckWhitelist|IPs without limits||
+server-game|Custom/FactionSystem.ini|EnableFactionSystem|Enable Good vs Evil factions||
+server-game|Custom/FactionSystem.ini|StartingLocation|Faction: starting location||
+server-game|Custom/FactionSystem.ini|ManagerSpawnLocation|Faction: manager NPC location||
+server-game|Custom/FactionSystem.ini|GoodBaseLocation|Good faction base||
+server-game|Custom/FactionSystem.ini|EvilBaseLocation|Evil faction base||
+server-game|Custom/FactionSystem.ini|GoodTeamName|Good faction name||
+server-game|Custom/FactionSystem.ini|EvilTeamName|Evil faction name||
+server-game|Custom/FactionSystem.ini|GoodNameColor|Good faction name color||
+server-game|Custom/FactionSystem.ini|EvilNameColor|Evil faction name color||
+server-game|Custom/FactionSystem.ini|EnableFactionGuards|Faction guards||
+server-game|Custom/FactionSystem.ini|RespawnAtFactionBase|Respawn at the faction base||
+server-game|Custom/FactionSystem.ini|FactionAutoNobless|Faction members become Noblesse||
+server-game|Custom/FactionSystem.ini|EnableFactionChat|Faction chat||
+server-game|Custom/FactionSystem.ini|BalanceOnlinePlayers|Keep factions balanced||
+server-game|Custom/FactionSystem.ini|BalancePlayerExceedLimit|Largest allowed faction difference||
+server-game|Custom/FakePlayers.ini|EnableFakePlayers|Enable Mobius fake players||These are Mobius's built-in fake players, separate from L2Everdream's sims.
+server-game|Custom/FakePlayers.ini|FakePlayerChat|Fake players chat||
+server-game|Custom/FakePlayers.ini|FakePlayerUseShots|Fake players use soulshots||
+server-game|Custom/FakePlayers.ini|FakePlayerKillsRewardPvP|Killing fake players counts as PvP||
+server-game|Custom/FakePlayers.ini|FakePlayerUnflaggedKillsKarma|Killing unflagged fake players gives karma||
+server-game|Custom/FakePlayers.ini|FakePlayerAutoAttackable|Fake players can be attacked without Ctrl||
+server-game|Custom/FakePlayers.ini|FakePlayerAggroMonsters|Fake players attack monsters||
+server-game|Custom/FakePlayers.ini|FakePlayerAggroPlayers|Fake players attack players||
+server-game|Custom/FakePlayers.ini|FakePlayerAggroFPC|Fake players attack each other||
+server-game|Custom/FakePlayers.ini|FakePlayerCanDropItems|Fake players drop items||
+server-game|Custom/FakePlayers.ini|FakePlayerCanPickup|Fake players pick up items||
+server-game|Custom/FindPvP.ini|EnableFindPvP|Enable the "find PvP" teleport||
+server-game|Custom/FreeMounts.ini|EnableFreeStrider|Free strider for everyone||
+server-game|Custom/FreeMounts.ini|EnableFreeWyvern|Free wyvern for everyone||
+server-game|Custom/MerchantZeroSellPrice.ini|MerchantZeroSellPrice|NPC shops pay nothing for items||
+server-game|Custom/MultilingualSupport.ini|MultiLangEnable|Multiple languages for NPC dialogs||
+server-game|Custom/MultilingualSupport.ini|MultiLangDefault|Default language||
+server-game|Custom/MultilingualSupport.ini|MultiLangAllowed|Available languages||
+server-game|Custom/MultilingualSupport.ini|MultiLangVoiceCommand|Let players pick a language with .lang||
+server-game|Custom/OfflinePlay.ini|EnableOfflinePlayCommand|Enable offline auto play (.offlineplay)||
+server-game|Custom/OfflinePlay.ini|RestoreAutoPlayOffliners|Resume offline auto play after a restart||
+server-game|Custom/OfflinePlay.ini|OfflinePlayPremium|Offline auto play is premium-only||
+server-game|Custom/OfflinePlay.ini|OfflinePlayLogoutOnDeath|Log offline characters out when they die||
+server-game|Custom/OfflinePlay.ini|OfflinePlayDisconnectSameAccount|Stop offline play when the account logs in||
+server-game|Custom/OfflinePlay.ini|OfflinePlayLoginMessage|Offline auto play login message||
+server-game|Custom/OfflinePlay.ini|OfflinePlaySetNameColor|Color the names of offline players||
+server-game|Custom/OfflinePlay.ini|OfflinePlayNameColor|Offline player name color||Hex color, e.g. 808080.
+server-game|Custom/OfflinePlay.ini|OfflinePlayAbnormalEffect|Visual effect on offline players||
+server-game|Custom/OfflineTrade.ini|OfflineTradeEnable|Private stores stay open after logout||
+server-game|Custom/OfflineTrade.ini|OfflineCraftEnable|Private workshops stay open after logout||
+server-game|Custom/OfflineTrade.ini|OfflineModeInPeaceZone|Only in peace zones||
+server-game|Custom/OfflineTrade.ini|OfflineModeNoDamage|Offline traders can't be hurt||
+server-game|Custom/OfflineTrade.ini|OfflineSetNameColor|Color the names of offline traders||
+server-game|Custom/OfflineTrade.ini|OfflineNameColor|Offline trader name color||Hex color, e.g. 808080.
+server-game|Custom/OfflineTrade.ini|OfflineFame|Offline traders earn fame||
+server-game|Custom/OfflineTrade.ini|RestoreOffliners|Reopen offline stores after a restart||
+server-game|Custom/OfflineTrade.ini|OfflineMaxDays|Close offline stores after|days|0 = never.
+server-game|Custom/OfflineTrade.ini|OfflineDisconnectFinished|Log out traders who sold everything||
+server-game|Custom/OfflineTrade.ini|OfflineDisconnectSameAccount|Close offline stores when the account logs in||
+server-game|Custom/OfflineTrade.ini|StoreOfflineTradeInRealtime|Save offline stores immediately||
+server-game|Custom/OfflineTrade.ini|EnableOfflineCommand|Enable the .offline command||
+server-game|Custom/OfflineTrade.ini|OfflineAbnormalEffect|Visual effect on offline traders||
+server-game|Custom/OnlineInfo.ini|EnableOnlineCommand|Enable the .online command||
+server-game|Custom/PasswordChange.ini|AllowChangePassword|Allow .changepassword||
+server-game|Custom/PremiumSystem.ini|EnablePremiumSystem|Enable premium accounts||
+server-game|Custom/PremiumSystem.ini|PcCafeEnabled|Enable PC Café points||The client also needs UsePCBangPoint=true in l2.ini.
+server-game|Custom/PremiumSystem.ini|PcCafeRetailLike|Retail-like PC Café points||
+server-game|Custom/PremiumSystem.ini|PcCafeRewardTime|PC Café points every|ms|
+server-game|Custom/PremiumSystem.ini|PcCafeOnlyPremium|PC Café points for premium only||
+server-game|Custom/PremiumSystem.ini|MaxPcCafePoints|Most PC Café points||
+server-game|Custom/PremiumSystem.ini|AcquisitionPointsRetailLikePoints|Retail-like point amounts||
+server-game|Custom/PremiumSystem.ini|AcquisitionPointsRate|Points gained|times|
+server-game|Custom/PremiumSystem.ini|AcquisitionPointsRandom|Random point amounts||
+server-game|Custom/PremiumSystem.ini|DoublingAcquisitionPoints|Chance to double points||
+server-game|Custom/PremiumSystem.ini|DoublingAcquisitionPointsChance|Double points chance|%|
+server-game|Custom/PremiumSystem.ini|RewardLowExpKills|Points for low-experience kills||
+server-game|Custom/PremiumSystem.ini|RewardLowExpKillsChance|Points chance for low-experience kills|%|
+server-game|Custom/PrivateStoreRange.ini|ShopMinRangeFromPlayer|Private stores must be this far from other stores||
+server-game|Custom/PrivateStoreRange.ini|ShopMinRangeFromNpc|Private stores must be this far from NPCs||
+server-game|Custom/PvpAnnounce.ini|AnnouncePkPvP|Announce player kills||
+server-game|Custom/PvpAnnounce.ini|AnnouncePkPvPNormalMessage|Use a normal message instead of a screen message||
+server-game|Custom/PvpAnnounce.ini|AnnouncePkMsg|PK announcement text||$killer and $target are replaced with names.
+server-game|Custom/PvpAnnounce.ini|AnnouncePvpMsg|PvP announcement text||$killer and $target are replaced with names.
+server-game|Custom/PvpRewardItem.ini|RewardPvpItem|Reward PvP kills with an item||
+server-game|Custom/PvpRewardItem.ini|RewardPvpItemId|PvP reward item ID||
+server-game|Custom/PvpRewardItem.ini|RewardPvpItemAmount|PvP reward amount||
+server-game|Custom/PvpRewardItem.ini|RewardPvpItemMessage|Tell the player about the PvP reward||
+server-game|Custom/PvpRewardItem.ini|RewardPkItem|Reward PK kills with an item||
+server-game|Custom/PvpRewardItem.ini|RewardPkItemId|PK reward item ID||
+server-game|Custom/PvpRewardItem.ini|RewardPkItemAmount|PK reward amount||
+server-game|Custom/PvpRewardItem.ini|RewardPkItemMessage|Tell the player about the PK reward||
+server-game|Custom/PvpRewardItem.ini|DisableRewardsInInstances|No rewards inside instances||
+server-game|Custom/PvpRewardItem.ini|DisableRewardsInPvpZones|No rewards inside PvP zones||
+server-game|Custom/PvpTitleColor.ini|EnablePvPColorSystem|Color titles by PvP count||
+server-game|Custom/RandomSpawns.ini|EnableRandomMonsterSpawns|Monsters spawn at random spots nearby||
+server-game|Custom/RandomSpawns.ini|MaxSpawnMobRange|Random spawn distance||
+server-game|Custom/RandomSpawns.ini|MobsSpawnNotRandom|Monsters that always use their exact spot||
+server-game|Custom/SchemeBuffer.ini|BufferMaxSchemesPerChar|Buff schemes per character||
+server-game|Custom/SchemeBuffer.ini|BufferItemId|Buffer price item ID||57 = adena.
+server-game|Custom/SchemeBuffer.ini|BufferStaticCostPerBuff|Price per buff||-1 = use each buff's own price.
+server-game|Custom/ScreenWelcomeMessage.ini|ScreenWelcomeMessageEnable|Show a welcome message on screen||
+server-game|Custom/ScreenWelcomeMessage.ini|ScreenWelcomeMessageText|Welcome message text||
+server-game|Custom/ScreenWelcomeMessage.ini|ScreenWelcomeMessageTime|Welcome message stays for|seconds|
+server-game|Custom/SellBuffs.ini|SellBuffEnable|Players can sell their buffs (.sellbuffs)||
+server-game|Custom/SellBuffs.ini|MpCostMultipler|MP cost of sold buffs|times|
+server-game|Custom/SellBuffs.ini|PaymentID|Payment item ID||57 = adena.
+server-game|Custom/SellBuffs.ini|MinimumPrice|Lowest buff price||
+server-game|Custom/SellBuffs.ini|MaximumPrice|Highest buff price||
+server-game|Custom/SellBuffs.ini|MaxBuffs|Most buffs in one shop||
+server-game|Custom/ServerTime.ini|DisplayServerTime|Show server time on login||
+server-game|Custom/Transmog.ini|TransmogEnabled|Enable transmogrification||
+server-game|Custom/Transmog.ini|TransmogShareAccount|Share appearances across the account||
+server-game|Custom/Transmog.ini|TransmogApplyCost|Price to apply an appearance|adena|
+server-game|Custom/Transmog.ini|TransmogRemoveCost|Price to remove an appearance|adena|
+server-game|Custom/Transmog.ini|TransmogBannedItemIds|Items that can't be used as appearances||
+server-game|Custom/WalkerBotProtection.ini|L2WalkerProtection|Detect L2Walker bots||
+server-game|Custom/WarehouseSorting.ini|EnableWarehouseSortingClan|Sorting buttons in the clan warehouse||
+server-game|Custom/WarehouseSorting.ini|EnableWarehouseSortingPrivate|Sorting buttons in the private warehouse||
+server-game|Custom/Wedding.ini|AllowWedding|Enable weddings||
+server-game|Custom/Wedding.ini|WeddingPrice|Wedding price|adena|
+server-game|Custom/Wedding.ini|WeddingPunishInfidelity|Punish cheating spouses||
+server-game|Custom/Wedding.ini|WeddingTeleport|Spouses can teleport to each other||
+server-game|Custom/Wedding.ini|WeddingTeleportPrice|Spouse teleport price|adena|
+server-game|Custom/Wedding.ini|WeddingTeleportDuration|Spouse teleport casting time|seconds|
+server-game|Custom/Wedding.ini|WeddingAllowSameSex|Allow same-sex weddings||
+server-game|Custom/Wedding.ini|WeddingFormalWear|Formal wear required||
+server-game|Custom/Wedding.ini|WeddingDivorceCosts|Divorce costs this share of the adena|%|
+# ---------------------------------------------------------------- GrandBoss / ConquerableHallSiege / misc
+server-game|ConquerableHallSiege.ini|MinClanLevel|Clan level needed to register||
+server-game|ConquerableHallSiege.ini|MaxAttackers|Most attacking clans||
+server-game|ConquerableHallSiege.ini|MaxFlagsPerClan|Flags per clan||
+server-game|ConquerableHallSiege.ini|EnableFame|Participants earn fame||
+server-game|ConquerableHallSiege.ini|FameAmount|Fame gained||
+server-game|ConquerableHallSiege.ini|FameFrequency|Fame every|seconds|
+server-game|Database.ini|MaximumDatabaseConnections|Database connections||
+server-game|Database.ini|TestDatabaseConnections|Test database connections||
+server-game|Database.ini|BackupDatabase|Back up the database on shutdown||
+server-game|Database.ini|MySqlBinLocation|MySQL tools folder||
+server-game|Database.ini|BackupPath|Backup folder||
+server-game|Database.ini|BackupDays|Keep backups for|days|
+server-game|Interface.ini|EnableGUI|Show the server window||
+server-game|Interface.ini|DarkTheme|Dark server window||
+server-login|Interface.ini|EnableGUI|Show the login server window||
+server-login|Interface.ini|DarkTheme|Dark login server window||
+# ---------------------------------------------------------------- L2Everdream additions without stock wording
+server-game|Network.ini|BufferPool.Huge.Size|Security buffer pool: how many||Part of a security protection added by L2Everdream. Leave it as shipped.
+server-game|Network.ini|BufferPool.Huge.BufferSize|Security buffer pool: buffer size||Part of a security protection added by L2Everdream. Leave it as shipped.
+server-login|Network.ini|BufferPool.Huge.Size|Security buffer pool: how many||Part of a security protection added by L2Everdream. Leave it as shipped.
+server-login|Network.ini|BufferPool.Huge.BufferSize|Security buffer pool: buffer size||Part of a security protection added by L2Everdream. Leave it as shipped.

@@ -1,0 +1,359 @@
+{
+ "version": 1,
+ "stock": {
+  "project": "MobiusDevelopment/L2J_Mobius",
+  "path": "L2J_Mobius_CT_0_Interlude/dist",
+  "commit": "59097d4d05f0",
+  "committed": "2026-06-27"
+ },
+ "changes": [
+  {
+   "target": "server-game",
+   "file": "Network.ini",
+   "key": "BufferPool.Huge.BufferSize",
+   "kind": "added",
+   "name": "Security buffer pool: buffer size",
+   "settingId": "server-game:Network.ini:BufferPool.Huge.BufferSize",
+   "category": "server",
+   "stockValue": null,
+   "shippedValue": "65536",
+   "note": "Buffer size for the security pool above (65536 covers every possible packet size). Only works together with the “how many” line.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-login",
+   "file": "Network.ini",
+   "key": "BufferPool.Huge.BufferSize",
+   "kind": "added",
+   "name": "Security buffer pool: buffer size",
+   "settingId": "server-login:Network.ini:BufferPool.Huge.BufferSize",
+   "category": "server",
+   "stockValue": null,
+   "shippedValue": "65536",
+   "note": "Buffer size for the login server’s security pool (65536 covers every possible packet size).",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "Network.ini",
+   "key": "BufferPool.Huge.Size",
+   "kind": "added",
+   "name": "Security buffer pool: how many",
+   "settingId": "server-game:Network.ini:BufferPool.Huge.Size",
+   "category": "server",
+   "stockValue": null,
+   "shippedValue": "4",
+   "note": "Security protection added by L2Everdream: one pool that covers the largest possible network packet, which stops oversized packets from permanently using up server memory. Keep it together with the buffer size line below.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-login",
+   "file": "Network.ini",
+   "key": "BufferPool.Huge.Size",
+   "kind": "added",
+   "name": "Security buffer pool: how many",
+   "settingId": "server-login:Network.ini:BufferPool.Huge.Size",
+   "category": "server",
+   "stockValue": null,
+   "shippedValue": "4",
+   "note": "Same security protection as the game server, for the login server’s port.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "Rates.ini",
+   "key": "RateTeleportFee",
+   "kind": "added",
+   "name": "Gatekeeper teleport price",
+   "settingId": "server-game:Rates.ini:RateTeleportFee",
+   "category": "characters",
+   "stockValue": null,
+   "shippedValue": "0.5",
+   "note": "New setting added by L2Everdream (it needed a server code change). Scales the price of normal town gatekeeper teleports; shipped at 0.5 (half price). It does not affect dungeon, clan hall or noblesse teleport lists.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "General.ini",
+   "key": "AllowCursedWeapons",
+   "kind": "value",
+   "name": "Enable cursed weapons (Zariche, Akamanah)",
+   "settingId": "server-game:General.ini:AllowCursedWeapons",
+   "category": "events",
+   "stockValue": "True",
+   "shippedValue": "False",
+   "note": "Cursed weapons (Zariche and Akamanah) are turned off until the mechanic is fully supported in L2Everdream.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "General.ini",
+   "key": "AutoDestroyDroppedItemAfter",
+   "kind": "value",
+   "name": "Remove dropped items after",
+   "settingId": "server-game:General.ini:AutoDestroyDroppedItemAfter",
+   "category": "items",
+   "stockValue": "600",
+   "shippedValue": "3600",
+   "note": "Dropped rewards stay on the ground for an hour instead of ten minutes. Herbs still disappear after their own 60 seconds.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "GeoEngine.ini",
+   "key": "PathFindBuffers",
+   "kind": "value",
+   "name": "Path find buffers",
+   "settingId": "server-game:GeoEngine.ini:PathFindBuffers",
+   "category": "server",
+   "stockValue": "100x6;128x6;192x6;256x4;320x4;384x4;500x2",
+   "shippedValue": "100x8;128x8;192x8;256x8;320x8;384x8;500x6;768x8;1024x6;1536x3",
+   "note": "Larger and more numerous pathfinding buffers, so sims can find long routes across towns and many can path at once without walking into walls. Uses a little more memory.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-login",
+   "file": "Interface.ini",
+   "key": "EnableGUI",
+   "kind": "value",
+   "name": "Show the login server window",
+   "settingId": "server-login:Interface.ini:EnableGUI",
+   "category": "server",
+   "stockValue": "True",
+   "shippedValue": "False",
+   "note": "The login server runs without its own window; the L2Everdream launcher starts it in the background.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "NPC.ini",
+   "key": "AggroDistanceCheckEnabled",
+   "kind": "value",
+   "name": "Monsters give up when pulled too far",
+   "settingId": "server-game:NPC.ini:AggroDistanceCheckEnabled",
+   "category": "monsters",
+   "stockValue": "False",
+   "shippedValue": "True",
+   "note": "Monsters give up and return home when pulled too far from where they spawned, instead of chasing forever (which dragged monsters into towns).",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "NPC.ini",
+   "key": "AltGameViewNpc",
+   "kind": "value",
+   "name": "Show NPC details on Shift+click",
+   "settingId": "server-game:NPC.ini:AltGameViewNpc",
+   "category": "monsters",
+   "stockValue": "False",
+   "shippedValue": "True",
+   "note": "Players can Shift+click monsters to see their stats and drop and spoil lists. Shipped on as a trial.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "Network.ini",
+   "key": "BufferPool.AutoExpandCapacity",
+   "kind": "value",
+   "name": "Buffer pool auto expand capacity",
+   "settingId": "server-game:Network.ini:BufferPool.AutoExpandCapacity",
+   "category": "server",
+   "stockValue": "True",
+   "shippedValue": "False",
+   "note": "Network buffer pools can no longer grow without limit. Part of a security protection; if network speed ever seems off, this is the first thing to review.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-login",
+   "file": "Network.ini",
+   "key": "BufferPool.AutoExpandCapacity",
+   "kind": "value",
+   "name": "Buffer pool auto expand capacity",
+   "settingId": "server-login:Network.ini:BufferPool.AutoExpandCapacity",
+   "category": "server",
+   "stockValue": "True",
+   "shippedValue": "False",
+   "note": "Same protection as the game server: login server buffer pools can no longer grow without limit.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "Player.ini",
+   "key": "AltLeavePartyLeader",
+   "kind": "value",
+   "name": "When the leader leaves, pass leadership instead of disbanding",
+   "settingId": "server-game:Player.ini:AltLeavePartyLeader",
+   "category": "characters",
+   "stockValue": "False",
+   "shippedValue": "True",
+   "note": "When a party leader leaves, leadership passes to another member instead of the party breaking up, so sims recruited into a party keep hunting.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "Player.ini",
+   "key": "AltNewCharAlwaysIsNewbie",
+   "kind": "value",
+   "name": "Every new character on an account counts as a newbie",
+   "settingId": "server-game:Player.ini:AltNewCharAlwaysIsNewbie",
+   "category": "characters",
+   "stockValue": "False",
+   "shippedValue": "True",
+   "note": "Every new character counts as a newbie, not only the first one on an account, so each gets the newbie buffs and help.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "Player.ini",
+   "key": "MaxFreeTeleportLevel",
+   "kind": "value",
+   "name": "Teleports are free up to level",
+   "settingId": "server-game:Player.ini:MaxFreeTeleportLevel",
+   "category": "characters",
+   "stockValue": "40",
+   "shippedValue": "0",
+   "note": "Teleports are never free. Stock Mobius makes them free up to level 40, a rule from a later chronicle; retail Interlude charged every level.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "Rates.ini",
+   "key": "RateDropManor",
+   "kind": "value",
+   "name": "Manor crop harvest rate",
+   "settingId": "server-game:Rates.ini:RateDropManor",
+   "category": "economy",
+   "stockValue": "1",
+   "shippedValue": "15",
+   "note": "Manor harvests shipped at 15× to match the other rates.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "Rates.ini",
+   "key": "RatePartySp",
+   "kind": "value",
+   "name": "Party skill point rate",
+   "settingId": "server-game:Rates.ini:RatePartySp",
+   "category": "rates",
+   "stockValue": "1",
+   "shippedValue": "15",
+   "note": "Party skill point bonus shipped at 15× to match the skill point rate.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "Rates.ini",
+   "key": "RatePartyXp",
+   "kind": "value",
+   "name": "Party experience rate",
+   "settingId": "server-game:Rates.ini:RatePartyXp",
+   "category": "rates",
+   "stockValue": "1",
+   "shippedValue": "15",
+   "note": "Party experience bonus shipped at 15× to match the experience rate.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "Rates.ini",
+   "key": "RateSp",
+   "kind": "value",
+   "name": "Skill point (SP) rate",
+   "settingId": "server-game:Rates.ini:RateSp",
+   "category": "rates",
+   "stockValue": "1",
+   "shippedValue": "15",
+   "note": "Offline worlds ship at 15× skill points instead of retail 1×.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-game",
+   "file": "Rates.ini",
+   "key": "RateXp",
+   "kind": "value",
+   "name": "Experience (XP) rate",
+   "settingId": "server-game:Rates.ini:RateXp",
+   "category": "rates",
+   "stockValue": "1",
+   "shippedValue": "15",
+   "note": "Offline worlds ship at 15× experience instead of retail 1×. The public L2Everdream worlds run at 1×.",
+   "launcherManaged": false
+  },
+  {
+   "target": "server-login",
+   "file": "Server.ini",
+   "key": "AutoCreateAccounts",
+   "kind": "note",
+   "name": "Create an account automatically on first login",
+   "settingId": "server-login:Server.ini:AutoCreateAccounts",
+   "category": "server",
+   "stockValue": "True",
+   "shippedValue": "True",
+   "note": "Unchanged value, but the release documents it: accounts are created automatically on first login, which suits a world on your own PC. A server open to the internet should turn this off.",
+   "launcherManaged": true
+  }
+ ],
+ "files": [
+  {
+   "target": "server-game",
+   "file": "ClassMaster.xml",
+   "kind": "changed",
+   "summary": "39 line(s) added, 3 removed compared with stock. The launcher also rewrites this file when the world starts."
+  },
+  {
+   "target": "server-game",
+   "file": "General.ini",
+   "kind": "settings",
+   "summary": "2 setting(s) differ from stock."
+  },
+  {
+   "target": "server-game",
+   "file": "GeoEngine.ini",
+   "kind": "settings",
+   "summary": "1 setting(s) differ from stock."
+  },
+  {
+   "target": "server-game",
+   "file": "NPC.ini",
+   "kind": "settings",
+   "summary": "2 setting(s) differ from stock."
+  },
+  {
+   "target": "server-game",
+   "file": "Network.ini",
+   "kind": "settings",
+   "summary": "3 setting(s) differ from stock."
+  },
+  {
+   "target": "server-game",
+   "file": "Player.ini",
+   "kind": "settings",
+   "summary": "3 setting(s) differ from stock."
+  },
+  {
+   "target": "server-game",
+   "file": "Rates.ini",
+   "kind": "settings",
+   "summary": "6 setting(s) differ from stock."
+  },
+  {
+   "target": "server-login",
+   "file": "Interface.ini",
+   "kind": "settings",
+   "summary": "1 setting(s) differ from stock."
+  },
+  {
+   "target": "server-login",
+   "file": "Network.ini",
+   "kind": "settings",
+   "summary": "3 setting(s) differ from stock."
+  },
+  {
+   "target": "server-login",
+   "file": "Server.ini",
+   "kind": "settings",
+   "summary": "1 setting(s) differ from stock."
+  }
+ ]
+}

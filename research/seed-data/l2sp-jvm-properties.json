@@ -1,0 +1,1111 @@
+[
+ {
+  "property": "l2sp.armorsets.dir",
+  "readBy": [
+   "ArmorPieceCatalogDataset",
+   "ArmorSetCatalogDataset"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.autoscale.costperplayer",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "3",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.autoscale.enabled",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.autoscale.floorfraction",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "0.5",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.buffers.tier",
+  "readBy": [
+   "ActiveSimLayer"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.chat.dir",
+  "readBy": [
+   "ChatCorpusDataset"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.chat.enabled",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.chat.greet.permin",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "5.0",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.chat.say.permin",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "12.0",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.chat.scan.ms",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "4000",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.chat.shout.cityband",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "55",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.chat.shout.permin",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "4.0",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.chat.speaker.cooldown",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "5",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.chat.trade.permin",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "7.0",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.combat.attackerfirst",
+  "readBy": [
+   "AttackerFirst"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.combat.buffbar.landable",
+  "readBy": [
+   "SimEquipper"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.combat.buffupkeep.partyowned",
+  "readBy": [
+   "CombatSimLayer"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.combat.derivedcomp",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.combat.dualshots",
+  "readBy": [
+   "DualShots"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.combat.engagedlist",
+  "readBy": [
+   "SimCombatDriver"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.combat.partytownrefresh",
+  "readBy": [
+   "PartyTownRefresh"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.combat.poolSize",
+  "readBy": [
+   "FieldDrivePoolManager"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.combat.poolTickMs",
+  "readBy": [
+   "FieldDrivePoolManager"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.combat.rolepool",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.combat.rolepool.file",
+  "readBy": [
+   "RoleClassPoolArtifacts"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.combat.simspoilsweep",
+  "readBy": [
+   "SimCombatDriver"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.combat.solobuffupkeep",
+  "readBy": [
+   "CombatSimLayer"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.combat.supportaffinity.file",
+  "readBy": [
+   "SupportAffinityArtifacts"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.datapack.dir",
+  "readBy": [
+   "MapRegionLabels",
+   "RecipeDataset",
+   "StarterWorld"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.debug.observer",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.debug.observer.port",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "8129",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.debug.skipTrace",
+  "readBy": [
+   "CombatSimLayer"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.dev.nameplate",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.economy.craftershare",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "25",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.economy.crystalsupply",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.economy.demandpricing",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "false",
+  "launcherOwned": true,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.economy.dir",
+  "readBy": [
+   "ArmorPieceCatalogDataset",
+   "ArmorSetCatalogDataset",
+   "ChatCorpusDataset",
+   "ClassParentsDataset",
+   "ClassSkillIndexDataset",
+   "EconomyDataset",
+   "JewelryCatalogDataset",
+   "ShieldCatalogDataset",
+   "ShotSupplyDataset",
+   "SkillMetaDataset",
+   "SkillPropertiesDataset",
+   "SpellbookResaleDataset",
+   "SummonIndexDataset",
+   "TownPois",
+   "TownProfiles",
+   "WealthProfileDataset",
+   "WeaponCatalogDataset",
+   "ZoneDamageLeanIndex",
+   "ZoneHpTierIndex"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.economy.maturity",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "genesis",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.economy.passingtrade",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.economy.shotsupply",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.economy.spellbookresale",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.economy.territory",
+  "readBy": [
+   "MarketSiteFactsLoader"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.economy.vendorsink",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "1.0",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.field.migration",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.flag.accounts",
+  "readBy": [
+   "FlagService"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.flag.everyone",
+  "readBy": [
+   "FlagService"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.gearfloor.map",
+  "readBy": [
+   "ZoneGearFloorArtifacts"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.launcher.dist127Rescue",
+  "readBy": [
+   "LauncherMain"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "launcher"
+ },
+ {
+  "property": "l2sp.launcher.headlessgate",
+  "readBy": [
+   "LauncherApp",
+   "LauncherClickGate"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "launcher"
+ },
+ {
+  "property": "l2sp.launcher.heapgb",
+  "readBy": [
+   "LauncherApp"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "launcher"
+ },
+ {
+  "property": "l2sp.launcher.lang",
+  "readBy": [
+   "LauncherApp"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "launcher"
+ },
+ {
+  "property": "l2sp.launcher.machinegb",
+  "readBy": [
+   "LauncherApp"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "launcher"
+ },
+ {
+  "property": "l2sp.launcher.manifestUrl",
+  "readBy": [
+   "SiteUpdateChannel"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "launcher"
+ },
+ {
+  "property": "l2sp.launcher.pressPlayOnStart",
+  "readBy": [
+   "LauncherApp"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "launcher"
+ },
+ {
+  "property": "l2sp.launcher.pressWorldControlOnStart",
+  "readBy": [
+   "LauncherApp"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "launcher"
+ },
+ {
+  "property": "l2sp.launcher.profiledir",
+  "readBy": [
+   "LauncherApp"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "launcher"
+ },
+ {
+  "property": "l2sp.launcher.reducedmotion",
+  "readBy": [
+   "LauncherApp"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "launcher"
+ },
+ {
+  "property": "l2sp.launcher.settingsOpen",
+  "readBy": [
+   "LauncherApp"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "launcher"
+ },
+ {
+  "property": "l2sp.launcher.state",
+  "readBy": [
+   "LauncherApp",
+   "LauncherClickGate"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "launcher"
+ },
+ {
+  "property": "l2sp.launcher.worldFlyoutOpen",
+  "readBy": [
+   "LauncherApp"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "launcher"
+ },
+ {
+  "property": "l2sp.nav.dir",
+  "readBy": [
+   "EncounterProfileArtifacts",
+   "NavBlacklistStore",
+   "RoadMasks",
+   "TownQaSnapshots",
+   "ZoneGeoGrids",
+   "ZoneNavArtifacts",
+   "ZoneSectionArtifacts"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.nav.goalstoreyguard",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "false",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.nav.locationIndex",
+  "readBy": [
+   "TeleportDestinationIndex"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.observe.worldstream",
+  "readBy": [
+   "WorldStreamSampler"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.observe.worldstream.capacity",
+  "readBy": [
+   "WorldStreamSampler"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.observe.worldstream.stride",
+  "readBy": [
+   "WorldStreamSampler"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.observe.zonealloc",
+  "readBy": [
+   "ZoneAllocationRecorder"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.party.escort.caststuckrepair",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "false",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.party.escort.pickup",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.party.escort.trashdelete",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "false",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.party.invite.maxAbove",
+  "readBy": [
+   "PlayerSimPartyInvite"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.party.invite.maxBelow",
+  "readBy": [
+   "PlayerSimPartyInvite"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.placement.map",
+  "readBy": [
+   "RegionSeatingArtifacts"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.placement.musterpercent",
+  "readBy": [
+   "CombatSimLayer"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.placement.names",
+  "readBy": [
+   "RegionSeatingArtifacts"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.placement.rooms",
+  "readBy": [
+   "ZoneSectionArtifacts"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.placement.staging",
+  "readBy": [
+   "CombatSimLayer"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.player.autohunt",
+  "readBy": [
+   "PlayerFeature"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.player.commands",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.player.raidcam",
+  "readBy": [
+   "PlayerFeature"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.poi.index",
+  "readBy": [
+   "PoiArrivalIndex"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.policies.dir",
+  "readBy": [
+   "SimCombatHarness"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.qa.ceiling",
+  "readBy": [
+   "QaTraceRecorder"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.qa.flagsPath",
+  "readBy": [
+   "FlagService"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.qa.timeline.frames",
+  "readBy": [
+   "QaTraceRecorder"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.reflex.poolSize",
+  "readBy": [
+   "SimReflexPool"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.reflex.tickMs",
+  "readBy": [
+   "SimReflexPool"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.region.embodiment.radius",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "9000",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.region.host.slider",
+  "readBy": [
+   "EconomyConfig",
+   "MeterMapping"
+  ],
+  "default": "1.0",
+  "launcherOwned": true,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.region.maxsims",
+  "readBy": [
+   "CombatSimLayer"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.region.poolmult",
+  "readBy": [
+   "CombatSimLayer"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.region.sim.spawn",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.region.zone.floor",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "2",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.selectedBinding",
+  "readBy": [
+   "LauncherApp"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.sevensigns.sim",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.shop.lightbody",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.shop85.centre",
+  "readBy": [
+   "RoadShopPlacer"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.shop85.roadRows",
+  "readBy": [
+   "RoadShopPlacer"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.shots.dir",
+  "readBy": [
+   "ShotSupplyDataset"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.sim.count",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.sim.invulnerable",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "false",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.sim.purgecap",
+  "readBy": [
+   "SimHygiene"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.skills.dir",
+  "readBy": [
+   "ClassParentsDataset",
+   "ClassSkillIndexDataset",
+   "JewelryCatalogDataset",
+   "ShieldCatalogDataset",
+   "SkillMetaDataset",
+   "SkillPropertiesDataset",
+   "SummonIndexDataset",
+   "WeaponCatalogDataset"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.spellbookresale.dir",
+  "readBy": [
+   "SpellbookResaleDataset"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.synth.rosterPath",
+  "readBy": [
+   "SyntheticPlayer"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.town.arrivals",
+  "readBy": [
+   "TownArrivals"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.town.deathrecoveryms",
+  "readBy": [
+   "TownLifeDriver"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.wealth.dir",
+  "readBy": [
+   "WealthProfileDataset"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.world.activesims",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": true,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.world.age.perhour",
+  "readBy": [
+   "EconomyOrchestrator"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.world.age.ticksperhour",
+  "readBy": [
+   "EconomyOrchestrator"
+  ],
+  "default": null,
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.world.demand.idlefraction",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "0.3",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.world.demand.leasescans",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "0",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.world.level.center",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "L2SP_WORLD_LEVEL_CENTER",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.world.level.spread",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "16.0",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.world.multitown",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "true",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.world.pop",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "7500",
+  "launcherOwned": false,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.world.shopfraction",
+  "readBy": [
+   "EconomyConfig",
+   "MeterMapping"
+  ],
+  "default": "0.5",
+  "launcherOwned": true,
+  "scope": "server"
+ },
+ {
+  "property": "l2sp.world.town.floor",
+  "readBy": [
+   "EconomyConfig"
+  ],
+  "default": "25",
+  "launcherOwned": false,
+  "scope": "server"
+ }
+]

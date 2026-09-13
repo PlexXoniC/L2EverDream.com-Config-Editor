@@ -1,0 +1,97 @@
+# Client and world-profile settings. Pipe-separated; run python catalog/build_catalog.py after editing.
+# target: client-option (system\Option.ini) | client-l2ini (system\l2.ini, encrypted) | world-profile (L2Everdream-data\worlds\world-profile.json)
+# editor: toggle | number | slider | choice | text | secret
+# options: value=Label;value=Label (choice editor)
+target|file|section|key|group|name|description|editor|valueType|options|unit|min|max|default|advanced|managedReason|secret
+# ---------------------------------------------------------------- world-profile.json
+world-profile|world-profile.json||name|world.rules|World name|The name of your saved world. The launcher derives the world's database from this name, so it can only be changed in the launcher.|text|string||||||0|Renaming the world would point it at a different, empty database. Rename it in the launcher instead.|0
+world-profile|world-profile.json||simsPercent|world.population|World sims|How many simulated players fill your world, compared with the full shipped world. 100% is the world as intended; lower it if your computer struggles.|slider|int||%|25|100|100|0||0
+world-profile|world-profile.json||shopsPercent|world.population|Offline shops|How many sim-run offline shops appear in towns. Above 100% needs "Allow more shops than shipped".|slider|int||%|0|200|100|0||0
+world-profile|world-profile.json||shopsOverArmed|world.population|Allow more shops than shipped|Lets the offline shops setting go up to 200%. More shops use more memory.|toggle|bool|||||false|0||0
+world-profile|world-profile.json||freeClassChange|world.rules|Free class change|On: class changes at level 20, 40 and 76 are free from the Class Masters. Off: the retail class-change quests are required. The launcher writes the matching ClassMaster.xml when the world starts.|toggle|bool|||||true|0||0
+# ---------------------------------------------------------------- Option.ini [Video]
+client-option|Option.ini|Video|GamePlayViewportX|clientgfx.display|Resolution width|Width of the game in pixels.|number|int||px|640|7680|1024|0||0
+client-option|Option.ini|Video|GamePlayViewportY|clientgfx.display|Resolution height|Height of the game in pixels.|number|int||px|480|4320|768|0||0
+client-option|Option.ini|Video|StartupFullScreen|clientgfx.display|Start in full screen||toggle|bool|||||True|0||0
+client-option|Option.ini|Video|RefreshRate|clientgfx.display|Refresh rate|Should match your monitor.|number|int||Hz|30|360|60|0||0
+client-option|Option.ini|Video|ColorBits|clientgfx.display|Color depth||choice|int|16=16-bit;32=32-bit||||32|0||0
+client-option|Option.ini|Video|Gamma|clientgfx.display|Brightness (gamma)||slider|decimal|||0|1|0.5|0||0
+client-option|Option.ini|Video|TextureDetail|clientgfx.detail|Texture detail|Same as the in-game Texture Detail option. If unsure which number is which, change it in game and compare.|choice|int|0=0;1=1;2=2||||0|0||0
+client-option|Option.ini|Video|ModelDetail|clientgfx.detail|Character model detail|Same as the in-game Model Detail option.|choice|int|0=0;1=1;2=2||||0|0||0
+client-option|Option.ini|Video|UseTrilinear|clientgfx.detail|Trilinear texture filtering||toggle|bool|||||True|0||0
+client-option|Option.ini|Video|AntiAliasing|clientgfx.detail|Anti-aliasing||choice|int|0=Off;1=On||||0|0||0
+client-option|Option.ini|Video|PawnShadow|clientgfx.detail|Character shadows||toggle|bool|||||True|0||0
+client-option|Option.ini|Video|RenderDeco|clientgfx.detail|Grass and decorations||toggle|bool|||||True|0||0
+client-option|Option.ini|Video|WeatherEffect|clientgfx.detail|Weather effects||choice|int|0=Off;1=On||||0|0||0
+client-option|Option.ini|Video|PostProc|clientgfx.detail|Post-processing effects||choice|int|0=Off;1=On||||0|0||0
+client-option|Option.ini|Video|GPUAnimation|clientgfx.detail|Animate characters on the graphics card||toggle|bool|||||True|0||0
+client-option|Option.ini|Video|SkipAnim|clientgfx.detail|Skip animations|Lower-quality animations for more speed.|choice|int|0=Off;1=On||||0|0||0
+client-option|Option.ini|Video|IsKeepMinFrameRate|clientgfx.detail|Lower detail to keep the frame rate up||toggle|bool|||||True|0||0
+client-option|Option.ini|Video|RenderActorLimited|clientgfx.distance|Limit how many characters are drawn|Same as the in-game character limit option. Higher numbers draw more characters; useful in crowded towns full of sims.|number|int|||0|10|6|0||0
+client-option|Option.ini|Video|PawnClippingRange|clientgfx.distance|Character draw distance (in-game option)||choice|int|0=0;1=1;2=2;3=3;4=4||||0|0||0
+client-option|Option.ini|Video|TerrainClippingRange|clientgfx.distance|Terrain draw distance (in-game option)||choice|int|0=0;1=1;2=2;3=3;4=4||||0|0||0
+client-option|Option.ini|Video|UseColorCursor|clientgfx.window|Colored mouse cursor||toggle|bool|||||True|0||0
+# ---------------------------------------------------------------- Option.ini [ClippingRange] / [L2WaterEffect]
+client-option|Option.ini|ClippingRange|Terrain|clientgfx.distance|Terrain distance||number|decimal|||0|10|4|1||0
+client-option|Option.ini|ClippingRange|Actor|clientgfx.distance|Object distance||number|decimal|||0|10|4|1||0
+client-option|Option.ini|ClippingRange|StaticMesh|clientgfx.distance|Building distance||number|decimal|||0|10|2|1||0
+client-option|Option.ini|ClippingRange|StaticMeshLod|clientgfx.distance|Building detail distance||number|decimal|||0|10|4|1||0
+client-option|Option.ini|ClippingRange|Pawn|clientgfx.distance|Character distance||number|decimal|||0|10|1|1||0
+client-option|Option.ini|L2WaterEffect|IsUseEffect|clientgfx.detail|Water reflections||toggle|bool|||||False|0||0
+client-option|Option.ini|L2WaterEffect|EffectType|clientgfx.detail|Water reflection quality||choice|int|0=0;1=1;2=2||||0|1||0
+# ---------------------------------------------------------------- Option.ini [Audio]
+client-option|Option.ini|Audio|SoundVolume|clientaudio.volume|Sound effects volume||slider|decimal|||0|1|0.6|0||0
+client-option|Option.ini|Audio|MusicVolume|clientaudio.volume|Music volume||slider|decimal|||0|1|1|0||0
+client-option|Option.ini|Audio|WavVoiceVolume|clientaudio.volume|Voice volume||slider|decimal|||0|1|0.6|0||0
+client-option|Option.ini|Audio|OggVoiceVolume|clientaudio.volume|NPC voice volume||slider|decimal|||0|1|0.6|0||0
+client-option|Option.ini|Audio|AudioMuteOn|clientaudio.volume|Mute all sound||toggle|bool|||||False|0||0
+# ---------------------------------------------------------------- Option.ini [Game]
+client-option|Option.ini|Game|MyName|clientgame.names|Show my name||toggle|bool|||||True|0||0
+client-option|Option.ini|Game|NPCName|clientgame.names|Show NPC names||toggle|bool|||||True|0||0
+client-option|Option.ini|Game|OtherPCName|clientgame.names|Show other players' names||toggle|bool|||||True|0||0
+client-option|Option.ini|Game|PartyMemberName|clientgame.names|Show party members' names||toggle|bool|||||True|0||0
+client-option|Option.ini|Game|PledgeMemberName|clientgame.names|Show clan members' names||toggle|bool|||||True|0||0
+client-option|Option.ini|Game|GroupName|clientgame.names|Show clan and alliance names||toggle|bool|||||True|0||0
+client-option|Option.ini|Game|EnterChatting|clientgame.chat|Press Enter to start typing in chat||toggle|bool|||||True|0||0
+client-option|Option.ini|Game|OldChatting|clientgame.chat|Classic chat window||toggle|bool|||||True|0||0
+client-option|Option.ini|Game|SystemMsgWnd|clientgame.chat|Separate system message window||toggle|bool|||||False|0||0
+client-option|Option.ini|Game|SystemMsgWndDamage|clientgame.chat|…show damage messages there||toggle|bool|||||False|0||0
+client-option|Option.ini|Game|SystemMsgWndExpendableItem|clientgame.chat|…show item use messages there||toggle|bool|||||False|0||0
+client-option|Option.ini|Game|ShowGameTipMsg|clientgame.chat|Show game tips||toggle|bool|||||False|0||0
+client-option|Option.ini|Game|ShowZoneTitle|clientgame.interface|Show zone names when entering an area||toggle|bool|||||True|0||0
+client-option|Option.ini|Game|HideDropItem|clientgame.interface|Hide items on the ground||toggle|bool|||||False|0||0
+client-option|Option.ini|Game|TransparencyMode|clientgame.interface|See-through interface windows||toggle|bool|||||True|0||0
+client-option|Option.ini|Game|IsRejectingDuel|clientgame.interface|Refuse duel requests||toggle|bool|||||False|0||0
+client-option|Option.ini|Game|PartyLooting|clientgame.interface|Default party loot rule||choice|int|0=Finders keepers;1=Random;2=Random including spoil;3=By turn;4=By turn including spoil||||0|0||0
+client-option|Option.ini|Game|ScreenShotQuality|clientgame.interface|Screenshot format||choice|int|0=0;1=1;2=2||||0|1||0
+client-option|Option.ini|Game|IsLockShortcutWnd|clientgame.interface|Lock the shortcut bar||toggle|bool|||||False|0||0
+client-option|Option.ini|Game|Is1ExpandShortcutWnd|clientgame.interface|Show second shortcut bar||toggle|bool|||||False|0||0
+client-option|Option.ini|Game|Is2ExpandShortcutWnd|clientgame.interface|Show third shortcut bar||toggle|bool|||||False|0||0
+client-option|Option.ini|Game|IsShortcutWndVertical|clientgame.interface|Vertical shortcut bar||toggle|bool|||||False|0||0
+client-option|Option.ini|Game|ArrowMode|clientgame.camera|Arrow keys turn the camera||toggle|bool|||||True|0||0
+client-option|Option.ini|Game|AutoTrackingPawn|clientgame.camera|Camera follows your character||toggle|bool|||||True|0||0
+client-option|Option.ini|Game|IsNative|clientgame.camera|Native mouse movement||toggle|bool|||||True|1||0
+# ---------------------------------------------------------------- l2.ini (encrypted)
+client-l2ini|l2.ini|URL|ServerAddr|clientconn.server|Server address|The login server the client connects to. 127.0.0.1 is your own world.|text|string||||||0|Written by the L2Everdream launcher every time you press Play (your world, the official world, or a friend's IP).|0
+client-l2ini|l2.ini|URL|Port|clientconn.server|Game port||number|int|||1|65535|7777|1||0
+client-l2ini|l2.ini|AutoLogOn|IsL2AutoLogOn|clientconn.autologin|Log in automatically|Skip the login screen using the account below. Stored in plain text inside l2.ini.|toggle|bool|||||False|0||0
+client-l2ini|l2.ini|AutoLogOn|L2ID|clientconn.autologin|Account name||text|string||||||0||0
+client-l2ini|l2.ini|AutoLogOn|L2Passwd|clientconn.autologin|Account password|Hidden here, but stored in plain text inside l2.ini.|secret|string||||||0||1
+client-l2ini|l2.ini|AutoLogOn|L2Slot|clientconn.autologin|Character slot to enter||number|int|||0|7|0|0||0
+client-l2ini|l2.ini|WinDrv.WindowsClient|WindowedViewportX|clientgfx.window|Windowed mode width||number|int||px|640|7680|640|0||0
+client-l2ini|l2.ini|WinDrv.WindowsClient|WindowedViewportY|clientgfx.window|Windowed mode height||number|int||px|480|4320|480|0||0
+client-l2ini|l2.ini|WinDrv.WindowsClient|FullscreenViewportX|clientgfx.window|Full screen width (engine)||number|int||px|640|7680|1024|1||0
+client-l2ini|l2.ini|WinDrv.WindowsClient|FullscreenViewportY|clientgfx.window|Full screen height (engine)||number|int||px|480|4320|768|1||0
+client-l2ini|l2.ini|URL|ForceAspectRatio|clientgfx.display|Force aspect ratio||toggle|bool|||||False|1||0
+client-l2ini|l2.ini|URL|AspectRatio|clientgfx.display|Aspect ratio|1.334 = 4:3, 1.778 = 16:9.|number|decimal|||1|3|1.334|1||0
+client-l2ini|l2.ini|CharacterDisplay|Name|clientgame.names|Show names above characters (engine)||toggle|bool|||||true|1||0
+client-l2ini|l2.ini|CharacterDisplay|Dist|clientgame.names|Name display distance||number|int|||0|10000|1000|0||0
+client-l2ini|l2.ini|ClippingRange|PawnMax|clientgfx.distance|Engine: farthest character distance||number|decimal|||0|20|3|1||0
+client-l2ini|l2.ini|ClippingRange|PawnMin|clientgfx.distance|Engine: nearest character distance||number|decimal|||0|20|1.5|1||0
+client-l2ini|l2.ini|ClippingRange|Terrain|clientgfx.distance|Engine: terrain distance||number|decimal|||0|20|8|1||0
+client-l2ini|l2.ini|ClippingRange|StaticMesh|clientgfx.distance|Engine: building distance||number|decimal|||0|20|4|1||0
+client-l2ini|l2.ini|ClippingRange|Actor|clientgfx.distance|Engine: object distance||number|decimal|||0|20|4|1||0
+client-l2ini|l2.ini|Engine.GameEngine|CacheSizeMegs|clientgfx.detail|Engine cache size||number|int||MB|16|512|32|1||0
+client-l2ini|l2.ini|LanguageSet|Language|clientgame.language|Client language|0 = Korean, 1 = English, 2 = Japanese.|number|int|||0|10|0|1||0
+client-l2ini|l2.ini|FontSet|Font|clientgame.language|Interface font package||text|string||||||1||0
+client-l2ini|l2.ini|FontSet|Glyph|clientgame.language|Interface font glyph file||text|string||||||1||0

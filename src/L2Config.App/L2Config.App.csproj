@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>L2EverdreamConfig</AssemblyName>
+    <Product>L2Everdream Config</Product>
+  </PropertyGroup>
+
+  <!-- Standalone: `dotnet publish -c Release` produces one self-contained L2EverdreamConfig.exe (no installer, no .NET needed). -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\L2Config.Core\L2Config.Core.csproj" />
+  </ItemGroup>
+
+  <!-- The catalog travels inside the exe. -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\catalog\catalog.json" Link="catalog.json" LogicalName="catalog.json" />
+    <EmbeddedResource Include="..\..\catalog\custom-config.json" Link="custom-config.json" LogicalName="custom-config.json" />
+  </ItemGroup>
+
+</Project>

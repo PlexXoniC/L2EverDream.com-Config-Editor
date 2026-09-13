@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/L2Config.App/L2Config.App.csproj" />
+    <Project Path="src/L2Config.Core/L2Config.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/L2Config.Core.Tests/L2Config.Core.Tests.csproj" />
+  </Folder>
+</Solution>
