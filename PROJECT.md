@@ -4,6 +4,8 @@ A standalone Windows desktop app (C# / WPF, one self-contained `.exe`, no instal
 **local** Lineage 2 client, written for people who are not programmers. It follows the look of
 [l2everdream.com](https://l2everdream.com) and the official L2Everdream launcher.
 
+> Start with `CLAUDE.md` (rules and working notes for assistant sessions).
+>
 > **Keep this file current.** Any change to scope, rules, structure, commands, the catalog or the UI updates the
 > matching section here and adds a line to the [changelog](#changelog).
 
@@ -28,6 +30,7 @@ A standalone Windows desktop app (C# / WPF, one self-contained `.exe`, no instal
 ## 2. Build, run, test
 
 Requirements: Windows 10/11, .NET SDK 10 (`dotnet --list-sdks`). Python 3.11+ only to regenerate the catalog.
+All commands run from the repository root; nothing depends on where the repository folder lives.
 
 ```bash
 dotnet build L2EverdreamConfig.slnx -c Debug
@@ -41,8 +44,9 @@ dotnet test tests/L2Config.Core.Tests
 
 - The Debug build is `src\L2Config.App\bin\Debug\net10.0-windows\L2EverdreamConfig.exe` (needs the .NET 10 runtime).
 - Tests that need a real install and client read their folders from the git-ignored `test-paths.local.json` at the
-  repository root or from `L2CONFIG_TEST_SERVER` / `L2CONFIG_TEST_CLIENT`. They **only read** those folders and write
-  to temporary copies; without them those tests are skipped.
+  repository root (`{ "server": "…\L2Everdream", "client": "…\l2" }`) or from `L2CONFIG_TEST_SERVER` /
+  `L2CONFIG_TEST_CLIENT`. They **only read** those folders and write to temporary copies; without them those tests are skipped.
+- No machine-specific paths are committed. This PC's paths live in the git-ignored `CLAUDE.local.md` and `test-paths.local.json`.
 
 **Standalone release** (the Release configuration is preset to win-x64, self-contained, single file, compressed):
 
@@ -68,6 +72,9 @@ unsaved edit in memory.
 
 ```
 L2EverdreamConfig.slnx
+CLAUDE.md                        rules from the user + working notes (read first in a new session)
+CLAUDE.local.md                  git-ignored: this PC's server/client folders and tooling notes
+test-paths.local.json            git-ignored: server/client folders used by the local-install tests
 PROJECT.md                       ← this file
 catalog/                         the friendly layer (data + generators)
   build_catalog.py               → catalog.json   (names, groups, editors, limits, descriptions)
@@ -289,3 +296,5 @@ behaviour or adding a new file type.
 | 2026-09-13 | Custom Config tab (read-only differences from stock L2J Mobius); personal names removed everywhere. |
 | 2026-09-13 | PROJECT.md created. |
 | 2026-09-13 | Standalone: catalog embedded in the exe; Release publishes one self-contained single-file exe; no installer. |
+| 2026-09-13 | Repository made location-independent for a move: relative commands, CLAUDE.md with all rules and context. |
+| 2026-09-13 | No local paths in the repository or its history: this PC's folders moved to git-ignored `CLAUDE.local.md` and `test-paths.local.json`. |
