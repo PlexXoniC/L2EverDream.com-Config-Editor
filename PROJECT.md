@@ -120,7 +120,7 @@ tests/L2Config.Core.Tests/       xUnit
 | File | Responsibility |
 |---|---|
 | `App.xaml.cs` | Loads the embedded `catalog.json` + `custom-config.json`, builds the main view model; snapshot mode. |
-| `MainWindow.xaml` | Chromeless window: wordmark, **Server / Client / Custom Config** tabs, folder bar, left section list with search and filters, virtualized settings list, save bar. All editor, row and page templates. |
+| `MainWindow.xaml` | Chromeless window: "L2Everdreamconfig" wordmark ("config" styled like "L2"), **Server / Client / Custom Config / Characters / Backups** tabs, folder bar, left section list with search and filters, virtualized settings list, save bar. All editor, row and page templates. |
 | `ViewModels/MainViewModel.cs` | Tabs, folder choice and validation, reload, save/discard, runtime notices, "Show in editor" jump. |
 | `ViewModels/TabViewModel.cs` | One Server or Client tab: categories → groups, counts, search, "Changed only", advanced filter, rows. |
 | `ViewModels/SettingViewModel.cs` | One setting: value, dirty/changed state (as words), validation error, range text, undo, reset to default. |

@@ -924,12 +924,8 @@
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock VerticalAlignment="Center" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold">
-                        <Run Text="L2" FontSize="22" Foreground="{StaticResource LanternBrush}" /><Run Text="Ever" FontSize="34" Foreground="#F5F6FF" /><Run Text="dream" FontSize="34" Foreground="{StaticResource DreamGradientBrush}" />
+                        <Run Text="L2" FontSize="22" Foreground="{StaticResource LanternBrush}" /><Run Text="Ever" FontSize="34" Foreground="#F5F6FF" /><Run Text="dream" FontSize="34" Foreground="{StaticResource DreamGradientBrush}" /><Run Text="config" FontSize="22" Foreground="{StaticResource LanternBrush}" />
                     </TextBlock>
-                    <Border Margin="14,6,0,0" VerticalAlignment="Center" CornerRadius="999" Padding="8,2" BorderThickness="1"
-                            BorderBrush="{StaticResource LanternHairBrush}" Background="{StaticResource LanternWashBrush}">
-                        <TextBlock Text="CONFIG" FontSize="10.5" FontWeight="SemiBold" Foreground="{StaticResource EmberBrush}" />
-                    </Border>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
