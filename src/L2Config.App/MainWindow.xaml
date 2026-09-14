@@ -266,6 +266,101 @@
             </DataTemplate.Triggers>
         </DataTemplate>
 
+        <!-- ===== Characters tab (live world database) ======================================= -->
+        <DataTemplate DataType="{x:Type vm:CharacterRowViewModel}">
+            <Border x:Name="Card" Margin="0,0,14,8" Padding="16,12" CornerRadius="12" Background="{StaticResource CardBrush}"
+                    BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" MinWidth="240" />
+                        <ColumnDefinition Width="24" />
+                        <ColumnDefinition Width="400" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <WrapPanel>
+                            <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" VerticalAlignment="Center" />
+                            <Border x:Name="StatusBadge" Style="{StaticResource Badge}" Background="Transparent" BorderBrush="#4D7C6FB0">
+                                <TextBlock x:Name="StatusText" Text="{Binding StatusWord}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource LabelBrush}" />
+                            </Border>
+                        </WrapPanel>
+                        <TextBlock Text="{Binding Details}" Style="{StaticResource CaptionText}" Margin="0,4,0,0" />
+                        <TextBlock Text="{Binding CurrentAdenaText}" FontFamily="{StaticResource MonoFont}" FontSize="13" Margin="0,8,0,0"
+                                   Foreground="{StaticResource EmberBrush}" />
+                        <TextBlock Text="{Binding LockReason}" Style="{StaticResource CaptionText}" Margin="0,6,0,0" Foreground="{StaticResource LanternBrush}"
+                                   Visibility="{Binding LockReason, Converter={StaticResource VisibleWhen}}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Visibility="{Binding CanEdit, Converter={StaticResource VisibleWhen}}">
+                        <TextBlock Text="ADENA IN INVENTORY" Style="{StaticResource KickerText}" Margin="0,0,0,4" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Style="{StaticResource FieldTextBox}" Width="170" TextAlignment="Right" FontFamily="{StaticResource MonoFont}"
+                                     infra:NumericInput.ValueType="Int" Text="{Binding AdenaText, UpdateSourceTrigger=PropertyChanged}"
+                                     AutomationProperties.Name="{Binding Name}" />
+                            <Button Style="{StaticResource GhostButton}" Content="Apply" Command="{Binding ApplyCommand}" Margin="10,0,0,0" Padding="16,6" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding RangeText}" FontSize="11.5" Foreground="{StaticResource DimLabelBrush}" Margin="0,5,0,0" />
+                        <TextBlock Text="{Binding Error}" FontSize="12" Foreground="{StaticResource LanternBrush}" Margin="0,4,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding Error, Converter={StaticResource VisibleWhen}}" />
+                        <TextBlock Text="{Binding Message}" FontSize="12" Foreground="{StaticResource LanternBrush}" Margin="0,4,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding Message, Converter={StaticResource VisibleWhen}}" />
+                        <Button Style="{StaticResource LinkButton}" Content="↶ Undo" Command="{Binding UndoCommand}" HorizontalAlignment="Left" Margin="-4,2,0,0" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsOnline}" Value="True">
+                    <Setter TargetName="StatusBadge" Property="BorderBrush" Value="{StaticResource VerdanceBrush}" />
+                    <Setter TargetName="StatusText" Property="Foreground" Value="{StaticResource VerdanceBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsDirty}" Value="True">
+                    <Setter TargetName="Card" Property="BorderBrush" Value="{StaticResource LanternHairBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:CharactersViewModel}">
+            <Grid Margin="24,0,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Margin="2,0,24,12">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⚜" FontSize="22" Foreground="{StaticResource ArcaneBrush}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                        <TextBlock Text="{Binding Title}" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
+                        <Border Style="{StaticResource Badge}" Margin="12,6,0,0" Background="{StaticResource LanternWashBrush}" BorderBrush="{StaticResource LanternHairBrush}">
+                            <TextBlock Text="Live world" FontSize="10.5" Foreground="{StaticResource EmberBrush}" />
+                        </Border>
+                    </StackPanel>
+                    <TextBlock Text="{Binding Intro}" Style="{StaticResource CaptionText}" FontSize="13" Margin="0,4,0,0" LineHeight="19" />
+                </StackPanel>
+                <Grid Grid.Row="1" Margin="2,0,24,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="320" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid>
+                        <TextBox x:Name="CharacterSearch" Style="{StaticResource SearchBox}" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 AutomationProperties.Name="Search characters" />
+                        <TextBlock Text="⌕" Margin="11,0,0,1" VerticalAlignment="Center" FontSize="15" Foreground="{StaticResource LabelBrush}" IsHitTestVisible="False" />
+                        <TextBlock Text="Search characters or accounts…" Margin="31,0,0,0" VerticalAlignment="Center" FontSize="13" IsHitTestVisible="False"
+                                   Foreground="{StaticResource DimLabelBrush}"
+                                   Visibility="{Binding Text, ElementName=CharacterSearch, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
+                    </Grid>
+                    <TextBlock Grid.Column="1" Text="{Binding Summary}" Margin="14,0,0,0" VerticalAlignment="Center" FontSize="12" Foreground="{StaticResource DimLabelBrush}" />
+                    <Button Grid.Column="2" Style="{StaticResource GhostButton}" Content="↻ Refresh" Command="{Binding RefreshCommand}" Padding="14,6" FontSize="12" />
+                </Grid>
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Problem}" Style="{StaticResource CaptionText}" FontSize="13.5" Margin="2,20,24,0" Foreground="{StaticResource LanternBrush}"
+                                   Visibility="{Binding HasProblem, Converter={StaticResource VisibleWhen}}" />
+                        <ItemsControl ItemsSource="{Binding Rows}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </DataTemplate>
+
         <DataTemplate DataType="{x:Type vm:CustomConfigViewModel}">
             <Grid Margin="24,0,10,0">
                 <Grid.RowDefinitions>
@@ -533,6 +628,11 @@
                                  Visibility="{Binding HasCustomTab, Converter={StaticResource VisibleWhen}}"
                                  ToolTip="What L2Everdream changed compared with stock L2J Mobius">
                         <TextBlock Text="Custom Config" />
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsCharactersTab, Mode=OneWay}" Margin="8,0,0,0"
+                                 Command="{Binding SelectTabCommand}" CommandParameter="characters" WindowChrome.IsHitTestVisibleInChrome="True"
+                                 ToolTip="Player characters in your running world">
+                        <TextBlock Text="Characters" />
                     </RadioButton>
                 </StackPanel>
 

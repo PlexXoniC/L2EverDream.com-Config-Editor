@@ -23,6 +23,7 @@ A standalone Windows desktop app (C# / WPF, one self-contained `.exe`, no instal
 | **Friendly first, real name always visible** | Each setting shows a plain-English name, and a chip with the real `File › [Section] › Key` it is saved to. Search matches both. |
 | **No personal names** | Nobody (owner, comment authors, anyone) is named in the app, catalog, docs or messages. The catalog generator strips attributions from config comments. |
 | **Custom Config is read-only** | The tab shows how L2Everdream differs from stock L2J Mobius; it never writes. |
+| **Characters edit the live world carefully** | The Characters tab changes inventory adena of **offline** player characters in the running world's database (the offline check is inside the writing SQL). Sims (account `$sim`) are hidden, no item rows are created while the server runs, and every edit is logged to `%LOCALAPPDATA%\L2EverdreamConfig\character-edits.log`. |
 | **Standalone, no installer** | Ships as a single self-contained `L2EverdreamConfig.exe`: no .NET install, no side files, runs from any folder. The catalog is embedded. Its only own files are preferences and backups under `%LOCALAPPDATA%\L2EverdreamConfig`. |
 
 ---
@@ -63,7 +64,7 @@ Verified by running it alone from an empty folder.
 L2EverdreamConfig.exe --snapshot out.png --server "<server folder>" --client "<client folder>" --tab server --category rates --search "party xp" --edit RateXp=3 --advanced --size 1280x820
 ```
 
-`--tab` is `server`, `client` or `custom`; `--group <group id>` scrolls to a group; `--edit key=value` shows an
+`--tab` is `server`, `client`, `custom` or `characters`; `--group <group id>` scrolls to a group; `--edit key=value` shows an
 unsaved edit in memory.
 
 ---
@@ -87,7 +88,7 @@ research/
   L2EVERDREAM-KNOWLEDGE.md       how L2Everdream, the launcher, Mobius and the client work
   seed-data/                     schema extracted from the install (config keys + Java types/defaults), launcher.css, ini decoder reference
   upstream-mobius/<commit>/      stock L2J_Mobius_CT_0_Interlude config files (from GitLab) used for Custom Config
-src/L2Config.Core/               no UI: catalog model, INI editing, client ini codec, stores, validation, search
+src/L2Config.Core/               no UI: catalog model, INI editing, client ini codec, stores, validation, search, world database (MySqlConnector)
 src/L2Config.App/                WPF app (MVVM, no third-party packages)
 tests/L2Config.Core.Tests/       xUnit
 ```
@@ -107,6 +108,7 @@ tests/L2Config.Core.Tests/       xUnit
 | `Storage/SettingValues.cs` | Equality (numbers/booleans), range and format validation, bool formatting in the file's own style, range text. |
 | `Storage/BackupSession.cs` | Copies each file once before its first write to `%LOCALAPPDATA%\L2EverdreamConfig\backups\yyyyMMdd-HHmmss\…`. |
 | `Storage/RuntimeStatus.cs` | Read-only: is the world listening on its game port, is `L2.exe` running. |
+| `Characters/WorldDatabase.cs` | Connects with the world's `game\config\Database.ini` (MySqlConnector); lists player characters with inventory adena; sets adena only when offline and unchanged, otherwise says why. |
 
 ### App (`src/L2Config.App`)
 
@@ -117,6 +119,7 @@ tests/L2Config.Core.Tests/       xUnit
 | `ViewModels/MainViewModel.cs` | Tabs, folder choice and validation, reload, save/discard, runtime notices, "Show in editor" jump. |
 | `ViewModels/TabViewModel.cs` | One Server or Client tab: categories → groups, counts, search, "Changed only", advanced filter, rows. |
 | `ViewModels/SettingViewModel.cs` | One setting: value, dirty/changed state (as words), validation error, range text, undo, reset to default. |
+| `ViewModels/CharactersViewModel.cs` | Characters tab: load/refresh, search, per-character adena editor limited by Player.ini `MaxAdena`, Apply, Undo, edit log. |
 | `ViewModels/CustomConfigViewModel.cs` | Read-only differences with stock / shipped / current values and filters. |
 | `Theme/Colors.xaml`, `Theme/Controls.xaml` | The design system (see §8). |
 | `Infrastructure/*` | `ObservableObject`, `RelayCommand`, app preferences, converters, editor template selector, numeric input filter, password binding. |
@@ -227,7 +230,7 @@ when you changed it) and **Show in editor**, which opens that setting in the Ser
 
 ## 7. What the UI does
 
-- **Tabs**: Server, Client, Custom Config. The tab pill shows a count of unsaved changes.
+- **Tabs**: Server, Client, Custom Config, Characters (live world: offline characters' adena, applied per character). The tab pill shows a count of unsaved changes.
 - **Folder bar** per tab with *Change folder…*; with no folder chosen the page is a single card with one gold button.
 - **Left section list**: categories with counts; the selected category expands to its groups; clicking a group
   scrolls to it. While searching, only matching categories/groups are listed.
@@ -280,6 +283,7 @@ behaviour or adding a new file type.
   in-game labels are not verified.
 - About 480 server settings still use pattern or humanized names; improve them in `friendly-names.tsv`.
 - `-Dl2sp.*` launch settings are out of scope: the launcher regenerates its flags file on every start.
+- Characters tab: adena only; it cannot add adena to a character carrying none while the server runs.
 - No app icon yet. (There will be no installer — the app is a standalone exe by design.)
 
 ---
@@ -297,4 +301,5 @@ behaviour or adding a new file type.
 | 2026-09-13 | PROJECT.md created. |
 | 2026-09-13 | Standalone: catalog embedded in the exe; Release publishes one self-contained single-file exe; no installer. |
 | 2026-09-13 | Repository made location-independent for a move: relative commands, CLAUDE.md with all rules and context. |
+| 2026-09-14 | Characters tab: edit inventory adena of offline player characters in the running world's database (MySqlConnector). |
 | 2026-09-13 | No local paths in the repository or its history: this PC's folders moved to git-ignored `CLAUDE.local.md` and `test-paths.local.json`. |

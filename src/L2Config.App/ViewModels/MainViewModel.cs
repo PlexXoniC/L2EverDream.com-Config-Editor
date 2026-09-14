@@ -29,24 +29,19 @@ public sealed class MainViewModel : ObservableObject
 		ServerTab = new TabViewModel("server", catalog, () => ShowAdvanced, () => ChooseFolder(isServer: true));
 		ClientTab = new TabViewModel("client", catalog, () => ShowAdvanced, () => ChooseFolder(isServer: false));
 		CustomTab = customConfig is null ? null : new CustomConfigViewModel(customConfig, ShowSetting);
-		_selectedTab = appSettings.LastTab switch
-		{
-			"client" => ClientTab,
-			"custom" when CustomTab is not null => CustomTab,
-			_ => ServerTab,
-		};
+		CharactersTab = new CharactersViewModel(() => _store?.Locations, ReadMaxAdena);
+		_selectedTab = TabFor(appSettings.LastTab);
 
 		SaveCommand = new RelayCommand(Save, () => PendingCount > 0);
 		DiscardCommand = new RelayCommand(Discard, () => PendingCount > 0);
 		OpenBackupsCommand = new RelayCommand(() => _dialogs.OpenFolder(_lastBackupFolder ?? BackupSession.DefaultRoot));
-		SelectTabCommand = new RelayCommand(p => SelectedTab = (p as string) switch
-		{
-			"client" => ClientTab,
-			"custom" when CustomTab is not null => CustomTab,
-			_ => ServerTab,
-		});
+		SelectTabCommand = new RelayCommand(p => SelectedTab = TabFor(p as string));
 
 		Reload();
+		if (_selectedTab == CharactersTab)
+		{
+			_ = CharactersTab.RefreshAsync();
+		}
 
 		_statusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(4) };
 		_statusTimer.Tick += async (_, _) => await RefreshRuntimeStatusAsync();
@@ -58,8 +53,9 @@ public sealed class MainViewModel : ObservableObject
 	public TabViewModel ClientTab { get; }
 	public CustomConfigViewModel? CustomTab { get; }
 	public bool HasCustomTab => CustomTab is not null;
+	public CharactersViewModel CharactersTab { get; }
 
-	/// <summary>A <see cref="TabViewModel"/> (Server, Client) or the <see cref="CustomConfigViewModel"/>.</summary>
+	/// <summary>A <see cref="TabViewModel"/> (Server, Client), the <see cref="CustomConfigViewModel"/> or the <see cref="CharactersViewModel"/>.</summary>
 	public object SelectedTab
 	{
 		get => _selectedTab;
@@ -70,12 +66,18 @@ public sealed class MainViewModel : ObservableObject
 				OnPropertyChanged(nameof(IsServerTab));
 				OnPropertyChanged(nameof(IsClientTab));
 				OnPropertyChanged(nameof(IsCustomTab));
+				OnPropertyChanged(nameof(IsCharactersTab));
 				_appSettings.LastTab = value switch
 				{
 					TabViewModel tab => tab.Scope,
+					CharactersViewModel => "characters",
 					_ => "custom",
 				};
 				_appSettings.Save();
+				if (value == CharactersTab)
+				{
+					_ = CharactersTab.RefreshAsync();
+				}
 			}
 		}
 	}
@@ -83,6 +85,19 @@ public sealed class MainViewModel : ObservableObject
 	public bool IsServerTab => SelectedTab == ServerTab;
 	public bool IsClientTab => SelectedTab == ClientTab;
 	public bool IsCustomTab => CustomTab is not null && SelectedTab == CustomTab;
+	public bool IsCharactersTab => SelectedTab == CharactersTab;
+
+	private object TabFor(string? name) => name switch
+	{
+		"client" => ClientTab,
+		"custom" when CustomTab is not null => CustomTab,
+		"characters" => CharactersTab,
+		_ => ServerTab,
+	};
+
+	/// <summary>The server's own adena cap (Player.ini MaxAdena; a negative value means the client's maximum).</summary>
+	private long ReadMaxAdena() =>
+		long.TryParse(ReadServerValue("MaxAdena"), out var max) && max >= 0 ? max : int.MaxValue;
 
 	/// <summary>Opens a setting in the editor (used by the Custom Config tab).</summary>
 	public void ShowSetting(string settingId)
@@ -220,6 +235,10 @@ public sealed class MainViewModel : ObservableObject
 		ServerTab.SetSettings(server);
 		ClientTab.SetSettings(client);
 		CustomTab?.UpdateCurrentValues(_store, _catalog, locations.HasServer);
+		if (IsCharactersTab)
+		{
+			_ = CharactersTab.RefreshAsync();
+		}
 		RaisePending();
 	}
 

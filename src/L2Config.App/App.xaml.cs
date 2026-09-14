@@ -52,6 +52,17 @@ public partial class App : Application
 			snapshot.Apply(viewModel);
 			window.ContentRendered += (_, _) => window.Dispatcher.BeginInvoke(() =>
 			{
+				if (snapshot.Tab == "characters")
+				{
+					// The character list loads from the database after the first render.
+					var until = DateTime.Now.AddSeconds(5);
+					while (viewModel.CharactersTab.IsLoading && DateTime.Now < until)
+					{
+						window.Dispatcher.Invoke(() => { }, DispatcherPriority.Background);
+						Thread.Sleep(50);
+					}
+					window.UpdateLayout();
+				}
 				snapshot.Save(window);
 				Shutdown(0);
 			}, DispatcherPriority.ApplicationIdle);
@@ -111,6 +122,11 @@ public partial class App : Application
 
 		public void Apply(MainViewModel viewModel)
 		{
+			if (Tab == "characters")
+			{
+				viewModel.SelectedTab = viewModel.CharactersTab;
+				return;
+			}
 			if (Tab == "custom" && viewModel.CustomTab is not null)
 			{
 				viewModel.SelectedTab = viewModel.CustomTab;

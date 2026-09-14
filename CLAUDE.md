@@ -21,7 +21,11 @@ The project owner knows the user is building it.
    XML configs and `user.ini` are next. `-Dl2sp.*` JVM flags are out of scope (the launcher regenerates them each start).
 4. **Non-programmer UX.** Friendly names linked to the real `File › [Section] › Key`; grouping by type of setting, not by
    file; search across friendly and real names; a category → group section list on the left of the main window.
-5. **Separate tabs:** Server, Client, and a read-only **Custom Config** tab (how the release differs from stock L2J Mobius).
+5. **Separate tabs:** Server, Client, a read-only **Custom Config** tab (how the release differs from stock L2J Mobius), and
+   **Characters** — edits player characters in the running world's database (inventory adena only, for now). Only
+   offline characters are written (checked inside the writing SQL), sims (account `$sim`) are never listed, and no new
+   item rows are inserted while the server runs (it owns object-ID allocation). Each edit is appended to
+   `%LOCALAPPDATA%\L2EverdreamConfig\character-edits.log`.
 6. **The user chooses both folders.** No default or auto-detected server/client paths.
 7. **Valid values only.** Every setting has a type, range and/or format; editors refuse bad input; Save refuses invalid
    values with a plain-language reason. The test `EveryCurrentValueIsWithinItsLimits` must keep passing.
