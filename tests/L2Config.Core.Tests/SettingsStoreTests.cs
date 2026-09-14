@@ -20,6 +20,27 @@ public class SettingsStoreTests
 		Assert.All(Catalog.Settings.Where(s => s.Editor == SettingEditor.Choice), s => Assert.NotEmpty(s.Options!));
 	}
 
+	[Fact]
+	public void RelationsPointAtRealSettingsAndCanBeEvaluated()
+	{
+		var byId = Catalog.Settings.ToDictionary(s => s.Id);
+		var relations = Catalog.Settings.SelectMany(s => s.Relations.Select(r => (Setting: s, Relation: r))).ToList();
+		Assert.True(relations.Count > 100);
+		Assert.All(relations, x =>
+		{
+			Assert.True(byId.ContainsKey(x.Relation.Id), $"{x.Setting.Id} -> {x.Relation.Id}");
+			Assert.NotEqual(x.Setting.Id, x.Relation.Id);
+			Assert.Contains(x.Relation.Kind, new[] { "requires", "affects" });
+		});
+
+		var vitalityRate = Catalog.Settings.Single(s => s.Key == "RateVitalityLevel1").Relations.Single(r => r.IsRequirement);
+		Assert.True(vitalityRate.IsSatisfiedBy("True"));
+		Assert.False(vitalityRate.IsSatisfiedBy("False"));
+		var destroy = Catalog.Settings.Single(s => s.Key == "DestroyPlayerDroppedItem").Relations.First(r => r.Value == ">0");
+		Assert.False(destroy.IsSatisfiedBy("0"));
+		Assert.True(destroy.IsSatisfiedBy("3600"));
+	}
+
 	[LocalInstallFact]
 	public void EveryCatalogedSettingIsFoundInTheLocalFiles()
 	{
@@ -109,7 +130,10 @@ public class SettingsStoreTests
 		Assert.Equal(before.Split('\n').Length, after.Split('\n').Length);
 		Assert.Single(DiffLines(before, after));
 		Assert.NotNull(result.BackupFolder);
-		Assert.Equal(2, Directory.EnumerateFiles(result.BackupFolder!, "Rates.ini", SearchOption.AllDirectories).Count());
+		Assert.True(File.Exists(Path.Combine(result.BackupFolder!, "game-config__Rates.ini")));
+		Assert.True(File.Exists(Path.Combine(result.BackupFolder!, "game-player-copy__Rates.ini")));
+		Assert.True(File.Exists(Path.Combine(result.BackupFolder!, "manifest.json")));
+		Assert.Empty(Directory.EnumerateDirectories(result.BackupFolder!));
 	}
 
 	[LocalInstallFact]

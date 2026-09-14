@@ -1,0 +1,178 @@
+# How settings affect each other, shown on each setting's card. Pipe-separated; run python catalog/build_catalog.py.
+# kind: requires = this setting only has an effect while <other> has <value> (value may be ">0", "true", "false" or an exact value)
+#       affects  = this setting changes how <other> works (note says how); shown on both cards
+# Settings are written target:file:key (targets: game, login, option, l2ini, world). Keep notes plain and short.
+setting|kind|other|value|note
+# ---------------------------------------------------------------- rates
+game:Rates.ini:RatePartyXp|affects|game:Rates.ini:RateXp||Party experience is the normal experience rate plus this bonus, so both multiply what a party earns.
+game:Rates.ini:RatePartySp|affects|game:Rates.ini:RateSp||Party skill points are the normal skill point rate plus this bonus.
+game:Rates.ini:DeathDropChanceMultiplier|affects|game:Rates.ini:DeathDropAmountMultiplier||Chance and amount multiply: 5 × 5 means about 25 times the drops.
+game:Rates.ini:SpoilDropChanceMultiplier|affects|game:Rates.ini:SpoilDropAmountMultiplier||Chance and amount multiply: 5 × 5 means about 25 times the spoils.
+game:Rates.ini:DropAmountMultiplierByItemId|affects|game:Rates.ini:DeathDropAmountMultiplier||Items listed here (adena is 57) use their own amount instead of the general drop amount.
+game:Rates.ini:DropChanceMultiplierByItemId|affects|game:Rates.ini:DeathDropChanceMultiplier||Items listed here use their own chance instead of the general drop chance.
+game:Rates.ini:RateKarmaLost|affects|game:Rates.ini:RateXp||-1 means "use the experience rate".
+game:Rates.ini:RateVitalityLevel1|requires|game:Player.ini:EnableVitality|true|Vitality rates do nothing while the vitality system is off.
+game:Rates.ini:RateVitalityLevel2|requires|game:Player.ini:EnableVitality|true|Vitality rates do nothing while the vitality system is off.
+game:Rates.ini:RateVitalityLevel3|requires|game:Player.ini:EnableVitality|true|Vitality rates do nothing while the vitality system is off.
+game:Rates.ini:RateVitalityLevel4|requires|game:Player.ini:EnableVitality|true|Vitality rates do nothing while the vitality system is off.
+game:Rates.ini:RateVitalityGain|requires|game:Player.ini:EnableVitality|true|Vitality rates do nothing while the vitality system is off.
+game:Rates.ini:RateVitalityLost|requires|game:Player.ini:EnableVitality|true|Vitality rates do nothing while the vitality system is off.
+game:Rates.ini:RateRecoveryPeaceZone|requires|game:Player.ini:EnableVitality|true|Vitality rates do nothing while the vitality system is off.
+game:Rates.ini:RateRecoveryOnReconnect|requires|game:Player.ini:RecoverVitalityOnReconnect|true|Offline recovery speed only matters while offline recovery is on.
+game:Rates.ini:BossDropMinLevel|requires|game:Rates.ini:BossDropEnable|true|Extra raid boss drops are off.
+game:Rates.ini:BossDropMaxLevel|requires|game:Rates.ini:BossDropEnable|true|Extra raid boss drops are off.
+game:Rates.ini:BossDropList|requires|game:Rates.ini:BossDropEnable|true|Extra raid boss drops are off.
+game:Rates.ini:RateQuestRewardPotion|requires|game:Rates.ini:UseQuestRewardMultipliers|true|Per-type quest multipliers are only used when they are switched on; otherwise the general quest reward rate applies.
+game:Rates.ini:RateQuestRewardScroll|requires|game:Rates.ini:UseQuestRewardMultipliers|true|Per-type quest multipliers are only used when they are switched on; otherwise the general quest reward rate applies.
+game:Rates.ini:RateQuestRewardRecipe|requires|game:Rates.ini:UseQuestRewardMultipliers|true|Per-type quest multipliers are only used when they are switched on; otherwise the general quest reward rate applies.
+game:Rates.ini:RateQuestRewardMaterial|requires|game:Rates.ini:UseQuestRewardMultipliers|true|Per-type quest multipliers are only used when they are switched on; otherwise the general quest reward rate applies.
+game:Rates.ini:RateTeleportFee|affects|game:Player.ini:MaxFreeTeleportLevel||Characters at or below the free teleport level pay nothing, whatever the teleport price is.
+game:Rates.ini:PlayerRateDrop|affects|game:PVP.ini:MinimumPKRequiredToDrop||Items only drop once a player has at least this many player kills.
+game:Rates.ini:KarmaRateDrop|affects|game:PVP.ini:MinimumPKRequiredToDrop||Items only drop once a player has at least this many player kills.
+# ---------------------------------------------------------------- player
+game:Player.ini:RecoverVitalityOnReconnect|requires|game:Player.ini:EnableVitality|true|The vitality system is off.
+game:Player.ini:StartingVitalityPoints|requires|game:Player.ini:EnableVitality|true|The vitality system is off.
+game:Player.ini:RaidbossUseVitality|requires|game:Player.ini:EnableVitality|true|The vitality system is off.
+game:Player.ini:SkillDurationList|requires|game:Player.ini:EnableModifySkillDuration|true|This list is ignored until custom buff durations are switched on.
+game:Player.ini:SkillReuseList|requires|game:Player.ini:EnableModifySkillReuse|true|This list is ignored until custom skill cooldowns are switched on.
+game:Player.ini:AutoLearnSkillsWithoutItems|requires|game:Player.ini:AutoLearnSkills|true|Only applies while skills are learned automatically.
+game:Player.ini:AutoLearnForgottenScrollSkills|requires|game:Player.ini:AutoLearnSkills|true|Only applies while skills are learned automatically.
+game:Player.ini:MaxOffsetOnTeleport|requires|game:Player.ini:OffsetOnTeleportEnabled|true|Teleport scatter is off.
+game:Player.ini:MaxPetitionsPerPlayer|requires|game:Player.ini:PetitioningAllowed|true|Petitions are turned off.
+game:Player.ini:MaxPetitionsPending|requires|game:Player.ini:PetitioningAllowed|true|Petitions are turned off.
+game:Player.ini:MaxPetitionsPending|affects|game:Player.ini:MaxPetitionsPerPlayer||The total waiting must be higher than the number one player may send.
+game:Player.ini:PartyXpCutoffPercent|requires|game:Player.ini:PartyXpCutoffMethod|percentage|Only used when the sharing rule is "percentage".
+game:Player.ini:PartyXpCutoffLevel|requires|game:Player.ini:PartyXpCutoffMethod|level|Only used when the sharing rule is "level".
+game:Player.ini:PartyXpCutoffGaps|requires|game:Player.ini:PartyXpCutoffMethod|highfive|Only used when the sharing rule is "highfive".
+game:Player.ini:PartyXpCutoffGapPercent|requires|game:Player.ini:PartyXpCutoffMethod|highfive|Only used when the sharing rule is "highfive".
+game:Player.ini:MaxFreeTeleportLevel|affects|game:Rates.ini:RateTeleportFee||Above this level, teleports cost the gatekeeper price times the teleport price rate.
+game:Player.ini:RetailLikeAugmentationNoGradeChance|requires|game:Player.ini:RetailLikeAugmentation|true|Color odds are only used with retail-like augmentation.
+game:Player.ini:RetailLikeAugmentationMidGradeChance|requires|game:Player.ini:RetailLikeAugmentation|true|Color odds are only used with retail-like augmentation.
+game:Player.ini:RetailLikeAugmentationHighGradeChance|requires|game:Player.ini:RetailLikeAugmentation|true|Color odds are only used with retail-like augmentation.
+game:Player.ini:RetailLikeAugmentationTopGradeChance|requires|game:Player.ini:RetailLikeAugmentation|true|Color odds are only used with retail-like augmentation.
+game:Player.ini:AugmentationNGGlowChance|requires|game:Player.ini:RetailLikeAugmentation|false|Glow and skill chances are ignored while retail-like augmentation is on.
+game:Player.ini:AugmentationMidGlowChance|requires|game:Player.ini:RetailLikeAugmentation|false|Glow and skill chances are ignored while retail-like augmentation is on.
+game:Player.ini:AugmentationHighGlowChance|requires|game:Player.ini:RetailLikeAugmentation|false|Glow and skill chances are ignored while retail-like augmentation is on.
+game:Player.ini:AugmentationTopGlowChance|requires|game:Player.ini:RetailLikeAugmentation|false|Glow and skill chances are ignored while retail-like augmentation is on.
+game:Player.ini:AugmentationBaseStatChance|requires|game:Player.ini:RetailLikeAugmentation|false|Glow and skill chances are ignored while retail-like augmentation is on.
+game:Player.ini:FortressZoneFameTaskFrequency|requires|game:Player.ini:EnableFameSystem|true|The fame system is off.
+game:Player.ini:FortressZoneFameAquirePoints|requires|game:Player.ini:EnableFameSystem|true|The fame system is off.
+game:Player.ini:CastleZoneFameTaskFrequency|requires|game:Player.ini:EnableFameSystem|true|The fame system is off.
+game:Player.ini:CastleZoneFameAquirePoints|requires|game:Player.ini:EnableFameSystem|true|The fame system is off.
+game:Player.ini:MaxPersonalFamePoints|requires|game:Player.ini:EnableFameSystem|true|The fame system is off.
+game:Player.ini:FameForDeadPlayers|requires|game:Player.ini:EnableFameSystem|true|The fame system is off.
+game:Player.ini:AltGameCreationSpeed|requires|game:Player.ini:AltGameCreation|true|Crafting time only applies when crafting takes time.
+game:Player.ini:AltGameCreationXpRate|requires|game:Player.ini:AltGameCreation|true|Crafting experience only applies when crafting takes time.
+game:Player.ini:AltGameCreationSpRate|requires|game:Player.ini:AltGameCreation|true|Crafting skill points only apply when crafting takes time.
+game:Player.ini:AutoLootItemIds|affects|game:Player.ini:AutoLoot||Items listed here are always picked up automatically, even when auto loot is off.
+game:Player.ini:AutoLootSlotLimit|requires|game:Player.ini:AutoLoot|true|Only matters while drops are picked up automatically.
+game:Player.ini:RaidLootRightsCCSize|affects|game:Player.ini:RaidLootRightsInterval||A command channel this big gets raid loot priority for the time set there.
+game:Player.ini:MaximumPlayerLevel|affects|game:Player.ini:MaxSubclassLevel||Subclasses cannot go above this level either.
+game:Player.ini:BaseSubclassLevel|affects|game:Player.ini:MaxSubclassLevel||New subclasses start at this level; it must be below the maximum subclass level.
+game:Player.ini:StartingLevel|affects|game:Player.ini:MaximumPlayerLevel||Must not be above the maximum character level.
+game:Player.ini:MaximumSlotsForDwarf|affects|game:Player.ini:MaximumSlotsForNoDwarf||Dwarves use this limit instead; the Characters tab uses it when adding items to dwarves.
+game:Player.ini:MaximumSlotsForGMPlayer|affects|game:Player.ini:MaximumSlotsForNoDwarf||Game Masters use this limit instead; the Characters tab uses it when adding items to them.
+game:Player.ini:DisableOverEnchanting|affects|game:Player.ini:OverEnchantProtection||With over-enchanting blocked, the protection only catches items that were already over the limit.
+game:Player.ini:OverEnchantPunishment|requires|game:Player.ini:OverEnchantProtection|true|Punishment only applies while over-enchant protection is on.
+game:Player.ini:AltKarmaPlayerCanTeleport|affects|game:Player.ini:AltKarmaPlayerCanUseGK||Escape and recall are separate from gatekeepers.
+# ---------------------------------------------------------------- general / npc / pvp
+game:General.ini:LogItemsSmallLog|requires|game:General.ini:LogItems|true|Item logging is off.
+game:General.ini:LogItemsIdsOnly|requires|game:General.ini:LogItems|true|Item logging is off.
+game:General.ini:LogItemsIdsList|requires|game:General.ini:LogItemsIdsOnly|true|The ID list is only used when logging only listed items.
+game:General.ini:SkillCheckRemove|requires|game:General.ini:SkillCheckEnable|true|Skill checking is off.
+game:General.ini:SkillCheckGM|requires|game:General.ini:SkillCheckEnable|true|Skill checking is off.
+game:General.ini:DestroyPlayerDroppedItem|requires|game:General.ini:AutoDestroyDroppedItemAfter|>0|Dropped items are never removed while the removal time is 0.
+game:General.ini:DestroyEquipableItem|requires|game:General.ini:DestroyPlayerDroppedItem|true|Player-dropped items are not being removed.
+game:General.ini:SaveDroppedItemInterval|requires|game:General.ini:SaveDroppedItem|true|Ground items are not being kept through restarts.
+game:General.ini:EmptyDroppedItemTableAfterLoad|requires|game:General.ini:SaveDroppedItem|true|Ground items are not being kept through restarts.
+game:General.ini:ClearDroppedItemTable|requires|game:General.ini:SaveDroppedItem|false|Only works while ground items are not kept through restarts.
+game:General.ini:UpdateItemsOnCharStore|requires|game:General.ini:LazyItemsUpdate|true|Only matters when items are saved lazily.
+game:General.ini:MinNpcAnimation|affects|game:General.ini:MaxNpcAnimation||The shortest delay must not be longer than the longest.
+game:General.ini:MinMonsterAnimation|affects|game:General.ini:MaxMonsterAnimation||The shortest delay must not be longer than the longest.
+game:General.ini:GridNeighborTurnOnTime|requires|game:General.ini:GridsAlwaysOn|false|Regions never sleep while they are all kept active.
+game:General.ini:GridNeighborTurnOffTime|requires|game:General.ini:GridsAlwaysOn|false|Regions never sleep while they are all kept active.
+game:General.ini:WearDelay|requires|game:General.ini:AllowWear|true|Trying on gear is off.
+game:General.ini:WearPrice|requires|game:General.ini:AllowWear|true|Trying on gear is off.
+game:General.ini:ChatFilterChars|requires|game:General.ini:UseChatFilter|true|The chat filter is off.
+game:General.ini:BBSDefault|requires|game:General.ini:EnableCommunityBoard|true|The Community Board is off.
+game:General.ini:AltManorSavePeriodRate|requires|game:General.ini:AltManorSaveAllActions|false|Not used while the manor saves after every action.
+game:General.ini:AltLotteryPrize|requires|game:General.ini:AllowLottery|true|The lottery is off.
+game:General.ini:AltLotteryTicketPrice|requires|game:General.ini:AllowLottery|true|The lottery is off.
+game:General.ini:AltFishChampionshipRewardItemId|requires|game:General.ini:AltFishChampionshipEnabled|true|The fishing championship is off.
+game:General.ini:AltItemAuctionExpiredAfter|requires|game:General.ini:AltItemAuctionEnabled|true|The item auction is off.
+game:General.ini:AltItemAuctionTimeExtendsOnBid|requires|game:General.ini:AltItemAuctionEnabled|true|The item auction is off.
+game:General.ini:DefaultPunishParam|affects|game:General.ini:DefaultPunish||How long the chosen punishment lasts.
+game:General.ini:JailDisableChat|affects|game:General.ini:DefaultPunish||Applies to anyone jailed, including by the punishment for illegal actions.
+game:NPC.ini:AggroDistanceCheckRange|requires|game:NPC.ini:AggroDistanceCheckEnabled|true|Monsters never give up while the distance check is off.
+game:NPC.ini:AggroDistanceCheckRaids|requires|game:NPC.ini:AggroDistanceCheckEnabled|true|Monsters never give up while the distance check is off.
+game:NPC.ini:AggroDistanceCheckRaidRange|requires|game:NPC.ini:AggroDistanceCheckRaids|true|Raid bosses are not included in the distance check.
+game:NPC.ini:AggroDistanceCheckInstances|requires|game:NPC.ini:AggroDistanceCheckEnabled|true|Monsters never give up while the distance check is off.
+game:NPC.ini:AggroDistanceCheckRestoreLife|requires|game:NPC.ini:AggroDistanceCheckEnabled|true|Monsters never give up while the distance check is off.
+game:NPC.ini:RaidMinRespawnMultiplier|affects|game:NPC.ini:RaidMaxRespawnMultiplier||Raid respawn falls between these two; keep the shortest below the longest.
+game:PVP.ini:AntiFeedDualbox|requires|game:PVP.ini:AntiFeedEnable|true|Anti-feed is off.
+game:PVP.ini:AntiFeedDisconnectedAsDualbox|requires|game:PVP.ini:AntiFeedEnable|true|Anti-feed is off.
+game:PVP.ini:AntiFeedInterval|requires|game:PVP.ini:AntiFeedEnable|true|Anti-feed is off.
+game:Server.ini:KickMissingHWID|requires|game:Server.ini:EnableHardwareInfo|true|Hardware IDs are not being read.
+game:Server.ini:MaxPlayersPerHWID|requires|game:Server.ini:EnableHardwareInfo|true|Hardware IDs are not being read.
+game:Server.ini:DeadlockCheckInterval|requires|game:Server.ini:DeadlockWatcher|true|The freeze watcher is off.
+game:Server.ini:RestartOnDeadlock|requires|game:Server.ini:DeadlockWatcher|true|The freeze watcher is off.
+game:Server.ini:PrecautionaryRestartCpu|requires|game:Server.ini:PrecautionaryRestartEnabled|true|Overload restarts are off.
+game:Server.ini:PrecautionaryRestartMemory|requires|game:Server.ini:PrecautionaryRestartEnabled|true|Overload restarts are off.
+game:Server.ini:PrecautionaryRestartChecks|requires|game:Server.ini:PrecautionaryRestartEnabled|true|Overload restarts are off.
+game:Server.ini:PrecautionaryRestartPercentage|requires|game:Server.ini:PrecautionaryRestartEnabled|true|Overload restarts are off.
+game:Server.ini:PrecautionaryRestartDelay|requires|game:Server.ini:PrecautionaryRestartEnabled|true|Overload restarts are off.
+game:Server.ini:ServerRestartScheduleMessage|requires|game:Server.ini:ServerRestartScheduleEnabled|true|Scheduled restarts are off.
+game:Server.ini:ServerRestartScheduleCountdown|requires|game:Server.ini:ServerRestartScheduleEnabled|true|Scheduled restarts are off.
+game:Server.ini:ServerRestartSchedule|requires|game:Server.ini:ServerRestartScheduleEnabled|true|Scheduled restarts are off.
+game:Server.ini:ServerRestartDays|requires|game:Server.ini:ServerRestartScheduleEnabled|true|Scheduled restarts are off.
+game:Server.ini:PetNameTemplate|affects|game:Server.ini:CnameTemplate||Uses the same kind of pattern as character names.
+game:Server.ini:ClanNameTemplate|affects|game:Server.ini:CnameTemplate||Uses the same kind of pattern as character names.
+game:Olympiad.ini:OlympiadPeriod|requires|game:Olympiad.ini:OlympiadUseCustomPeriodSettings|true|The custom period is off.
+game:Olympiad.ini:OlympiadPeriodMultiplier|requires|game:Olympiad.ini:OlympiadUseCustomPeriodSettings|true|The custom period is off.
+game:Olympiad.ini:OlympiadCompetitionDays|requires|game:Olympiad.ini:OlympiadUseCustomPeriodSettings|true|The custom period is off.
+game:GeoEngine.ini:DiagonalWeight|requires|game:GeoEngine.ini:AdvancedDiagonalStrategy|true|Only used with the advanced diagonal strategy.
+game:GeoEngine.ini:PathFindBuffers|requires|game:GeoEngine.ini:PathFinding|>0|Pathfinding is off.
+# ---------------------------------------------------------------- custom features
+game:Custom/CancelReturn.ini:ReturnPlayerOlys|requires|game:Custom/CancelReturn.ini:ReturnPlayer|true|Olympiad returns only apply when returning buffs cancelled by players.
+game:Custom/ChampionMonsters.ini:ChampionEnableVitality|requires|game:Player.ini:EnableVitality|true|The vitality system is off.
+game:Custom/OfflinePlay.ini:OfflinePlayNameColor|requires|game:Custom/OfflinePlay.ini:OfflinePlaySetNameColor|true|Name coloring for offline players is off.
+game:Custom/OfflineTrade.ini:OfflineNameColor|requires|game:Custom/OfflineTrade.ini:OfflineSetNameColor|true|Name coloring for offline traders is off.
+game:Custom/PremiumSystem.ini:DoublingAcquisitionPointsChance|requires|game:Custom/PremiumSystem.ini:DoublingAcquisitionPoints|true|Doubling points is off.
+game:Custom/PremiumSystem.ini:RewardLowExpKillsChance|requires|game:Custom/PremiumSystem.ini:RewardLowExpKills|true|Points for low-experience kills are off.
+game:Custom/AutoPotions.ini:AutoCpPercentage|requires|game:Custom/AutoPotions.ini:AutoCpEnabled|true|Auto CP potions are off.
+game:Custom/AutoPotions.ini:AutoCpItemIds|requires|game:Custom/AutoPotions.ini:AutoCpEnabled|true|Auto CP potions are off.
+game:Custom/AutoPotions.ini:AutoHpPercentage|requires|game:Custom/AutoPotions.ini:AutoHpEnabled|true|Auto HP potions are off.
+game:Custom/AutoPotions.ini:AutoHpItemIds|requires|game:Custom/AutoPotions.ini:AutoHpEnabled|true|Auto HP potions are off.
+game:Custom/AutoPotions.ini:AutoMpPercentage|requires|game:Custom/AutoPotions.ini:AutoMpEnabled|true|Auto MP potions are off.
+game:Custom/AutoPotions.ini:AutoMpItemIds|requires|game:Custom/AutoPotions.ini:AutoMpEnabled|true|Auto MP potions are off.
+game:Custom/PvpRewardItem.ini:RewardPvpItemId|requires|game:Custom/PvpRewardItem.ini:RewardPvpItem|true|PvP rewards are off.
+game:Custom/PvpRewardItem.ini:RewardPvpItemAmount|requires|game:Custom/PvpRewardItem.ini:RewardPvpItem|true|PvP rewards are off.
+game:Custom/PvpRewardItem.ini:RewardPvpItemMessage|requires|game:Custom/PvpRewardItem.ini:RewardPvpItem|true|PvP rewards are off.
+game:Custom/PvpRewardItem.ini:RewardPkItemId|requires|game:Custom/PvpRewardItem.ini:RewardPkItem|true|PK rewards are off.
+game:Custom/PvpRewardItem.ini:RewardPkItemAmount|requires|game:Custom/PvpRewardItem.ini:RewardPkItem|true|PK rewards are off.
+game:Custom/PvpRewardItem.ini:RewardPkItemMessage|requires|game:Custom/PvpRewardItem.ini:RewardPkItem|true|PK rewards are off.
+game:Custom/StartingLocation.ini:CustomStartingLocX|requires|game:Custom/StartingLocation.ini:CustomStartingLocation|true|The custom starting location is off.
+game:Custom/StartingLocation.ini:CustomStartingLocY|requires|game:Custom/StartingLocation.ini:CustomStartingLocation|true|The custom starting location is off.
+game:Custom/StartingLocation.ini:CustomStartingLocZ|requires|game:Custom/StartingLocation.ini:CustomStartingLocation|true|The custom starting location is off.
+game:Custom/Wedding.ini:WeddingTeleportPrice|requires|game:Custom/Wedding.ini:WeddingTeleport|true|Spouse teleport is off.
+game:Custom/Wedding.ini:WeddingTeleportDuration|requires|game:Custom/Wedding.ini:WeddingTeleport|true|Spouse teleport is off.
+game:Custom/PremiumSystem.ini:PcCafeRetailLike|requires|game:Custom/PremiumSystem.ini:PcCafeEnabled|true|PC Café points are off.
+game:Custom/PremiumSystem.ini:PcCafeRewardTime|requires|game:Custom/PremiumSystem.ini:PcCafeEnabled|true|PC Café points are off.
+game:Custom/PremiumSystem.ini:PcCafeOnlyPremium|requires|game:Custom/PremiumSystem.ini:PcCafeEnabled|true|PC Café points are off.
+game:Custom/PremiumSystem.ini:MaxPcCafePoints|requires|game:Custom/PremiumSystem.ini:PcCafeEnabled|true|PC Café points are off.
+# ---------------------------------------------------------------- launcher world profile
+world:world-profile.json:shopsPercent|requires|world:world-profile.json:shopsOverArmed|true|Above 100% only works while "Allow more shops than shipped" is on; the launcher caps it at 100% otherwise.
+# ---------------------------------------------------------------- client
+option:Option.ini:SystemMsgWndDamage|requires|option:Option.ini:SystemMsgWnd|true|There is no separate system message window.
+option:Option.ini:SystemMsgWndExpendableItem|requires|option:Option.ini:SystemMsgWnd|true|There is no separate system message window.
+option:Option.ini:EffectType|requires|option:Option.ini:IsUseEffect|true|Water reflections are off.
+option:Option.ini:GamePlayViewportX|requires|option:Option.ini:StartupFullScreen|true|Full-screen resolution; the windowed size is set by the windowed mode width and height.
+option:Option.ini:GamePlayViewportY|requires|option:Option.ini:StartupFullScreen|true|Full-screen resolution; the windowed size is set by the windowed mode width and height.
+l2ini:l2.ini:WindowedViewportX|requires|option:Option.ini:StartupFullScreen|false|Only used when the game starts in a window.
+l2ini:l2.ini:WindowedViewportY|requires|option:Option.ini:StartupFullScreen|false|Only used when the game starts in a window.
+l2ini:l2.ini:AspectRatio|requires|l2ini:l2.ini:ForceAspectRatio|true|The aspect ratio is not being forced.
+l2ini:l2.ini:L2ID|requires|l2ini:l2.ini:IsL2AutoLogOn|true|Automatic login is off.
+l2ini:l2.ini:L2Passwd|requires|l2ini:l2.ini:IsL2AutoLogOn|true|Automatic login is off.
+l2ini:l2.ini:L2Slot|requires|l2ini:l2.ini:IsL2AutoLogOn|true|Automatic login is off.
+l2ini:l2.ini:Dist|requires|l2ini:l2.ini:Name|true|Names above characters are hidden.
+option:Option.ini:OtherPCName|affects|l2ini:l2.ini:Dist||Names only show within the name display distance.

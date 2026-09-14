@@ -65,8 +65,47 @@ public sealed class SettingDefinition
 	[JsonPropertyName("l2everdream")]
 	public bool L2Everdream { get; init; }
 
+	/// <summary>Other settings that change what this one does.</summary>
+	public IReadOnlyList<SettingRelation> Relations { get; init; } = [];
+
 	[JsonIgnore]
 	public bool IsManaged => !string.IsNullOrEmpty(ManagedReason);
+}
+
+public sealed class SettingRelation
+{
+	/// <summary>The other setting's id.</summary>
+	public required string Id { get; init; }
+
+	/// <summary>"requires": this setting only has an effect while the other has <see cref="Value"/>. "affects": they work together.</summary>
+	public required string Kind { get; init; }
+
+	/// <summary>For "requires": "true", "false", "&gt;0" or an exact value.</summary>
+	public string? Value { get; init; }
+
+	public string? Note { get; init; }
+
+	public bool IsRequirement => Kind == "requires";
+
+	/// <summary>Whether <paramref name="otherValue"/> satisfies this requirement.</summary>
+	public bool IsSatisfiedBy(string? otherValue)
+	{
+		if (!IsRequirement || Value is null)
+		{
+			return true;
+		}
+		if (otherValue is null)
+		{
+			return false;
+		}
+		return Value switch
+		{
+			"true" => Storage.SettingValues.IsTrue(otherValue),
+			"false" => !Storage.SettingValues.IsTrue(otherValue),
+			">0" => Storage.SettingValues.TryParseNumber(otherValue, out var n) && n > 0,
+			_ => string.Equals(otherValue.Trim(), Value, StringComparison.OrdinalIgnoreCase),
+		};
+	}
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter<SettingEditor>))]

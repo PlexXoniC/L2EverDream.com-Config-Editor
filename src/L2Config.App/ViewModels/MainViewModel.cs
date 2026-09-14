@@ -1,7 +1,9 @@
 using System.IO;
 using System.Windows.Threading;
 using L2Config.App.Infrastructure;
+using L2Config.Core.Backups;
 using L2Config.Core.Catalog;
+using L2Config.Core.Characters;
 using L2Config.Core.Storage;
 
 namespace L2Config.App.ViewModels;
@@ -29,19 +31,17 @@ public sealed class MainViewModel : ObservableObject
 		ServerTab = new TabViewModel("server", catalog, () => ShowAdvanced, () => ChooseFolder(isServer: true));
 		ClientTab = new TabViewModel("client", catalog, () => ShowAdvanced, () => ChooseFolder(isServer: false));
 		CustomTab = customConfig is null ? null : new CustomConfigViewModel(customConfig, ShowSetting);
-		CharactersTab = new CharactersViewModel(() => _store?.Locations, ReadMaxAdena);
+		CharactersTab = new CharactersViewModel(BuildServerFacts, dialogs, ShowSetting);
+		BackupsTab = new BackupsViewModel(ReadRestoreConditionsAsync, CharactersTab, dialogs, () => Reload());
 		_selectedTab = TabFor(appSettings.LastTab);
 
 		SaveCommand = new RelayCommand(Save, () => PendingCount > 0);
 		DiscardCommand = new RelayCommand(Discard, () => PendingCount > 0);
-		OpenBackupsCommand = new RelayCommand(() => _dialogs.OpenFolder(_lastBackupFolder ?? BackupSession.DefaultRoot));
+		OpenBackupsCommand = new RelayCommand(() => SelectedTab = BackupsTab);
 		SelectTabCommand = new RelayCommand(p => SelectedTab = TabFor(p as string));
 
 		Reload();
-		if (_selectedTab == CharactersTab)
-		{
-			_ = CharactersTab.RefreshAsync();
-		}
+		RefreshTabData(_selectedTab);
 
 		_statusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(4) };
 		_statusTimer.Tick += async (_, _) => await RefreshRuntimeStatusAsync();
@@ -54,6 +54,7 @@ public sealed class MainViewModel : ObservableObject
 	public CustomConfigViewModel? CustomTab { get; }
 	public bool HasCustomTab => CustomTab is not null;
 	public CharactersViewModel CharactersTab { get; }
+	public BackupsViewModel BackupsTab { get; }
 
 	/// <summary>A <see cref="TabViewModel"/> (Server, Client), the <see cref="CustomConfigViewModel"/> or the <see cref="CharactersViewModel"/>.</summary>
 	public object SelectedTab
@@ -67,17 +68,16 @@ public sealed class MainViewModel : ObservableObject
 				OnPropertyChanged(nameof(IsClientTab));
 				OnPropertyChanged(nameof(IsCustomTab));
 				OnPropertyChanged(nameof(IsCharactersTab));
+				OnPropertyChanged(nameof(IsBackupsTab));
 				_appSettings.LastTab = value switch
 				{
 					TabViewModel tab => tab.Scope,
 					CharactersViewModel => "characters",
+					BackupsViewModel => "backups",
 					_ => "custom",
 				};
 				_appSettings.Save();
-				if (value == CharactersTab)
-				{
-					_ = CharactersTab.RefreshAsync();
-				}
+				RefreshTabData(value);
 			}
 		}
 	}
@@ -86,14 +86,70 @@ public sealed class MainViewModel : ObservableObject
 	public bool IsClientTab => SelectedTab == ClientTab;
 	public bool IsCustomTab => CustomTab is not null && SelectedTab == CustomTab;
 	public bool IsCharactersTab => SelectedTab == CharactersTab;
+	public bool IsBackupsTab => SelectedTab == BackupsTab;
 
 	private object TabFor(string? name) => name switch
 	{
 		"client" => ClientTab,
 		"custom" when CustomTab is not null => CustomTab,
 		"characters" => CharactersTab,
+		"backups" => BackupsTab,
 		_ => ServerTab,
 	};
+
+	private void RefreshTabData(object tab)
+	{
+		if (tab == CharactersTab)
+		{
+			_ = CharactersTab.RefreshAsync();
+		}
+		else if (tab == BackupsTab)
+		{
+			_ = BackupsTab.RefreshAsync();
+		}
+	}
+
+	/// <summary>Everything the Characters tab needs from the chosen server's settings, or null without a server folder.</summary>
+	private ServerFacts? BuildServerFacts()
+	{
+		if (_store is not { Locations.HasServer: true } store)
+		{
+			return null;
+		}
+		int Slots(string key, int fallback) => int.TryParse(ReadServerValue(key), out var n) && n > 0 ? n : fallback;
+		var delivery = _catalog.Settings.FirstOrDefault(s => s.Target == SettingTargets.ServerGame && s.Key == "CustomMailManagerEnabled");
+		var deliveryValue = delivery is null ? null : store.GetValue(delivery);
+		return new ServerFacts(
+			store.Locations,
+			new InventoryLimits(Slots("MaximumSlotsForNoDwarf", 80), Slots("MaximumSlotsForDwarf", 100), Slots("MaximumSlotsForGMPlayer", 250),
+				ReadGameMasterLevels(store.Locations)),
+			ReadMaxAdena(),
+			deliveryValue is null ? null : SettingValues.IsTrue(deliveryValue),
+			int.TryParse(ReadServerValue("DatabaseQueryDelay"), out var delay) && delay > 0 ? delay : 30,
+			delivery?.Id);
+	}
+
+	/// <summary>Access levels marked isGM="true" in AccessLevels.xml (they get the Game Master inventory limit).</summary>
+	private static IReadOnlySet<int> ReadGameMasterLevels(L2Locations locations)
+	{
+		var path = Path.Combine(locations.GameConfigDir, "AccessLevels.xml");
+		var levels = new HashSet<int>();
+		if (File.Exists(path))
+		{
+			foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(
+				File.ReadAllText(path), "<access\\b[^>]*\\blevel=\"(-?\\d+)\"[^>]*\\bisGM=\"true\""))
+			{
+				levels.Add(int.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture));
+			}
+		}
+		return levels;
+	}
+
+	private async Task<RestoreConditions> ReadRestoreConditionsAsync()
+	{
+		var world = _store is { Locations.HasServer: true } && await RuntimeStatus.IsWorldRunningAsync(_gameServerPort);
+		return new RestoreConditions(world, RuntimeStatus.IsClientRunning(), _store?.Locations.ClientSystemDir, BuildServerFacts());
+	}
 
 	/// <summary>The server's own adena cap (Player.ini MaxAdena; a negative value means the client's maximum).</summary>
 	private long ReadMaxAdena() =>
@@ -232,6 +288,7 @@ public sealed class MainViewModel : ObservableObject
 			}
 			(isClient ? client : server).Add(vm);
 		}
+		LinkRelations(server.Concat(client).ToDictionary(s => s.Definition.Id));
 		ServerTab.SetSettings(server);
 		ClientTab.SetSettings(client);
 		CustomTab?.UpdateCurrentValues(_store, _catalog, locations.HasServer);
@@ -240,6 +297,26 @@ public sealed class MainViewModel : ObservableObject
 			_ = CharactersTab.RefreshAsync();
 		}
 		RaisePending();
+	}
+
+	/// <summary>Gives every card its "depends on / controls / works with" lines, in both directions.</summary>
+	private void LinkRelations(Dictionary<string, SettingViewModel> byId)
+	{
+		foreach (var setting in byId.Values)
+		{
+			foreach (var relation in setting.Definition.Relations)
+			{
+				if (!byId.TryGetValue(relation.Id, out var other))
+				{
+					continue;
+				}
+				setting.Relations.Add(new RelationViewModel(relation, other, reverse: false, ShowSetting));
+				if (!other.Relations.Any(r => r.Other == setting))
+				{
+					other.Relations.Add(new RelationViewModel(relation, setting, reverse: true, ShowSetting));
+				}
+			}
+		}
 	}
 
 	private string? ReadServerValue(string key)

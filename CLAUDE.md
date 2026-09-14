@@ -21,11 +21,23 @@ The project owner knows the user is building it.
    XML configs and `user.ini` are next. `-Dl2sp.*` JVM flags are out of scope (the launcher regenerates them each start).
 4. **Non-programmer UX.** Friendly names linked to the real `File › [Section] › Key`; grouping by type of setting, not by
    file; search across friendly and real names; a category → group section list on the left of the main window.
-5. **Separate tabs:** Server, Client, a read-only **Custom Config** tab (how the release differs from stock L2J Mobius), and
-   **Characters** — edits player characters in the running world's database (inventory adena only, for now). Only
-   offline characters are written (checked inside the writing SQL), sims (account `$sim`) are never listed, and no new
-   item rows are inserted while the server runs (it owns object-ID allocation). Each edit is appended to
-   `%LOCALAPPDATA%\L2EverdreamConfig\character-edits.log`.
+5. **Separate tabs:** Server, Client, a read-only **Custom Config** tab (how the release differs from stock L2J Mobius),
+   **Characters** and **Backups**.
+   - **Characters** edits player characters in the running world's database: adena, plus an inventory editor that changes,
+     removes and adds items from the full item list. Existing rows are written only while the character is offline (the
+     character row is locked and `online = 0` re-checked inside the writing transaction). Sims (account `$sim`) are never
+     listed. **No item rows are ever inserted while the server runs** (it allocates object IDs in memory): new items are
+     queued in `custom_mail` and the server's CustomMailManager delivers them when the character is online — this must
+     be explained plainly in the UI, including the live state of `CustomMailManagerEnabled` and that it needs a world
+     restart. The inventory limit is enforced exactly as the server counts it (`InventoryRules.cs`), including queued
+     deliveries, and stacks are capped (adena by `MaxAdena`).
+   - **Backups**: every settings save, character change and restore first backs up what it replaces — files, and database
+     rows as they were — into one flat folder per backup (`yyyyMMdd-HHmmss-title\role__file` + `manifest.json`).
+     Restores: files never while the world is running (client files never while `L2.exe` runs); database rows only for
+     offline characters, while the world runs (its database only runs with it). A removed item is re-created with its
+     original ID only if the world has not restarted since the backup. The user chose these rules.
+   - **Explain how settings affect each other.** Setting cards show "depends on / has no effect right now / controls /
+     works with" lines from `catalog/setting-relations.tsv` plus derived rules, evaluated live.
 6. **The user chooses both folders.** No default or auto-detected server/client paths.
 7. **Valid values only.** Every setting has a type, range and/or format; editors refuse bad input; Save refuses invalid
    values with a plain-language reason. The test `EveryCurrentValueIsWithinItsLimits` must keep passing.
@@ -60,6 +72,11 @@ python catalog/build_custom_config.py "%LOCALAPPDATA%\L2Everdream"
 ```
 
 Regenerate the catalog after editing `catalog/*.tsv` or the generators, then rebuild (the JSON is embedded).
+`build_custom_config.py` compares against the install's current files, so on a machine where settings were edited it
+picks those edits up as "release changes" — review its output before committing a regenerated `custom-config.json`.
+
+Database tests: `WorldDatabaseIntegrationTests` run only when `L2CONFIG_TEST_DB` points at a **throwaway** database with
+the Mobius `characters`, `items` and `custom_mail` tables (never a world's database).
 Visual checks without clicking: `L2EverdreamConfig.exe --snapshot out.png --server <dir> --client <dir> --tab server|client|custom ...`
 (see PROJECT.md §2). Snapshot mode never saves.
 

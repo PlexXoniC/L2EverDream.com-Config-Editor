@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using L2Config.Core.Backups;
 using L2Config.Core.Ini;
 
 namespace L2Config.Core.Storage;
@@ -45,12 +46,17 @@ public sealed class ServerIniFile : ConfigFile
 {
 	private readonly string _installPath;
 	private readonly string _playerCopyPath;
+	private readonly string _server;
+	private readonly string _relativeName;
 	private TextFile? _install;
 	private TextFile? _playerCopy;
 
-	public ServerIniFile(string displayName, string installPath, string playerCopyPath)
-		: base(displayName)
+	/// <param name="server">"game" or "login" — used to name the backup copies.</param>
+	public ServerIniFile(string server, string relativeName, string installPath, string playerCopyPath)
+		: base($"{server}/config/{relativeName}")
 	{
+		_server = server;
+		_relativeName = relativeName;
 		_installPath = installPath;
 		_playerCopyPath = playerCopyPath;
 	}
@@ -96,7 +102,7 @@ public sealed class ServerIniFile : ConfigFile
 			{
 				continue;
 			}
-			backup.Preserve(file.Path);
+			backup.PreserveFile(file.Path, file == _install ? $"{_server}-config" : $"{_server}-player-copy", _relativeName);
 			WriteAtomically(file.Path, file.Encode());
 		}
 	}
@@ -154,7 +160,7 @@ public sealed class ClientIniFile : ConfigFile
 		{
 			throw new InvalidDataException($"Refusing to save {Path.GetFileName(_path)}: the encoded file did not decode back to the same text.");
 		}
-		backup.Preserve(_path);
+		backup.PreserveFile(_path, "client", Path.GetFileName(_path));
 		WriteAtomically(_path, bytes);
 	}
 }
@@ -221,7 +227,7 @@ public sealed class WorldProfileFile : ConfigFile
 		{
 			return;
 		}
-		backup.Preserve(_path);
+		backup.PreserveFile(_path, "world-profile", "world-profile.json");
 		WriteAtomically(_path, Encoding.UTF8.GetBytes(_root.ToJsonString(WriteOptions) + "\n"));
 	}
 }

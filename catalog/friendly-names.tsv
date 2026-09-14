@@ -214,7 +214,7 @@ server-game|Player.ini|AltLeavePartyLeader|When the leader leaves, pass leadersh
 server-game|Player.ini|StartingAdena|Starting adena|adena|
 server-game|Player.ini|StartingLevel|Starting level||
 server-game|Player.ini|StartingSP|Starting skill points||
-server-game|Player.ini|MaxAdena|Most adena a character can hold|adena|
+server-game|Player.ini|MaxAdena|Most adena a character can hold|adena|Characters can never hold more than this, however much drops. The Characters tab also uses it as the adena limit.
 server-game|Player.ini|AutoLootHerbs|Pick up herbs automatically||
 server-game|Player.ini|AutoLoot|Pick up monster drops automatically||
 server-game|Player.ini|AutoLootRaids|Pick up raid boss drops automatically||
@@ -695,7 +695,7 @@ server-game|Custom/CommunityBoard.ini|CommunityPremiumBuyCoinId|Premium price it
 server-game|Custom/CommunityBoard.ini|CommunityPremiumPricePerDay|Premium price per day||
 server-game|Custom/CommunityBoard.ini|CommunityAvailableBuffs|Buffs offered on the board||
 server-game|Custom/CommunityBoard.ini|CommunityTeleportList|Teleports offered on the board||
-server-game|Custom/CustomMailManager.ini|CustomMailManagerEnabled|Send mail from the database||
+server-game|Custom/CustomMailManager.ini|CustomMailManagerEnabled|Deliver items queued from the database||Needed for adding new items in the Characters tab: the server checks for queued items every few seconds and adds them to characters who are online. Takes effect the next time the world starts.
 server-game|Custom/CustomMailManager.ini|DatabaseQueryDelay|Check for new mail every|seconds|
 server-game|Custom/DelevelManager.ini|Enabled|Delevel NPC: enabled||
 server-game|Custom/DelevelManager.ini|NpcId|Delevel NPC: NPC ID||

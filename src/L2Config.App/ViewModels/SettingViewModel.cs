@@ -45,6 +45,11 @@ public sealed class SettingViewModel : ObservableObject
 		: null;
 	public IReadOnlyList<ChoiceOption> Options { get; }
 
+	/// <summary>How other settings change what this one does (and which settings this one controls).</summary>
+	public System.Collections.ObjectModel.ObservableCollection<RelationViewModel> Relations { get; } = [];
+
+	public bool HasRelations => Relations.Count > 0;
+
 	/// <summary>Why the value can't be shown (file missing/unreadable), or null.</summary>
 	public string? FileProblem { get; }
 

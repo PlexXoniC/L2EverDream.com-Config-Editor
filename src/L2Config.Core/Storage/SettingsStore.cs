@@ -1,3 +1,4 @@
+using L2Config.Core.Backups;
 using L2Config.Core.Catalog;
 
 namespace L2Config.Core.Storage;
@@ -62,11 +63,13 @@ public sealed class SettingsStore
 			}
 		}
 
-		var backup = new BackupSession(backupsRoot, DateTime.Now);
+		var title = changes.Count == 1 ? $"Saved {changes.First().Setting.Name}" : $"Saved {changes.Count} settings";
+		var backup = new BackupSession(backupsRoot, DateTime.Now, BackupKind.Settings, title);
 		var touched = new List<ConfigFile>();
 		foreach (var (setting, value) in changes)
 		{
 			var file = FileFor(setting);
+			backup.NoteChange($"{setting.Name} ({setting.File} › {setting.Key})", GetValue(setting), value);
 			file.Set(setting.Section, setting.Key, value);
 			if (!touched.Contains(file))
 			{
@@ -77,17 +80,17 @@ public sealed class SettingsStore
 		{
 			file.Save(backup);
 		}
-		return new SaveResult(touched.SelectMany(f => f.Paths).ToList(), backup.PreservedFiles.Count > 0 ? backup.Folder : null);
+		return new SaveResult(touched.SelectMany(f => f.Paths).ToList(), backup.IsEmpty ? null : backup.Folder);
 	}
 
 	private ConfigFile CreateFile(string target, string file) => target switch
 	{
 		SettingTargets.ServerGame => new ServerIniFile(
-			$"game/config/{file}",
+			"game", file,
 			Path.Combine(Locations.GameConfigDir, file),
 			Path.Combine(Locations.PlayerGameConfigDir, file)),
 		SettingTargets.ServerLogin => new ServerIniFile(
-			$"login/config/{file}",
+			"login", file,
 			Path.Combine(Locations.LoginConfigDir, file),
 			Path.Combine(Locations.PlayerLoginConfigDir, file)),
 		SettingTargets.ClientOption or SettingTargets.ClientL2Ini => new ClientIniFile(

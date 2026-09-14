@@ -121,6 +121,37 @@
                         <TextBlock Text="{Binding Definition.ManagedReason}" Style="{StaticResource CaptionText}" Margin="0,4,0,0"
                                    Foreground="{StaticResource EmberBrush}" Visibility="{Binding IsManaged, Converter={StaticResource VisibleWhen}}" />
 
+                        <ItemsControl ItemsSource="{Binding Relations}" Margin="0,6,0,0" Focusable="False"
+                                      Visibility="{Binding HasRelations, Converter={StaticResource VisibleWhen}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type vm:RelationViewModel}">
+                                    <Border x:Name="Line" Margin="0,3,0,0" Padding="9,5" CornerRadius="8" Background="{StaticResource ArcaneWashBrush}"
+                                            BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel>
+                                                <TextBlock x:Name="Kicker" Text="{Binding Kicker}" FontSize="9.5" FontWeight="SemiBold" Foreground="{StaticResource LabelBrush}" />
+                                                <TextBlock x:Name="Body" Text="{Binding Text}" FontSize="12" Foreground="{StaticResource SoftTextBrush}" TextWrapping="Wrap" Margin="0,1,0,0" />
+                                            </StackPanel>
+                                            <Button Grid.Column="1" Style="{StaticResource LinkButton}" Content="Show →" Command="{Binding ShowCommand}"
+                                                    VerticalAlignment="Center" Margin="8,0,0,0" ToolTip="{Binding OtherName}" />
+                                        </Grid>
+                                    </Border>
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding IsProblem}" Value="True">
+                                            <Setter TargetName="Line" Property="Background" Value="{StaticResource LanternWashBrush}" />
+                                            <Setter TargetName="Line" Property="BorderBrush" Value="{StaticResource LanternHairBrush}" />
+                                            <Setter TargetName="Kicker" Property="Foreground" Value="{StaticResource LanternBrush}" />
+                                            <Setter TargetName="Body" Property="Foreground" Value="{StaticResource EmberBrush}" />
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
                         <WrapPanel Margin="0,8,0,0">
                             <Border CornerRadius="6" Background="#40100E22" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1" Padding="7,2"
                                     ToolTip="The real file and setting name this value is saved to.">
@@ -288,6 +319,8 @@
                                    Foreground="{StaticResource EmberBrush}" />
                         <TextBlock Text="{Binding LockReason}" Style="{StaticResource CaptionText}" Margin="0,6,0,0" Foreground="{StaticResource LanternBrush}"
                                    Visibility="{Binding LockReason, Converter={StaticResource VisibleWhen}}" />
+                        <Button Style="{StaticResource GhostButton}" Content="Inventory…" Command="{Binding OpenInventoryCommand}" HorizontalAlignment="Left"
+                                Padding="14,5" FontSize="12" Margin="0,10,0,0" ToolTip="See, change, remove and add items" />
                     </StackPanel>
                     <StackPanel Grid.Column="2" VerticalAlignment="Center" Visibility="{Binding CanEdit, Converter={StaticResource VisibleWhen}}">
                         <TextBlock Text="ADENA IN INVENTORY" Style="{StaticResource KickerText}" Margin="0,0,0,4" />
@@ -317,6 +350,301 @@
             </DataTemplate.Triggers>
         </DataTemplate>
 
+        <!-- ===== Inventory editor ============================================================ -->
+        <DataTemplate DataType="{x:Type vm:InventoryRowViewModel}">
+            <Border Margin="0,0,0,6" Padding="14,9" CornerRadius="10" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{Binding DisplayName}" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
+                        <TextBlock Text="{Binding Details}" FontSize="11.5" Foreground="{StaticResource CaptionBrush}" Margin="0,2,0,0" />
+                        <TextBlock Text="{Binding CountError}" FontSize="11.5" Foreground="{StaticResource LanternBrush}" Margin="0,3,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding CountError, Converter={StaticResource VisibleWhen}}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding CountDisplay}" FontFamily="{StaticResource MonoFont}" FontSize="13" Foreground="{StaticResource EmberBrush}"
+                                   VerticalAlignment="Center" Margin="0,0,12,0"
+                                   Visibility="{Binding CanEditCount, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding CanEditCount, Converter={StaticResource VisibleWhen}}">
+                            <TextBox Style="{StaticResource FieldTextBox}" Width="130" TextAlignment="Right" FontFamily="{StaticResource MonoFont}"
+                                     infra:NumericInput.ValueType="Int" Text="{Binding CountText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{Binding DisplayName}" />
+                            <Button Style="{StaticResource GhostButton}" Content="Set count" Command="{Binding ApplyCommand}" Margin="8,0,0,0" Padding="12,5" FontSize="12" />
+                        </StackPanel>
+                        <Button Style="{StaticResource GhostButton}" Content="Remove" Command="{Binding RemoveCommand}" Margin="8,0,0,0" Padding="12,5" FontSize="12"
+                                Visibility="{Binding CanEdit, Converter={StaticResource VisibleWhen}}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:DeliveryRowViewModel}">
+            <Border Margin="0,0,0,6" Padding="14,8" CornerRadius="10" Background="{StaticResource LanternWashBrush}" BorderBrush="{StaticResource LanternHairBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="{Binding Text}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource EmberBrush}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding When}" FontSize="11.5" Foreground="{StaticResource CaptionBrush}" Margin="0,2,0,0" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Style="{StaticResource GhostButton}" Content="Cancel delivery" Command="{Binding CancelCommand}" Padding="12,5" FontSize="12" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:InventoryViewModel}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid Margin="2,0,24,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Button Style="{StaticResource GhostButton}" Content="← All characters" Command="{Binding CloseCommand}" Padding="12,6" FontSize="12" VerticalAlignment="Center" />
+                    <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name}" FontFamily="{StaticResource DisplayFont}" FontSize="24" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
+                            <Border Style="{StaticResource Badge}" Background="Transparent" BorderBrush="#4D7C6FB0" Margin="10,4,0,0">
+                                <TextBlock Text="{Binding StatusWord}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource LabelBrush}" />
+                            </Border>
+                        </StackPanel>
+                        <TextBlock Text="{Binding SlotsText}" FontSize="12.5" Foreground="{StaticResource EmberBrush}" Margin="0,2,0,0" />
+                        <TextBlock Text="{Binding LimitSourceText}" FontSize="11.5" Foreground="{StaticResource DimLabelBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <Button Grid.Column="2" Style="{StaticResource GhostButton}" Content="↻ Refresh" Command="{Binding RefreshCommand}" Padding="14,6" FontSize="12" VerticalAlignment="Center" />
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="430" />
+                    </Grid.ColumnDefinitions>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,8,0">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Problem}" Style="{StaticResource CaptionText}" FontSize="13" Foreground="{StaticResource LanternBrush}" Margin="0,0,0,10"
+                                       Visibility="{Binding HasProblem, Converter={StaticResource VisibleWhen}}" />
+                            <Border x:Name="Status" Padding="12,8" CornerRadius="10" Margin="0,0,0,10" Background="{StaticResource ArcaneWashBrush}"
+                                    BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1" Visibility="{Binding Message, Converter={StaticResource VisibleWhen}}">
+                                <TextBlock x:Name="StatusText" Text="{Binding Message}" FontSize="12.5" Foreground="{StaticResource VerdanceBrush}" TextWrapping="Wrap" />
+                            </Border>
+                            <TextBlock Text="{Binding EditLockText}" Style="{StaticResource CaptionText}" Margin="0,0,0,10" />
+
+                            <StackPanel Visibility="{Binding HasDeliveries, Converter={StaticResource VisibleWhen}}" Margin="0,0,0,12">
+                                <TextBlock Text="WAITING FOR THE SERVER TO DELIVER" Style="{StaticResource KickerText}" Margin="0,0,0,6" />
+                                <ItemsControl ItemsSource="{Binding Deliveries}" />
+                            </StackPanel>
+
+                            <TextBlock Text="IN THE INVENTORY" Style="{StaticResource KickerText}" Margin="0,0,0,6" />
+                            <ItemsControl ItemsSource="{Binding Items}" />
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- Add items -->
+                    <Border Grid.Column="2" Padding="16,14" CornerRadius="14" Background="{StaticResource CardGradientBrush}" BorderBrush="{StaticResource VioletHairBrush}" BorderThickness="1"
+                            Margin="0,0,14,10">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,6,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Add items" FontFamily="{StaticResource DisplayFont}" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
+                                <Border Padding="10,8" CornerRadius="10" Margin="0,8,0,0" Background="{StaticResource LanternWashBrush}" BorderBrush="{StaticResource LanternHairBrush}" BorderThickness="1">
+                                    <StackPanel>
+                                        <TextBlock Text="HOW NEW ITEMS ARRIVE" FontSize="9.5" FontWeight="SemiBold" Foreground="{StaticResource LanternBrush}" />
+                                        <TextBlock Text="{Binding DeliveryExplanation}" FontSize="12" Foreground="{StaticResource SoftTextBrush}" TextWrapping="Wrap" Margin="0,3,0,0" LineHeight="17" />
+                                        <TextBlock x:Name="DeliveryState" Text="{Binding DeliverySettingText}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource VerdanceBrush}"
+                                                   TextWrapping="Wrap" Margin="0,6,0,0" LineHeight="17" />
+                                        <Button Style="{StaticResource LinkButton}" Content="Open that setting →" Command="{Binding ShowDeliverySettingCommand}" HorizontalAlignment="Left" Margin="-4,3,0,0" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+
+                            <Grid Grid.Row="1" Margin="0,12,0,4">
+                                <TextBox x:Name="ItemSearch" Style="{StaticResource SearchBox}" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=150}" AutomationProperties.Name="Search items" />
+                                <TextBlock Text="⌕" Margin="11,0,0,1" VerticalAlignment="Center" FontSize="15" Foreground="{StaticResource LabelBrush}" IsHitTestVisible="False" />
+                                <TextBlock Text="Search all items by name or ID…" Margin="31,0,0,0" VerticalAlignment="Center" FontSize="13" IsHitTestVisible="False" Foreground="{StaticResource DimLabelBrush}"
+                                           Visibility="{Binding Text, ElementName=ItemSearch, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
+                            </Grid>
+                            <TextBlock Grid.Row="2" Text="{Binding ResultsText}" FontSize="11.5" Foreground="{StaticResource DimLabelBrush}" Margin="2,0,0,4" />
+
+                            <ListBox Grid.Row="3" MaxHeight="230" ItemsSource="{Binding Results}" SelectedItem="{Binding Selected, Mode=TwoWay}" Background="Transparent" BorderThickness="0"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingPanel.IsVirtualizing="True">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="Cursor" Value="Hand" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ListBoxItem">
+                                                    <Border x:Name="Chrome" Background="Transparent" BorderBrush="Transparent" BorderThickness="2,0,0,0" CornerRadius="8" Padding="10,6" Margin="0,0,0,2">
+                                                        <ContentPresenter />
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Chrome" Property="Background" Value="{StaticResource HoverWashBrush}" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsSelected" Value="True">
+                                                            <Setter TargetName="Chrome" Property="Background" Value="{StaticResource SelectedWashBrush}" />
+                                                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource ArcaneBrush}" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock FontSize="11" Foreground="{StaticResource CaptionBrush}" TextTrimming="CharacterEllipsis">
+                                                <Run Text="{Binding Id, StringFormat=ID {0}  ·  , Mode=OneWay}" /><Run Text="{Binding Description, Mode=OneWay}" />
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                            <StackPanel Grid.Row="4" Margin="0,10,0,0" Visibility="{Binding HasSelection, Converter={StaticResource VisibleWhen}}">
+                                <TextBlock Text="{Binding Selected.Name}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource EmberBrush}" TextWrapping="Wrap" />
+                                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                    <StackPanel>
+                                        <TextBlock Text="AMOUNT" Style="{StaticResource KickerText}" />
+                                        <TextBox Style="{StaticResource FieldTextBox}" Width="140" TextAlignment="Right" FontFamily="{StaticResource MonoFont}" Margin="0,3,0,0"
+                                                 infra:NumericInput.ValueType="Int" Text="{Binding AmountText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Amount" />
+                                    </StackPanel>
+                                    <StackPanel Margin="12,0,0,0" Visibility="{Binding CanEnchant, Converter={StaticResource VisibleWhen}}">
+                                        <TextBlock Text="ENCHANT" Style="{StaticResource KickerText}" />
+                                        <TextBox Style="{StaticResource FieldTextBox}" Width="80" TextAlignment="Right" FontFamily="{StaticResource MonoFont}" Margin="0,3,0,0"
+                                                 infra:NumericInput.ValueType="Int" Text="{Binding EnchantText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Enchant level" />
+                                    </StackPanel>
+                                </StackPanel>
+                                <TextBlock Text="{Binding AddPlan}" FontSize="12" Foreground="{StaticResource SoftTextBrush}" TextWrapping="Wrap" Margin="0,8,0,0"
+                                           Visibility="{Binding AddPlan, Converter={StaticResource VisibleWhen}}" />
+                                <TextBlock Text="{Binding AddProblem}" FontSize="12" Foreground="{StaticResource LanternBrush}" TextWrapping="Wrap" Margin="0,6,0,0"
+                                           Visibility="{Binding AddProblem, Converter={StaticResource VisibleWhen}}" />
+                                <Button Style="{StaticResource PrimaryButton}" Content="{Binding AddButtonText}" Command="{Binding AddCommand}" HorizontalAlignment="Left" Margin="0,10,0,0" />
+                            </StackPanel>
+                        </Grid>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding MessageIsError}" Value="True">
+                    <Setter TargetName="Status" Property="Background" Value="{StaticResource LanternWashBrush}" />
+                    <Setter TargetName="Status" Property="BorderBrush" Value="{StaticResource LanternHairBrush}" />
+                    <Setter TargetName="StatusText" Property="Foreground" Value="{StaticResource LanternBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding DeliveryDisabled}" Value="True">
+                    <Setter TargetName="DeliveryState" Property="Foreground" Value="{StaticResource LanternBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <!-- ===== Backups tab =================================================================== -->
+        <DataTemplate DataType="{x:Type vm:BackupRowViewModel}">
+            <Border Margin="0,0,14,10" Padding="18,14" CornerRadius="12" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <WrapPanel>
+                            <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" VerticalAlignment="Center" />
+                            <Border Style="{StaticResource Badge}" Background="{StaticResource ArcaneWashBrush}" BorderBrush="#739D8CF0">
+                                <TextBlock Text="{Binding KindWord}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource ArcaneBrush}" />
+                            </Border>
+                        </WrapPanel>
+                        <TextBlock FontSize="12" Foreground="{StaticResource CaptionBrush}" Margin="0,3,0,0">
+                            <Run Text="{Binding When, Mode=OneWay}" /><Run Text="   ·   " /><Run Text="{Binding FolderName, Mode=OneWay}" FontFamily="{StaticResource MonoFont}" />
+                        </TextBlock>
+                        <ItemsControl ItemsSource="{Binding Changes}" Margin="0,8,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" FontSize="12" Foreground="{StaticResource EmberBrush}" TextWrapping="Wrap" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Text="{Binding MoreChanges}" FontSize="11.5" Foreground="{StaticResource DimLabelBrush}" Visibility="{Binding MoreChanges, Converter={StaticResource VisibleWhen}}" />
+                        <ItemsControl ItemsSource="{Binding Contents}" Margin="0,6,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" FontFamily="{StaticResource MonoFont}" FontSize="11.5" Foreground="{StaticResource DimLabelBrush}" TextWrapping="Wrap" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Text="{Binding BlockedReason}" FontSize="12" Foreground="{StaticResource LanternBrush}" Margin="0,8,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding BlockedReason, Converter={StaticResource VisibleWhen}}" />
+                        <ItemsControl ItemsSource="{Binding Results}" Margin="0,8,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock x:Name="Result" Text="{Binding Message}" FontSize="12" Foreground="{StaticResource VerdanceBrush}" TextWrapping="Wrap" Margin="0,1,0,0" />
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding Ok}" Value="False">
+                                            <Setter TargetName="Result" Property="Foreground" Value="{StaticResource LanternBrush}" />
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Top">
+                        <Button Style="{StaticResource GhostButton}" Content="Restore…" Command="{Binding RestoreCommand}" Padding="16,6" FontSize="12.5" />
+                        <Button Style="{StaticResource LinkButton}" Content="Open folder" Command="{Binding OpenFolderCommand}" HorizontalAlignment="Center" Margin="0,6,0,0" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:BackupsViewModel}">
+            <Grid Margin="24,0,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Margin="2,0,24,12">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⟲" FontSize="22" Foreground="{StaticResource ArcaneBrush}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                        <TextBlock Text="{Binding Title}" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding Intro}" Style="{StaticResource CaptionText}" FontSize="13" Margin="0,4,0,0" LineHeight="19" />
+                </StackPanel>
+                <Grid Grid.Row="1" Margin="2,0,24,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Summary}" FontSize="12" Foreground="{StaticResource DimLabelBrush}" />
+                        <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="{StaticResource EmberBrush}" TextWrapping="Wrap" Visibility="{Binding Status, Converter={StaticResource VisibleWhen}}" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Style="{StaticResource GhostButton}" Content="Open backups folder" Command="{Binding OpenRootCommand}" Padding="14,6" FontSize="12" Margin="0,0,8,0" />
+                    <Button Grid.Column="2" Style="{StaticResource GhostButton}" Content="↻ Refresh" Command="{Binding RefreshCommand}" Padding="14,6" FontSize="12" />
+                </Grid>
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Rows}" />
+                </ScrollViewer>
+            </Grid>
+        </DataTemplate>
+
         <DataTemplate DataType="{x:Type vm:CharactersViewModel}">
             <Grid Margin="24,0,10,0">
                 <Grid.RowDefinitions>
@@ -334,7 +662,9 @@
                     </StackPanel>
                     <TextBlock Text="{Binding Intro}" Style="{StaticResource CaptionText}" FontSize="13" Margin="0,4,0,0" LineHeight="19" />
                 </StackPanel>
-                <Grid Grid.Row="1" Margin="2,0,24,12">
+                <ContentControl Grid.Row="1" Grid.RowSpan="2" Content="{Binding Inventory}" Focusable="False"
+                                Visibility="{Binding IsListVisible, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
+                <Grid Grid.Row="1" Margin="2,0,24,12" Visibility="{Binding IsListVisible, Converter={StaticResource VisibleWhen}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="320" />
                         <ColumnDefinition Width="*" />
@@ -351,7 +681,7 @@
                     <TextBlock Grid.Column="1" Text="{Binding Summary}" Margin="14,0,0,0" VerticalAlignment="Center" FontSize="12" Foreground="{StaticResource DimLabelBrush}" />
                     <Button Grid.Column="2" Style="{StaticResource GhostButton}" Content="↻ Refresh" Command="{Binding RefreshCommand}" Padding="14,6" FontSize="12" />
                 </Grid>
-                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Visibility="{Binding IsListVisible, Converter={StaticResource VisibleWhen}}">
                     <StackPanel>
                         <TextBlock Text="{Binding Problem}" Style="{StaticResource CaptionText}" FontSize="13.5" Margin="2,20,24,0" Foreground="{StaticResource LanternBrush}"
                                    Visibility="{Binding HasProblem, Converter={StaticResource VisibleWhen}}" />
@@ -634,6 +964,11 @@
                                  ToolTip="Player characters in your running world">
                         <TextBlock Text="Characters" />
                     </RadioButton>
+                    <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsBackupsTab, Mode=OneWay}" Margin="8,0,0,0"
+                                 Command="{Binding SelectTabCommand}" CommandParameter="backups" WindowChrome.IsHitTestVisibleInChrome="True"
+                                 ToolTip="Every backup, and restoring them">
+                        <TextBlock Text="Backups" />
+                    </RadioButton>
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,10,0,0">
@@ -657,8 +992,8 @@
                         <TextBlock Text="{Binding StatusMessage}" FontSize="12.5" Foreground="{StaticResource VerdanceBrush}" TextWrapping="Wrap"
                                    Visibility="{Binding StatusMessage, Converter={StaticResource VisibleWhen}}" />
                         <TextBlock FontSize="11.5" Foreground="{StaticResource DimLabelBrush}" Margin="0,2,0,0">
-                            <Run Text="Every save backs up the files it changes first." />
-                            <Hyperlink Command="{Binding OpenBackupsCommand}" Foreground="{StaticResource LabelBrush}">Open backups</Hyperlink>
+                            <Run Text="Every save and character change is backed up first." />
+                            <Hyperlink Command="{Binding OpenBackupsCommand}" Foreground="{StaticResource LabelBrush}">Backups and restore</Hyperlink>
                         </TextBlock>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">

@@ -56,10 +56,38 @@ public partial class App : Application
 				{
 					// The character list loads from the database after the first render.
 					var until = DateTime.Now.AddSeconds(5);
-					while (viewModel.CharactersTab.IsLoading && DateTime.Now < until)
+					void Pump(Func<bool> busy)
 					{
-						window.Dispatcher.Invoke(() => { }, DispatcherPriority.Background);
-						Thread.Sleep(50);
+						while (busy() && DateTime.Now < until)
+						{
+							// A nested frame processes queued work. This callback runs at ApplicationIdle, so async continuations
+							// are posted at that priority too: exit the frame only at SystemIdle, after they have run.
+							var frame = new DispatcherFrame();
+							window.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, () => frame.Continue = false);
+							Dispatcher.PushFrame(frame);
+							Thread.Sleep(20);
+						}
+					}
+					Pump(() => viewModel.CharactersTab.IsLoading);
+					// --inventory <character> opens the inventory editor; --item-search / --item / --amount fill in the add panel (nothing is applied).
+					if (snapshot.Inventory is { } who && viewModel.CharactersTab.Rows.FirstOrDefault(r => r.Name == who) is { } row)
+					{
+						until = DateTime.Now.AddSeconds(15);
+						row.OpenInventoryCommand.Execute(null);
+						Pump(() => viewModel.CharactersTab.Inventory is not { IsBusy: false } inv || inv.Items.Count == 0);
+						var inventory = viewModel.CharactersTab.Inventory!;
+						if (snapshot.ItemSearch is not null)
+						{
+							inventory.SearchText = snapshot.ItemSearch;
+						}
+						if (snapshot.Item is { } id)
+						{
+							inventory.Selected = inventory.Results.FirstOrDefault(i => i.Id == id);
+						}
+						if (snapshot.Amount is not null)
+						{
+							inventory.AmountText = snapshot.Amount;
+						}
 					}
 					window.UpdateLayout();
 				}
@@ -90,6 +118,10 @@ public partial class App : Application
 		public int Width { get; private set; } = 1280;
 		public int Height { get; private set; } = 820;
 		public string? Edit { get; private set; }
+		public string? Inventory { get; private set; }
+		public string? ItemSearch { get; private set; }
+		public int? Item { get; private set; }
+		public string? Amount { get; private set; }
 
 		public static SnapshotOptions? Parse(string[] args)
 		{
@@ -111,6 +143,10 @@ public partial class App : Application
 			options.Category = Next("--category");
 			options.Group = Next("--group");
 			options.Edit = Next("--edit");
+			options.Inventory = Next("--inventory");
+			options.ItemSearch = Next("--item-search");
+			options.Item = int.TryParse(Next("--item"), out var itemId) ? itemId : null;
+			options.Amount = Next("--amount");
 			options.Advanced = args.Contains("--advanced");
 			if (Next("--size") is { } size && size.Split('x') is [var w, var h])
 			{
@@ -122,9 +158,9 @@ public partial class App : Application
 
 		public void Apply(MainViewModel viewModel)
 		{
-			if (Tab == "characters")
+			if (Tab is "characters" or "backups")
 			{
-				viewModel.SelectedTab = viewModel.CharactersTab;
+				viewModel.SelectedTab = Tab == "backups" ? viewModel.BackupsTab : viewModel.CharactersTab;
 				return;
 			}
 			if (Tab == "custom" && viewModel.CustomTab is not null)

@@ -23,7 +23,9 @@ A standalone Windows desktop app (C# / WPF, one self-contained `.exe`, no instal
 | **Friendly first, real name always visible** | Each setting shows a plain-English name, and a chip with the real `File › [Section] › Key` it is saved to. Search matches both. |
 | **No personal names** | Nobody (owner, comment authors, anyone) is named in the app, catalog, docs or messages. The catalog generator strips attributions from config comments. |
 | **Custom Config is read-only** | The tab shows how L2Everdream differs from stock L2J Mobius; it never writes. |
-| **Characters edit the live world carefully** | The Characters tab changes inventory adena of **offline** player characters in the running world's database (the offline check is inside the writing SQL). Sims (account `$sim`) are hidden, no item rows are created while the server runs, and every edit is logged to `%LOCALAPPDATA%\L2EverdreamConfig\character-edits.log`. |
+| **Characters edit the live world carefully** | The Characters tab changes adena and inventory items of player characters in the running world's database. Existing rows change only while the character is **offline** (character row locked, `online = 0` re-checked in the same transaction). **Item rows are never inserted while the server runs** — new items are queued in `custom_mail` and the server delivers them when the character is online (needs `CustomMailManagerEnabled`, explained in the UI). The inventory limit is enforced as the server counts it, including queued deliveries. Sims are hidden. |
+| **Settings explain each other** | Cards show what a setting depends on (and whether it currently has any effect), what it controls and what it works with. |
+| **Everything is backed up, restores never race the world** | Every save, character change and restore first backs up what it replaces (files and database rows). Files are restored only while the world is stopped (client files only while Lineage 2 is closed); database rows only for offline characters while the world runs. |
 | **Standalone, no installer** | Ships as a single self-contained `L2EverdreamConfig.exe`: no .NET install, no side files, runs from any folder. The catalog is embedded. Its only own files are preferences and backups under `%LOCALAPPDATA%\L2EverdreamConfig`. |
 
 ---
@@ -64,7 +66,7 @@ Verified by running it alone from an empty folder.
 L2EverdreamConfig.exe --snapshot out.png --server "<server folder>" --client "<client folder>" --tab server --category rates --search "party xp" --edit RateXp=3 --advanced --size 1280x820
 ```
 
-`--tab` is `server`, `client`, `custom` or `characters`; `--group <group id>` scrolls to a group; `--edit key=value` shows an
+`--inventory <character>` opens that character's inventory (with `--item-search`, `--item <id>`, `--amount` to fill the add panel; nothing is applied); `--tab` is `server`, `client`, `custom`, `characters` or `backups`; `--group <group id>` scrolls to a group; `--edit key=value` shows an
 unsaved edit in memory.
 
 ---
@@ -83,6 +85,7 @@ catalog/                         the friendly layer (data + generators)
   friendly-names.tsv             hand-curated names/units/descriptions for server settings
   client-settings.tsv            hand-written client + world-profile settings
   custom-config-notes.tsv        neutral summaries for each Custom Config difference
+  setting-relations.tsv          how settings affect each other (requires / affects), with plain notes
   catalog.json, custom-config.json   generated; embedded into the exe at build time
 research/
   L2EVERDREAM-KNOWLEDGE.md       how L2Everdream, the launcher, Mobius and the client work
@@ -106,9 +109,11 @@ tests/L2Config.Core.Tests/       xUnit
 | `Storage/ConfigFiles.cs` | `ServerIniFile` (install copy + launcher player copy), `ClientIniFile` (re-verifies encoding before writing), `WorldProfileFile` (keeps JSON types and unknown fields). Atomic writes. |
 | `Storage/SettingsStore.cs` | Loads every file the catalog uses; validates **all** changes before writing any; backs up, then saves. |
 | `Storage/SettingValues.cs` | Equality (numbers/booleans), range and format validation, bool formatting in the file's own style, range text. |
-| `Storage/BackupSession.cs` | Copies each file once before its first write to `%LOCALAPPDATA%\L2EverdreamConfig\backups\yyyyMMdd-HHmmss\…`. |
+| `Backups/BackupSession.cs` | One backup: flat folder `backups\yyyyMMdd-HHmmss-title\` with `role__file` copies (e.g. `game-config__Rates.ini`, `game-player-copy__Rates.ini`, `client__l2.ini`), `db-NN__table.json` row snapshots and a `manifest.json` (original paths, SHA-256, what changed from → to). |
+| `Backups/BackupLibrary.cs` | Lists backups (also the older nested-folder format) and restores them: verifies SHA-256, refuses files while the world or client runs, backs up the current state first, restores database rows through `WorldDatabase`. |
 | `Storage/RuntimeStatus.cs` | Read-only: is the world listening on its game port, is `L2.exe` running. |
-| `Characters/WorldDatabase.cs` | Connects with the world's `game\config\Database.ini` (MySqlConnector); lists player characters with inventory adena; sets adena only when offline and unchanged, otherwise says why. |
+| `Characters/WorldDatabase.cs` | The world's database (from `game\config\Database.ini`, MySqlConnector): characters, inventory, queued deliveries; set/remove item counts and queue/cancel deliveries inside transactions that lock the character and back up rows first; restore rows (offline only; re-create a removed item with its original ID only if the world has not restarted since the backup). |
+| `Characters/ItemCatalog.cs`, `Characters/InventoryRules.cs` | Every item from `game\data\stats\items` (name, type, stackable, grade); the server's inventory limit (race, Game Master access levels from `AccessLevels.xml`) and slot counting incl. pending deliveries. |
 
 ### App (`src/L2Config.App`)
 
@@ -119,7 +124,8 @@ tests/L2Config.Core.Tests/       xUnit
 | `ViewModels/MainViewModel.cs` | Tabs, folder choice and validation, reload, save/discard, runtime notices, "Show in editor" jump. |
 | `ViewModels/TabViewModel.cs` | One Server or Client tab: categories → groups, counts, search, "Changed only", advanced filter, rows. |
 | `ViewModels/SettingViewModel.cs` | One setting: value, dirty/changed state (as words), validation error, range text, undo, reset to default. |
-| `ViewModels/CharactersViewModel.cs` | Characters tab: load/refresh, search, per-character adena editor limited by Player.ini `MaxAdena`, Apply, Undo, edit log. |
+| `ViewModels/CharactersViewModel.cs`, `ViewModels/InventoryViewModel.cs` | Characters list with adena editor; inventory editor: items with Set count / Remove, waiting deliveries with Cancel, item search over the full list, amount/enchant, live slot and stack checks, the plain delivery explanation. |
+| `ViewModels/BackupsViewModel.cs`, `ViewModels/RelationViewModel.cs` | Backups tab (list, what changed, restore with a plan and per-item results); live "depends on / has no effect right now / controls / works with" lines on setting cards. |
 | `ViewModels/CustomConfigViewModel.cs` | Read-only differences with stock / shipped / current values and filters. |
 | `Theme/Colors.xaml`, `Theme/Controls.xaml` | The design system (see §8). |
 | `Infrastructure/*` | `ObservableObject`, `RelayCommand`, app preferences, converters, editor template selector, numeric input filter, password binding. |
@@ -144,7 +150,7 @@ tests/L2Config.Core.Tests/       xUnit
   these on every start. `ClassMaster.xml` is likewise written by the launcher from the "Free class change" setting.
 - Saving is refused while `L2.exe` is running if there are client changes (the client rewrites its settings on exit).
 - Server changes save while the world runs, with a notice that they apply on the next start.
-- Every save first backs up each file it touches (see `BackupSession`). "Open backups" is in the save bar.
+- Every save first backs up each file it touches, into one flat backup folder with a manifest (see §6a). "Backups and restore" in the save bar opens the Backups tab.
 
 ---
 
@@ -228,9 +234,39 @@ when you changed it) and **Show in editor**, which opens that setting in the Ser
 
 ---
 
+## 6a. Backups and restore
+
+Location: `%LOCALAPPDATA%\L2EverdreamConfig\backups\`. One folder per backup, never nested:
+
+```
+20260914-101500-saved-3-settings\
+  manifest.json                 kind, title, created, entries (original path, SHA-256), changes (what: from -> to)
+  game-config__Rates.ini        the game server's copy
+  game-player-copy__Rates.ini   the launcher's protected copy
+  client__l2.ini
+  db-01__items.json             database rows as they were, and the operation (update / delete / insert)
+```
+
+| Kind | Taken before | Restore |
+|---|---|---|
+| Settings | Save changes | Files, only while the world is stopped; client files only while Lineage 2 is closed |
+| Characters | Every adena/item change, delivery queued or cancelled | Rows, only for offline characters while the world runs. Updated rows are put back; removed items are re-created with their original ID only if the world has not restarted since; queued deliveries are removed if not yet delivered; cancelled deliveries are re-queued if they still fit |
+| Before restore | Every restore | Same rules, so a restore can be undone |
+| Older format | (first app version) | Files, same rules |
+
+Every restore verifies the backup copy's SHA-256 and refuses database rows from a different world's database.
+
+Database behaviour is covered by `WorldDatabaseIntegrationTests`, which run only with `L2CONFIG_TEST_DB` pointing at a throwaway database.
+
+---
+
 ## 7. What the UI does
 
-- **Tabs**: Server, Client, Custom Config, Characters (live world: offline characters' adena, applied per character). The tab pill shows a count of unsaved changes.
+- **Tabs**: Server, Client, Custom Config, Characters, Backups. The Server and Client tab pills show a count of unsaved changes.
+- **Setting cards** also show how other settings affect them: *Depends on* (green when met), *Has no effect right now* (amber, e.g. vitality rates while the vitality system is off), *Controls* and *Works with*, each with a *Show →* jump.
+- **Characters**: each player character with level, account, inventory slots used of the limit, adena editor (offline only) and *Inventory…*.
+- **Inventory**: items in the inventory (equipped marked) with *Set count* for stacks and *Remove* (confirmed); *Waiting for the server to deliver* with *Cancel delivery*; *Add items*: search every item by name or ID, amount, enchant for weapons/armor, a line saying exactly what will happen and how many slots it needs, and the reason when it can't. Adding to a stack the character already carries changes that stack immediately; anything else is queued for the server, with a highlighted explanation and the live state of the delivery setting.
+- **Backups**: every backup newest first with what changed (from → to), what it contains, *Restore…* (with a plan of what will and won't be restored right now) and *Open folder*; results per item after a restore.
 - **Folder bar** per tab with *Change folder…*; with no folder chosen the page is a single card with one gold button.
 - **Left section list**: categories with counts; the selected category expands to its groups; clicking a group
   scrolls to it. While searching, only matching categories/groups are listed.
@@ -283,7 +319,8 @@ behaviour or adding a new file type.
   in-game labels are not verified.
 - About 480 server settings still use pattern or humanized names; improve them in `friendly-names.tsv`.
 - `-Dl2sp.*` launch settings are out of scope: the launcher regenerates its flags file on every start.
-- Characters tab: adena only; it cannot add adena to a character carrying none while the server runs.
+- Characters: only inventory items (no warehouse, skills, stats yet). Deliveries need `CustomMailManagerEnabled` on and the world restarted after turning it on; the base inventory limit ignores in-game inventory-expansion skills (so it is slightly conservative).
+- `build_custom_config.py` reads the install's current files, so regenerating on a machine with edited settings counts those edits as release changes.
 - No app icon yet. (There will be no installer — the app is a standalone exe by design.)
 
 ---
@@ -302,4 +339,5 @@ behaviour or adding a new file type.
 | 2026-09-13 | Standalone: catalog embedded in the exe; Release publishes one self-contained single-file exe; no installer. |
 | 2026-09-13 | Repository made location-independent for a move: relative commands, CLAUDE.md with all rules and context. |
 | 2026-09-14 | Characters tab: edit inventory adena of offline player characters in the running world's database (MySqlConnector). |
+| 2026-09-14 | Inventory editor (change/remove items offline; add items via server delivery with inventory-limit checks), Backups tab with restore (files only while stopped, rows only for offline characters), row-level database backups, flat backup folders with manifest, setting relations on cards. |
 | 2026-09-13 | No local paths in the repository or its history: this PC's folders moved to git-ignored `CLAUDE.local.md` and `test-paths.local.json`. |

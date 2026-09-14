@@ -581,6 +581,63 @@ def infer_limits(entry, key, desc_all, editor, value_type, unit, options):
     return None, None, None, options
 
 
+TARGET_ALIASES = {"game": "server-game", "login": "server-login", "option": "client-option", "l2ini": "client-l2ini", "world": "world-profile"}
+ONLY_IF = re.compile(r"(?:works only|only (?:works|takes effect|used)?|used only|effective only|only)\s*(?:if|when|with)\s*`?([A-Z][A-Za-z0-9]+)`?\s*(?:=|is)\s*`?(true|false|enabled)`?", re.I)
+ENABLE_LIKE = re.compile(r"^(Enable|Allow)[A-Z]|(Enable|Enabled)$")
+
+
+def add_relations(settings, schema):
+    """Adds "relations": how other settings change what this one does (curated first, then derived)."""
+    by_key = {(s["target"], s["file"], s["key"]): s for s in settings}
+    by_target_key = {}
+    for st in settings:
+        by_target_key.setdefault((st["target"], st["key"]), []).append(st)
+    for st in settings:
+        st["relations"] = []
+
+    def resolve(ref):
+        alias, file, key = ref.split(":", 2)
+        return by_key.get((TARGET_ALIASES[alias], file, key))
+
+    def add(source, other, kind, value, note):
+        if source is other or any(r["id"] == other["id"] and r["kind"] == kind for r in source["relations"]):
+            return
+        source["relations"].append({"id": other["id"], "kind": kind, "value": value, "note": note or None})
+
+    bad = []
+    for row in load_tsv("setting-relations.tsv"):
+        source, other = resolve(row["setting"]), resolve(row["other"])
+        if not source or not other:
+            bad.append(row["setting"] + " -> " + row["other"])
+            continue
+        add(source, other, row["kind"], row["value"] or None, row["note"])
+    if bad:
+        print("setting-relations.tsv rows that match no setting:", *bad, sep="\n  ")
+
+    # "Works only if X = True" in the stock or release comments.
+    for e in schema:
+        source = by_key.get(("server-" + e["server"], e["file"], e["key"]))
+        if not source:
+            continue
+        for match in ONLY_IF.finditer(e["description"] or ""):
+            candidates = by_target_key.get((source["target"], match.group(1)), [])
+            if len(candidates) == 1 and candidates[0]["editor"] == "toggle":
+                add(source, candidates[0], "requires", "false" if match.group(2).lower() == "false" else "true", None)
+
+    # Custom feature files: the first on/off switch named Enable…/…Enabled/Allow… turns the whole feature on.
+    files = {}
+    for st in settings:
+        if st["target"] == "server-game" and st["file"].startswith("Custom/"):
+            files.setdefault(st["file"], []).append(st)
+    for file_settings in files.values():
+        master = next((st for st in file_settings if st["editor"] == "toggle" and ENABLE_LIKE.search(st["key"])), None)
+        if master is None or master is not file_settings[0]:
+            continue
+        for st in file_settings[1:]:
+            if not any(r["kind"] == "requires" for r in st["relations"]):
+                add(st, master, "requires", "true", None)
+
+
 def load_tsv(name):
     path = os.path.join(HERE, name)
     if not os.path.exists(path):
@@ -668,7 +725,7 @@ def main():
             "min": lo,
             "max": hi,
             "format": fmt,
-            "default": e["javaDefault"] if e["javaDefault"] not in (None, "None") else e["documentedDefault"],
+            "default": re.sub(r"^(-?\d+(?:\.\d*)?)[fdlFDL]$", r"\1", e["javaDefault"]) if e["javaDefault"] not in (None, "None") else e["documentedDefault"],
             "shippedValue": e["value"],
             "advanced": gid in ADVANCED_GROUPS or e["key"] in ADVANCED_KEYS,
             "managedReason": MANAGED.get((e["server"], e["file"], e["key"])) or
@@ -686,6 +743,7 @@ def main():
             "default": r["default"] or None, "shippedValue": None, "advanced": r["advanced"] == "1",
             "managedReason": r["managedReason"] or None, "secret": r.get("secret") == "1", "l2everdream": False,
         })
+    add_relations(settings, schema)
     known = {(s["target"], s["file"], s["key"]) for s in settings}
     stale = [k for k in names if k not in known]
     if stale:
