@@ -5,6 +5,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using L2Config.App.Infrastructure;
 using L2Config.App.ViewModels;
+using L2Config.Core.Backups;
 using L2Config.Core.Catalog;
 
 namespace L2Config.App;
@@ -29,6 +30,10 @@ public partial class App : Application
 		}
 
 		var snapshot = SnapshotOptions.Parse(e.Args);
+		if (snapshot?.Backups is { } backupsRoot)
+		{
+			BackupSession.DefaultRoot = backupsRoot;
+		}
 		var settings = snapshot is null
 			? AppSettings.Load()
 			: new AppSettings { Transient = true, ServerFolder = snapshot.Server, ClientFolder = snapshot.Client, LastTab = snapshot.Tab, ShowAdvanced = snapshot.Advanced };
@@ -103,7 +108,7 @@ public partial class App : Application
 
 	/// <summary>
 	/// Developer aid: L2EverdreamConfig.exe --snapshot out.png [--server dir] [--client dir] [--tab client] [--search text]
-	/// [--category id] [--group id] [--advanced] [--size 1280x820]. Renders the window to a PNG and exits. Never saves settings.
+	/// [--category id] [--group id] [--advanced] [--size 1280x820] [--backups dir]. Renders the window to a PNG and exits. Never saves settings.
 	/// </summary>
 	private sealed class SnapshotOptions
 	{
@@ -122,6 +127,7 @@ public partial class App : Application
 		public string? ItemSearch { get; private set; }
 		public int? Item { get; private set; }
 		public string? Amount { get; private set; }
+		public string? Backups { get; private set; }
 
 		public static SnapshotOptions? Parse(string[] args)
 		{
@@ -147,6 +153,7 @@ public partial class App : Application
 			options.ItemSearch = Next("--item-search");
 			options.Item = int.TryParse(Next("--item"), out var itemId) ? itemId : null;
 			options.Amount = Next("--amount");
+			options.Backups = Next("--backups");
 			options.Advanced = args.Contains("--advanced");
 			if (Next("--size") is { } size && size.Split('x') is [var w, var h])
 			{

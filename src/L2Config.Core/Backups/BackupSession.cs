@@ -38,7 +38,8 @@ public sealed class BackupSession
 	public bool IsEmpty => _manifest.Entries.Count == 0 && _manifest.Changes.Count == 0;
 	public BackupManifest Manifest => _manifest;
 
-	public static string DefaultRoot => Path.Combine(
+	/// <summary>%LOCALAPPDATA%\L2EverdreamConfig\backups. Only snapshot mode (--backups) points it elsewhere.</summary>
+	public static string DefaultRoot { get; set; } = Path.Combine(
 		Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "L2EverdreamConfig", "backups");
 
 	/// <summary>Copies a file once, before its first write. <paramref name="role"/> says which copy it is (game-config, client, …).</summary>

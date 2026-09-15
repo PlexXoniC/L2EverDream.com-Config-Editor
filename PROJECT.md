@@ -51,14 +51,40 @@ dotnet test tests/L2Config.Core.Tests
   `L2CONFIG_TEST_CLIENT`. They **only read** those folders and write to temporary copies; without them those tests are skipped.
 - No machine-specific paths are committed. This PC's paths live in the git-ignored `CLAUDE.local.md` and `test-paths.local.json`.
 
-**Standalone release** (the Release configuration is preset to win-x64, self-contained, single file, compressed):
+**Release builds.** Both are one `L2EverdreamConfig.exe` with the catalog embedded and no side files. The version is `<Version>` in
+`src/L2Config.App/L2Config.App.csproj`, currently 1.0.0.
 
 ```bash
-dotnet publish src/L2Config.App -c Release -o publish
+dotnet publish src/L2Config.App -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish/standalone
+```
+```bash
+dotnet publish src/L2Config.App -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o publish/needs-dotnet
 ```
 
-Output is one file, `publish\L2EverdreamConfig.exe` (~60 MB). Copy it anywhere and run it; nothing else is needed.
-Verified by running it alone from an empty folder.
+| Variant | Exe | Zip | Needs |
+|---|---|---|---|
+| standalone | ~59 MB | ~54 MB | nothing |
+| needs-dotnet | ~2.4 MB | ~0.7 MB | .NET 10 Desktop Runtime (x64) |
+
+- Release defaults to self-contained, so `dotnet publish src/L2Config.App -c Release -o publish` still gives the standalone exe.
+  Compression is enabled only when self-contained, because the SDK refuses it otherwise.
+- GitHub release assets are named `L2EverdreamConfig-<version>-win-x64-standalone.zip` and `…-needs-dotnet.zip`. Each zip contains
+  the exe and `LICENSE.txt`. The release notes list SHA-256 hashes (`certutil -hashfile <zip> SHA256`).
+- Both variants were verified by running the exe alone from an empty folder.
+- `README.md` is the user-facing GitHub page. Keep its numbers (settings, tests, sizes) in step with this file.
+
+**README screenshots** (`docs/images/*.png`) must show no real folders, account or character names. They are made in snapshot mode
+(1280x820 at 125 % scaling) from a demo world, never from a real install:
+
+1. Copy an install's `game\config`, `login\config`, `game\data\stats\items`, the data folder's `db\config` and
+   `worlds\world-profile.json`, and a client's `system\*.ini`, into a neutral tree, e.g. `D:\Games\L2Everdream`,
+   `D:\Games\L2Everdream-data` and `D:\Games\Lineage II` (a temporary `subst` drive works; remove it afterwards).
+2. Start a throwaway MariaDB (the install's `db\base\bin\mariadbd.exe --datadir=<temp> --port=33999 --skip-grant-tables`) with the
+   Mobius `characters`, `items` and `custom_mail` tables and made-up characters and items. Point the copy's `Database.ini` at it and
+   turn `CustomMailManagerEnabled` on in the copy.
+3. Make demo backups into a temporary folder with the Core API (`SettingsStore.Save`, `WorldDatabase.SetItemCountAsync`,
+   `QueueDeliveryAsync`), then render each tab with `--server`, `--client` and `--backups` pointing at the demo.
+4. Stop the database and delete the demo tree.
 
 **Developer snapshot mode** (renders the window to a PNG and exits; uses throwaway preferences and never saves):
 
@@ -66,7 +92,7 @@ Verified by running it alone from an empty folder.
 L2EverdreamConfig.exe --snapshot out.png --server "<server folder>" --client "<client folder>" --tab server --category rates --search "party xp" --edit RateXp=3 --advanced --size 1280x820
 ```
 
-`--inventory <character>` opens that character's inventory (with `--item-search`, `--item <id>`, `--amount` to fill the add panel; nothing is applied); `--tab` is `server`, `client`, `custom`, `characters` or `backups`; `--group <group id>` scrolls to a group; `--edit key=value` shows an
+`--backups <dir>` lists backups from another folder instead of `%LOCALAPPDATA%\L2EverdreamConfig\backups`; `--inventory <character>` opens that character's inventory (with `--item-search`, `--item <id>`, `--amount` to fill the add panel; nothing is applied); `--tab` is `server`, `client`, `custom`, `characters` or `backups`; `--group <group id>` scrolls to a group; `--edit key=value` shows an
 unsaved edit in memory.
 
 ---
@@ -79,6 +105,8 @@ CLAUDE.md                        rules from the user + working notes (read first
 CLAUDE.local.md                  git-ignored: this PC's server/client folders and tooling notes
 test-paths.local.json            git-ignored: server/client folders used by the local-install tests
 PROJECT.md                       ← this file
+README.md                        user-facing GitHub page (download, features, FAQ, developer notes)
+docs/images/                     README screenshots, made from a demo world (see §2)
 catalog/                         the friendly layer (data + generators)
   build_catalog.py               → catalog.json   (names, groups, editors, limits, descriptions)
   build_custom_config.py         → custom-config.json (differences from stock L2J Mobius)
@@ -340,4 +368,5 @@ behaviour or adding a new file type.
 | 2026-09-13 | Repository made location-independent for a move: relative commands, CLAUDE.md with all rules and context. |
 | 2026-09-14 | Characters tab: edit inventory adena of offline player characters in the running world's database (MySqlConnector). |
 | 2026-09-14 | Inventory editor (change/remove items offline; add items via server delivery with inventory-limit checks), Backups tab with restore (files only while stopped, rows only for offline characters), row-level database backups, flat backup folders with manifest, setting relations on cards. |
+| 2026-09-14 | Version 1.0.0: GitHub `README.md`; two release variants (standalone and needs-dotnet single-file exes), zipped with SHA-256 hashes and release notes. README screenshots from a demo world; snapshot mode `--backups <dir>`. |
 | 2026-09-13 | No local paths in the repository or its history: this PC's folders moved to git-ignored `CLAUDE.local.md` and `test-paths.local.json`. |

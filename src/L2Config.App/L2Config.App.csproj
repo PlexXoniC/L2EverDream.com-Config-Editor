@@ -8,17 +8,26 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>L2EverdreamConfig</AssemblyName>
     <Product>L2Everdream Config</Product>
+    <Version>1.0.0</Version>
   </PropertyGroup>
 
-  <!-- Standalone: `dotnet publish -c Release` produces one self-contained L2EverdreamConfig.exe (no installer, no .NET needed). -->
+  <!--
+    Release always publishes one L2EverdreamConfig.exe (no installer, no side files).
+    Standalone (default): `dotnet publish -c Release` bundles .NET, so nothing else is needed.
+    Needs-dotnet: publish with SelfContained=false for a much smaller exe that uses the installed .NET 10 Desktop Runtime.
+  -->
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <SelfContained>true</SelfContained>
+    <SelfContained Condition="'$(SelfContained)' == ''">true</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <DebugType>none</DebugType>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <!-- Compression is only possible when .NET is bundled. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release' And '$(SelfContained)' == 'true'">
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
   </PropertyGroup>
 
   <ItemGroup>

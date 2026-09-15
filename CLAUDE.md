@@ -62,7 +62,10 @@ dotnet run --project src/L2Config.App
 dotnet test tests/L2Config.Core.Tests
 ```
 ```bash
-dotnet publish src/L2Config.App -c Release -o publish
+dotnet publish src/L2Config.App -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish/standalone
+```
+```bash
+dotnet publish src/L2Config.App -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o publish/needs-dotnet
 ```
 ```bash
 python catalog/build_catalog.py
