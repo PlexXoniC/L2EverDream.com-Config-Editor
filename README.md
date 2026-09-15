@@ -14,6 +14,8 @@ also edits your player characters' adena and inventories, and it backs up everyt
 > servers, and it never starts, stops or controls your server, database or game. That stays the launcher's job.
 
 > This is an independent, unofficial tool. See [Credits](#credits).
+>
+> **Step-by-step guides for every feature are in the [wiki](../../wiki).**
 
 ![The Server tab: settings grouped by what they do, with plain names, the real file and key, and how each setting affects others](docs/images/server.png)
 

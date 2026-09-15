@@ -53,7 +53,7 @@ dotnet test tests/L2Config.Core.Tests
 - No machine-specific paths are committed. This PC's paths live in the git-ignored `CLAUDE.local.md` and `test-paths.local.json`.
 
 **Release builds.** Both are one `L2EverdreamConfig.exe` with the catalog embedded and no side files. The version is `<Version>` in
-`src/L2Config.App/L2Config.App.csproj`, currently 1.0.0.
+`src/L2Config.App/L2Config.App.csproj`, currently 1.1.0.
 
 ```bash
 dotnet publish src/L2Config.App -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish/standalone
@@ -73,6 +73,10 @@ dotnet publish src/L2Config.App -c Release -r win-x64 --self-contained false -p:
   the exe and `LICENSE.txt`. The release notes list SHA-256 hashes (`certutil -hashfile <zip> SHA256`).
 - Both variants were verified by running the exe alone from an empty folder.
 - `README.md` is the user-facing GitHub page. Keep its numbers (settings, tests, sizes) in step with this file.
+- **Wiki:** `docs/wiki/` is the source of the GitHub wiki (13 pages plus `_Sidebar.md` and `_Footer.md`). Pages link to each other by
+  page name and to images on the main branch (`raw.githubusercontent.com/…/main/docs/images/`). Keep it in step with the app and the README.
+  To publish: create the first wiki page once on GitHub (Wiki › Create the first page), then clone
+  `https://github.com/PlexXoniC/L2EverDream.com-Config-Editor.wiki.git`, copy `docs/wiki/*.md` into it, commit and push.
 
 **README screenshots** (`docs/images/*.png`) must show no real folders, account or character names. They are made in snapshot mode
 (1280x820 at 125 % scaling). Screens that show no folder path or character (the full-backup comparison,
@@ -111,7 +115,8 @@ CLAUDE.local.md                  git-ignored: this PC's server/client folders an
 test-paths.local.json            git-ignored: server/client folders used by the local-install tests
 PROJECT.md                       ← this file
 README.md                        user-facing GitHub page (download, features, FAQ, developer notes)
-docs/images/                     README screenshots, made from a demo world (see §2)
+docs/images/                     README and wiki screenshots (see §2 for how they are made)
+docs/wiki/                       GitHub wiki source: one .md per page, _Sidebar.md, _Footer.md (see §2)
 catalog/                         the friendly layer (data + generators)
   build_catalog.py               → catalog.json   (names, groups, editors, limits, descriptions)
   build_custom_config.py         → custom-config.json (differences from stock L2J Mobius)
@@ -407,6 +412,8 @@ behaviour or adding a new file type.
 | 2026-09-14 | Characters tab: edit inventory adena of offline player characters in the running world's database (MySqlConnector). |
 | 2026-09-14 | Inventory editor (change/remove items offline; add items via server delivery with inventory-limit checks), Backups tab with restore (files only while stopped, rows only for offline characters), row-level database backups, flat backup folders with manifest, setting relations on cards. |
 | 2026-09-14 | Version 1.0.0: GitHub `README.md`; two release variants (standalone and needs-dotnet single-file exes), zipped with SHA-256 hashes and release notes. README screenshots from a demo world; snapshot mode `--backups <dir>`. |
+| 2026-09-15 | Version 1.1.0 (full backups, custom skill durations); release notes in `publish/release/release-notes-v1.1.0.md`. |
+| 2026-09-15 | GitHub wiki source in `docs/wiki` (13 pages: install, server and client settings, skill durations, relations, Custom Config, characters, backups, full backups and updates, file locations, troubleshooting, privacy, developers). |
 | 2026-09-15 | Skill durations page for `SkillDurationList` (all skills with a duration, normal/enchanted durations, filters, bulk set, 12-hour limit); settings renamed "Use custom skill durations" / "Custom skill durations". README screenshot with the folder path blacked out. |
 | 2026-09-15 | README screenshot of the real 0.5.19 → 0.5.20 full-backup comparison. |
 | 2026-09-15 | Full backups: *Back up everything* to a user-chosen folder, compare with now setting by setting (backup / now / shipped), restore ticked settings; checked against the real 0.5.19 → 0.5.20 update (findings in the knowledge base). |
