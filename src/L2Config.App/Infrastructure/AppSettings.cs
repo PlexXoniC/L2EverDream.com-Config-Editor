@@ -13,6 +13,9 @@ public sealed class AppSettings
 	public bool ShowAdvanced { get; set; }
 	public string LastTab { get; set; } = "server";
 
+	/// <summary>Where full backups go. There is no default: the user chooses it the first time.</summary>
+	public string? FullBackupFolder { get; set; }
+
 	/// <summary>Developer snapshot runs use throwaway settings that are never written.</summary>
 	[System.Text.Json.Serialization.JsonIgnore]
 	public bool Transient { get; init; }

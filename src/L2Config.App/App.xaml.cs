@@ -36,7 +36,11 @@ public partial class App : Application
 		}
 		var settings = snapshot is null
 			? AppSettings.Load()
-			: new AppSettings { Transient = true, ServerFolder = snapshot.Server, ClientFolder = snapshot.Client, LastTab = snapshot.Tab, ShowAdvanced = snapshot.Advanced };
+			: new AppSettings
+			{
+				Transient = true, ServerFolder = snapshot.Server, ClientFolder = snapshot.Client, LastTab = snapshot.Tab, ShowAdvanced = snapshot.Advanced,
+				FullBackupFolder = snapshot.FullBackups,
+			};
 
 		CustomConfigReport? customConfig;
 		using (var customStream = OpenEmbedded("custom-config.json"))
@@ -57,22 +61,35 @@ public partial class App : Application
 			snapshot.Apply(viewModel);
 			window.ContentRendered += (_, _) => window.Dispatcher.BeginInvoke(() =>
 			{
+				var until = DateTime.Now.AddSeconds(5);
+				void Pump(Func<bool> busy)
+				{
+					while (busy() && DateTime.Now < until)
+					{
+						// A nested frame processes queued work. This callback runs at ApplicationIdle, so async continuations
+						// are posted at that priority too: exit the frame only at SystemIdle, after they have run.
+						var frame = new DispatcherFrame();
+						window.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, () => frame.Continue = false);
+						Dispatcher.PushFrame(frame);
+						Thread.Sleep(20);
+					}
+				}
+				if (snapshot.Tab == "backups" && snapshot.Compare is { } compare)
+				{
+					// --compare <backup folder name | latest> opens the comparison checklist (nothing is restored).
+					until = DateTime.Now.AddSeconds(15);
+					var task = viewModel.BackupsTab.FullBackups.CompareByNameAsync(compare);
+					Pump(() => !task.IsCompleted);
+					if (viewModel.BackupsTab.FullBackups.Comparison is { } comparison)
+					{
+						comparison.Filter = snapshot.Filter ?? comparison.Filter;
+						comparison.SearchText = snapshot.Search ?? "";
+					}
+					window.UpdateLayout();
+				}
 				if (snapshot.Tab == "characters")
 				{
 					// The character list loads from the database after the first render.
-					var until = DateTime.Now.AddSeconds(5);
-					void Pump(Func<bool> busy)
-					{
-						while (busy() && DateTime.Now < until)
-						{
-							// A nested frame processes queued work. This callback runs at ApplicationIdle, so async continuations
-							// are posted at that priority too: exit the frame only at SystemIdle, after they have run.
-							var frame = new DispatcherFrame();
-							window.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, () => frame.Continue = false);
-							Dispatcher.PushFrame(frame);
-							Thread.Sleep(20);
-						}
-					}
 					Pump(() => viewModel.CharactersTab.IsLoading);
 					// --inventory <character> opens the inventory editor; --item-search / --item / --amount fill in the add panel (nothing is applied).
 					if (snapshot.Inventory is { } who && viewModel.CharactersTab.Rows.FirstOrDefault(r => r.Name == who) is { } row)
@@ -108,7 +125,8 @@ public partial class App : Application
 
 	/// <summary>
 	/// Developer aid: L2EverdreamConfig.exe --snapshot out.png [--server dir] [--client dir] [--tab client] [--search text]
-	/// [--category id] [--group id] [--advanced] [--size 1280x820] [--backups dir]. Renders the window to a PNG and exits. Never saves settings.
+	/// [--category id] [--group id] [--advanced] [--size 1280x820] [--backups dir] [--backups-mode full] [--full-backups dir]
+	/// [--compare folder|latest] [--filter changed|shipped|new|all]. Renders the window to a PNG and exits. Never saves settings.
 	/// </summary>
 	private sealed class SnapshotOptions
 	{
@@ -128,6 +146,10 @@ public partial class App : Application
 		public int? Item { get; private set; }
 		public string? Amount { get; private set; }
 		public string? Backups { get; private set; }
+		public string? FullBackups { get; private set; }
+		public string? BackupsMode { get; private set; }
+		public string? Compare { get; private set; }
+		public string? Filter { get; private set; }
 
 		public static SnapshotOptions? Parse(string[] args)
 		{
@@ -154,6 +176,10 @@ public partial class App : Application
 			options.Item = int.TryParse(Next("--item"), out var itemId) ? itemId : null;
 			options.Amount = Next("--amount");
 			options.Backups = Next("--backups");
+			options.FullBackups = Next("--full-backups");
+			options.BackupsMode = Next("--backups-mode");
+			options.Compare = Next("--compare");
+			options.Filter = Next("--filter");
 			options.Advanced = args.Contains("--advanced");
 			if (Next("--size") is { } size && size.Split('x') is [var w, var h])
 			{
@@ -168,6 +194,7 @@ public partial class App : Application
 			if (Tab is "characters" or "backups")
 			{
 				viewModel.SelectedTab = Tab == "backups" ? viewModel.BackupsTab : viewModel.CharactersTab;
+				viewModel.BackupsTab.IsFullMode = BackupsMode == "full" || Compare is not null;
 				return;
 			}
 			if (Tab == "custom" && viewModel.CustomTab is not null)

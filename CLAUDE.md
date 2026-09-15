@@ -36,6 +36,12 @@ The project owner knows the user is building it.
      Restores: files never while the world is running (client files never while `L2.exe` runs); database rows only for
      offline characters, while the world runs (its database only runs with it). A removed item is re-created with its
      original ID only if the world has not restarted since the backup. The user chose these rules.
+   - **Full backups** (Backups tab › Full backups): one button copies every settings file — install config, launcher
+     protected copies and `.shipped-baseline`, `worlds\*.json`, `world-release.json`, client `system\*.ini` — into a
+     folder the user chooses (**no default**; never inside the install folder, which updates replace). Comparing a full
+     backup with now is **by setting value, not by file** (updates rewrite comments), shows backup / now / shipped, and
+     restores **ticked settings one value at a time** (both server copies; XML/text files whole). Same restore rules as
+     above, launcher-managed values never restored, and a normal "before restore" backup is taken first.
    - **Explain how settings affect each other.** Setting cards show "depends on / has no effect right now / controls /
      works with" lines from `catalog/setting-relations.tsv` plus derived rules, evaluated live.
 6. **The user chooses both folders.** No default or auto-detected server/client paths.

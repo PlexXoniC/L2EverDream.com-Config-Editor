@@ -31,6 +31,7 @@ also edits your player characters' adena and inventories, and it backs up everyt
   - [Custom Config: what L2Everdream changed](#custom-config-what-l2everdream-changed)
   - [Characters and inventories](#characters-and-inventories)
   - [Backups and restore](#backups-and-restore)
+  - [Before you update L2Everdream: full backups](#before-you-update-l2everdream-full-backups)
 - [What it will and won't do](#what-it-will-and-wont-do)
 - [Where your changes are saved](#where-your-changes-are-saved)
 - [Common questions](#common-questions)
@@ -223,6 +224,28 @@ Restores follow strict rules so they can never clash with a running game:
   tells you it can't, rather than risk a clash.
 - Deliveries that haven't happened yet are withdrawn. Cancelled deliveries are queued again if they still fit.
 
+### Before you update L2Everdream: full backups
+
+When the launcher updates L2Everdream, it replaces the whole install folder and rewrites every config file. The launcher tries hard to
+keep your changes, but it warns that hand-edited files are "not yet guaranteed to survive every update". **Full backups** let you
+check that for yourself, and put back anything that was lost.
+
+1. Open **Backups › Full backups** and click **Back up everything** before you click *Update* in the launcher. The first time, you
+   choose the folder for your full backups. Any folder outside the L2Everdream install works; the install folder itself is refused,
+   because the update would delete it.
+2. The backup copies every settings file in under two seconds. That includes the server's game and login config, the launcher's
+   protected copies of your settings, what L2Everdream ships, your world settings, and the client's settings. It is only about 1 MB,
+   labelled with the L2Everdream version it was taken on.
+3. After the update, open the backup and click **Compare with now**. The list shows every setting that differs, with the value **in the
+   backup**, the value **now** and what **L2Everdream ships**. You can filter between settings that differ from your backup, shipped
+   defaults the update changed, and settings the update added.
+4. Tick the settings you want back and click **Restore**. Only those values are written. The update's new settings stay, and so does
+   everything else in the files. Server settings go to both the install and the launcher's protected copy, so the launcher keeps them.
+
+Files whose text changed but whose settings didn't (updates often rewrite comments) are summarised in one line, with nothing to restore.
+The same safety rules apply as above: nothing is restored while your world is running or Lineage 2 is open. Values the launcher sets
+itself are never restored, and what gets replaced is backed up first so a restore can be undone.
+
 ---
 
 ## What it will and won't do
@@ -234,7 +257,7 @@ Restores follow strict rules so they can never clash with a running game:
 | Save server settings while the world runs (they apply on the next start) | Save client settings while Lineage 2 is running |
 | Change adena and items of logged-out player characters | Touch simulated players, or change characters who are logged in |
 | Queue new items for the server to deliver | Write new item rows into the database while the server runs |
-| Back up everything before every change | Delete your backups |
+| Back up everything before every change, and take full backups before updates | Delete your backups |
 | Refuse values the server would reject, with a reason | Let an invalid value reach a config file |
 
 ---
@@ -289,6 +312,10 @@ That's normal. L2Everdream ships its own tuned values. The **Custom Config** tab
 
 **Why does a setting say "Has no effect right now"?**
 It depends on another setting that is currently off. Click **Show →** to jump to it.
+
+**The launcher says an update is available. What should I do first?**
+Open **Backups › Full backups** and click **Back up everything**, then update. Afterwards, **Compare with now** shows whether the update
+changed any of your settings, and lets you tick the ones you want back.
 
 **Can I edit the XML configs, `user.ini` key bindings, warehouses or skills?**
 Not yet. The XML configs are listed but not editable, and the Characters tab covers adena and inventory items for now.
@@ -345,7 +372,7 @@ The Release configuration defaults to the standalone build, so `dotnet publish s
 |---|---|
 | `src/L2Config.Core` | No UI. Catalog model and search, line-preserving INI editor, client ini codec, settings store with validation and dual-copy saves, backups and restore, world database access, item catalog and inventory rules |
 | `src/L2Config.App` | The WPF application (MVVM, no UI libraries), styled after the L2Everdream site and launcher |
-| `tests/L2Config.Core.Tests` | 61 xUnit tests |
+| `tests/L2Config.Core.Tests` | 69 xUnit tests |
 | `catalog/` | The friendly layer: hand-curated names and relations (`*.tsv`), the Python generators, and the generated `catalog.json` and `custom-config.json` |
 | `research/` | How L2Everdream, its launcher, L2J Mobius and the client work, extracted schema data, and the stock Mobius configs used for comparison |
 
@@ -379,7 +406,7 @@ The JSON files are embedded into the exe at build time. Rebuild after regenerati
 - **Database tests.** `WorldDatabaseIntegrationTests` run only when `L2CONFIG_TEST_DB` is set to a connection string for a
   **throwaway** MariaDB/MySQL database that has the Mobius `characters`, `items` and `custom_mail` tables. Never point it at a real world.
 - **Snapshot mode.** This renders the window to a PNG without clicking and never saves:
-  `L2EverdreamConfig.exe --snapshot out.png --server <dir> --client <dir> --tab server|client|custom|characters|backups [--category id] [--group id] [--search text] [--edit Key=value] [--advanced] [--size 1280x820] [--backups <dir>]`.
+  `L2EverdreamConfig.exe --snapshot out.png --server <dir> --client <dir> --tab server|client|custom|characters|backups [--category id] [--group id] [--search text] [--edit Key=value] [--advanced] [--size 1280x820] [--backups <dir>] [--full-backups <dir> --compare latest]`.
   With `--tab characters`, `--inventory <name>` opens that character's inventory. The README screenshots in `docs/images` were made
   this way from a demo world (see `PROJECT.md`).
 - **More documentation.** [`PROJECT.md`](PROJECT.md) is the full project guide: architecture, save rules, catalog rules, design tokens,

@@ -18,18 +18,46 @@ public sealed class BackupsViewModel : ObservableObject
 	private readonly IDialogs _dialogs;
 	private readonly Action _afterRestore;
 	private string? _status;
+	private bool _isFullMode;
 
-	public BackupsViewModel(Func<Task<RestoreConditions>> conditions, CharactersViewModel characters, IDialogs dialogs, Action afterRestore)
+	public BackupsViewModel(Func<Task<RestoreConditions>> conditions, CharactersViewModel characters, FullBackupsViewModel fullBackups,
+		IDialogs dialogs, Action afterRestore)
 	{
 		_conditions = conditions;
 		_characters = characters;
 		_dialogs = dialogs;
 		_afterRestore = afterRestore;
+		FullBackups = fullBackups;
 		RefreshCommand = new RelayCommand(() => _ = RefreshAsync());
 		OpenRootCommand = new RelayCommand(() => dialogs.OpenFolder(BackupSession.DefaultRoot));
+		ModeCommand = new RelayCommand(p => IsFullMode = p as string == "full");
 	}
 
 	public string Title => "Backups";
+
+	/// <summary>Full backups (everything, before an update) instead of the automatic change backups.</summary>
+	public FullBackupsViewModel FullBackups { get; }
+
+	public bool IsFullMode
+	{
+		get => _isFullMode;
+		set
+		{
+			if (!Set(ref _isFullMode, value))
+			{
+				return;
+			}
+			OnPropertyChanged(nameof(IsChangeMode));
+			if (value)
+			{
+				FullBackups.Refresh();
+			}
+		}
+	}
+
+	public bool IsChangeMode => !IsFullMode;
+
+	public RelayCommand ModeCommand { get; }
 
 	public string Intro =>
 		"A backup is taken automatically before every save, every character change and every restore: the files as they were, and " +
@@ -51,6 +79,10 @@ public sealed class BackupsViewModel : ObservableObject
 
 	public async Task RefreshAsync()
 	{
+		if (IsFullMode && FullBackups.Comparison is null)
+		{
+			FullBackups.Refresh();
+		}
 		var conditions = await _conditions();
 		Rows.Clear();
 		foreach (var backup in _library.List())

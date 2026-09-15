@@ -32,7 +32,8 @@ public sealed class MainViewModel : ObservableObject
 		ClientTab = new TabViewModel("client", catalog, () => ShowAdvanced, () => ChooseFolder(isServer: false));
 		CustomTab = customConfig is null ? null : new CustomConfigViewModel(customConfig, ShowSetting);
 		CharactersTab = new CharactersViewModel(BuildServerFacts, dialogs, ShowSetting);
-		BackupsTab = new BackupsViewModel(ReadRestoreConditionsAsync, CharactersTab, dialogs, () => Reload());
+		var fullBackups = new FullBackupsViewModel(catalog, appSettings, () => _store?.Locations, ReadRestoreConditionsAsync, dialogs, () => Reload());
+		BackupsTab = new BackupsViewModel(ReadRestoreConditionsAsync, CharactersTab, fullBackups, dialogs, () => Reload());
 		_selectedTab = TabFor(appSettings.LastTab);
 
 		SaveCommand = new RelayCommand(Save, () => PendingCount > 0);

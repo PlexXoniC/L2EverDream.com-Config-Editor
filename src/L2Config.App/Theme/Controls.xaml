@@ -201,6 +201,43 @@
         </Setter>
     </Style>
 
+    <!-- Checkbox from the launcher: 26×26, radius 8, arcane when ticked. -->
+    <Style x:Key="TickBox" TargetType="CheckBox">
+        <Setter Property="Foreground" Value="{StaticResource SoftTextBrush}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <StackPanel Orientation="Horizontal" Background="Transparent">
+                        <Border x:Name="Box" Width="26" Height="26" CornerRadius="8" Background="{StaticResource FieldBrush}"
+                                BorderBrush="{StaticResource VioletHairBrush}" BorderThickness="1" VerticalAlignment="Center">
+                            <TextBlock x:Name="Tick" Text="✓" FontSize="15" FontWeight="Bold" Foreground="{StaticResource StarlightBrush}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" />
+                        </Border>
+                        <ContentPresenter Margin="8,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource VioletHairHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource ArcaneBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Box" Property="Background" Value="{StaticResource ArcaneBrush}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource ArcaneBrush}" />
+                            <Setter TargetName="Tick" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Box" Property="Opacity" Value="0.35" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ===== Inputs ========================================================================== -->
     <Style x:Key="FieldTextBox" TargetType="TextBox">
         <Setter Property="Foreground" Value="{StaticResource StarlightBrush}" />

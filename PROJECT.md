@@ -26,6 +26,7 @@ A standalone Windows desktop app (C# / WPF, one self-contained `.exe`, no instal
 | **Characters edit the live world carefully** | The Characters tab changes adena and inventory items of player characters in the running world's database. Existing rows change only while the character is **offline** (character row locked, `online = 0` re-checked in the same transaction). **Item rows are never inserted while the server runs** — new items are queued in `custom_mail` and the server delivers them when the character is online (needs `CustomMailManagerEnabled`, explained in the UI). The inventory limit is enforced as the server counts it, including queued deliveries. Sims are hidden. |
 | **Settings explain each other** | Cards show what a setting depends on (and whether it currently has any effect), what it controls and what it works with. |
 | **Everything is backed up, restores never race the world** | Every save, character change and restore first backs up what it replaces (files and database rows). Files are restored only while the world is stopped (client files only while Lineage 2 is closed); database rows only for offline characters while the world runs. |
+| **Full backups before updates** | One button copies every settings file (server, launcher copies and shipped baselines, world, client) into a folder the user chooses — no default, never inside the install folder that updates replace. A full backup is compared with now **setting by setting** and ticked settings are put back one value at a time, with the same restore rules. |
 | **Standalone, no installer** | Ships as a single self-contained `L2EverdreamConfig.exe`: no .NET install, no side files, runs from any folder. The catalog is embedded. Its only own files are preferences and backups under `%LOCALAPPDATA%\L2EverdreamConfig`. |
 
 ---
@@ -92,7 +93,7 @@ dotnet publish src/L2Config.App -c Release -r win-x64 --self-contained false -p:
 L2EverdreamConfig.exe --snapshot out.png --server "<server folder>" --client "<client folder>" --tab server --category rates --search "party xp" --edit RateXp=3 --advanced --size 1280x820
 ```
 
-`--backups <dir>` lists backups from another folder instead of `%LOCALAPPDATA%\L2EverdreamConfig\backups`; `--inventory <character>` opens that character's inventory (with `--item-search`, `--item <id>`, `--amount` to fill the add panel; nothing is applied); `--tab` is `server`, `client`, `custom`, `characters` or `backups`; `--group <group id>` scrolls to a group; `--edit key=value` shows an
+`--backups <dir>` lists backups from another folder instead of `%LOCALAPPDATA%\L2EverdreamConfig\backups`; `--backups-mode full` opens Full backups, `--full-backups <dir>` sets their folder, `--compare <backup folder|latest>` opens a comparison (with `--filter changed|shipped|new|all` and `--search`; nothing is restored); `--inventory <character>` opens that character's inventory (with `--item-search`, `--item <id>`, `--amount` to fill the add panel; nothing is applied); `--tab` is `server`, `client`, `custom`, `characters` or `backups`; `--group <group id>` scrolls to a group; `--edit key=value` shows an
 unsaved edit in memory.
 
 ---
@@ -139,6 +140,9 @@ tests/L2Config.Core.Tests/       xUnit
 | `Storage/SettingValues.cs` | Equality (numbers/booleans), range and format validation, bool formatting in the file's own style, range text. |
 | `Backups/BackupSession.cs` | One backup: flat folder `backups\yyyyMMdd-HHmmss-title\` with `role__file` copies (e.g. `game-config__Rates.ini`, `game-player-copy__Rates.ini`, `client__l2.ini`), `db-NN__table.json` row snapshots and a `manifest.json` (original paths, SHA-256, what changed from → to). |
 | `Backups/BackupLibrary.cs` | Lists backups (also the older nested-folder format) and restores them: verifies SHA-256, refuses files while the world or client runs, backs up the current state first, restores database rows through `WorldDatabase`. |
+| `FullBackups/FullBackup.cs` | Full backups: manifest (versions from `world-release.json`, every file's role, original path, SHA-256), `FullBackupLibrary.Create` (flat `role__file` copies written under `.partial` and renamed when complete), `List`, `LocationProblem` (refuses the install and client folders). |
+| `FullBackups/FullBackupComparer.cs` | Compares a full backup with the files now by **setting value**: server ini (protected copy preferred, shipped baseline before/now), world-profile fields, client ini (decoded); XML/text files with comments and blank lines ignored plus a line diff. Kinds: changed, no longer in the file, new since the backup, shipped default changed, comments only. Marks what can't be restored and why (launcher-managed, not allowed any more, not in the backup, launcher-written file). |
+| `FullBackups/FullBackupRestorer.cs` | Restores ticked settings one value at a time through the normal file classes (both server copies, client encoding re-verified), XML/text files whole; refuses while the world / Lineage 2 runs, re-checks each backup copy's SHA-256, backs up what it replaces first. |
 | `Storage/RuntimeStatus.cs` | Read-only: is the world listening on its game port, is `L2.exe` running. |
 | `Characters/WorldDatabase.cs` | The world's database (from `game\config\Database.ini`, MySqlConnector): characters, inventory, queued deliveries; set/remove item counts and queue/cancel deliveries inside transactions that lock the character and back up rows first; restore rows (offline only; re-create a removed item with its original ID only if the world has not restarted since the backup). |
 | `Characters/ItemCatalog.cs`, `Characters/InventoryRules.cs` | Every item from `game\data\stats\items` (name, type, stackable, grade); the server's inventory limit (race, Game Master access levels from `AccessLevels.xml`) and slot counting incl. pending deliveries. |
@@ -153,7 +157,8 @@ tests/L2Config.Core.Tests/       xUnit
 | `ViewModels/TabViewModel.cs` | One Server or Client tab: categories → groups, counts, search, "Changed only", advanced filter, rows. |
 | `ViewModels/SettingViewModel.cs` | One setting: value, dirty/changed state (as words), validation error, range text, undo, reset to default. |
 | `ViewModels/CharactersViewModel.cs`, `ViewModels/InventoryViewModel.cs` | Characters list with adena editor; inventory editor: items with Set count / Remove, waiting deliveries with Cancel, item search over the full list, amount/enchant, live slot and stack checks, the plain delivery explanation. |
-| `ViewModels/BackupsViewModel.cs`, `ViewModels/RelationViewModel.cs` | Backups tab (list, what changed, restore with a plan and per-item results); live "depends on / has no effect right now / controls / works with" lines on setting cards. |
+| `ViewModels/BackupsViewModel.cs`, `ViewModels/RelationViewModel.cs` | Backups tab (Change backups: list, what changed, restore with a plan and per-item results); live "depends on / has no effect right now / controls / works with" lines on setting cards. |
+| `ViewModels/FullBackupsViewModel.cs` | Backups tab › Full backups: folder choice, *Back up everything*, list with "updated since this backup", and the comparison checklist (filters, search, tick, *Restore selected*, results). |
 | `ViewModels/CustomConfigViewModel.cs` | Read-only differences with stock / shipped / current values and filters. |
 | `Theme/Colors.xaml`, `Theme/Controls.xaml` | The design system (see §8). |
 | `Infrastructure/*` | `ObservableObject`, `RelayCommand`, app preferences, converters, editor template selector, numeric input filter, password binding. |
@@ -286,6 +291,28 @@ Every restore verifies the backup copy's SHA-256 and refuses database rows from 
 
 Database behaviour is covered by `WorldDatabaseIntegrationTests`, which run only with `L2CONFIG_TEST_DB` pointing at a throwaway database.
 
+### Full backups (before updating L2Everdream)
+
+Launcher updates replace the whole install folder and rewrite every config file (0.5.20 stripped nearly all comments but
+changed no values — see the knowledge base). A full backup is the safety net for that, separate from the automatic
+change backups above.
+
+- **Where:** a folder the user chooses the first time (*Change folder…* later); remembered in the app's preferences.
+  There is no default. The install folder and the client's system folder are refused.
+- **What:** `game\config\**`, `login\config\**`, the launcher's protected copies and `.shipped-baseline\**` for game and
+  login, `L2Everdream-data\worlds\*.json`, `world-release.json`, client `system\*.ini`. About 190 files / 0.7 MB, under
+  two seconds. One flat folder `yyyyMMdd-HHmmss-full-backup-<launcher version>\` with `role__file` copies and
+  `full-backup.json`.
+- **Compare with now:** per setting — *in the backup*, *now* and *L2Everdream ships* (baseline before → now). Filters:
+  *Different from the backup* (default), *Shipped defaults changed*, *New since the backup*, *Everything*; search.
+  Files whose settings are all equal but whose text changed are summarised as "comments only". The header says whether
+  L2Everdream was updated since the backup (release versions differ).
+- **Restore selected:** only ticked values are written, so comments and settings added by an update stay. Refused while
+  the world runs (server/world) or Lineage 2 is open (client); launcher-managed values, settings not in the backup,
+  shipped-default-only changes and `ClassMaster.xml` can't be ticked. A "before restore" change backup is taken first.
+- Verified against the real 0.5.19 → 0.5.20 update: 1 shipped-default change (`GMGiveSpecialSkills`), 42 comment-only
+  files, nothing to restore; comparison 0.13 s.
+
 ---
 
 ## 7. What the UI does
@@ -294,7 +321,8 @@ Database behaviour is covered by `WorldDatabaseIntegrationTests`, which run only
 - **Setting cards** also show how other settings affect them: *Depends on* (green when met), *Has no effect right now* (amber, e.g. vitality rates while the vitality system is off), *Controls* and *Works with*, each with a *Show →* jump.
 - **Characters**: each player character with level, account, inventory slots used of the limit, adena editor (offline only) and *Inventory…*.
 - **Inventory**: items in the inventory (equipped marked) with *Set count* for stacks and *Remove* (confirmed); *Waiting for the server to deliver* with *Cancel delivery*; *Add items*: search every item by name or ID, amount, enchant for weapons/armor, a line saying exactly what will happen and how many slots it needs, and the reason when it can't. Adding to a stack the character already carries changes that stack immediately; anything else is queued for the server, with a highlighted explanation and the live state of the delivery setting.
-- **Backups**: every backup newest first with what changed (from → to), what it contains, *Restore…* (with a plan of what will and won't be restored right now) and *Open folder*; results per item after a restore.
+- **Backups**: *Change backups* / *Full backups* switch. Change backups: every backup newest first with what changed (from → to), what it contains, *Restore…* (with a plan of what will and won't be restored right now) and *Open folder*; results per item after a restore.
+- **Full backups**: folder card (*Change folder…*, *Open folder*, the gold *Back up everything*, installed version), list of full backups with version, size and "updated since this backup", *Compare with now* → checklist of setting cards (tick box, name, kind badge, group, real-name chip, backup / now / ships values, reason when it can't be restored), filter pills with counts, search, a "comments only" summary, and the *Put settings back* panel (tick all shown, clear, *Restore N settings*, per-item results).
 - **Folder bar** per tab with *Change folder…*; with no folder chosen the page is a single card with one gold button.
 - **Left section list**: categories with counts; the selected category expands to its groups; clicking a group
   scrolls to it. While searching, only matching categories/groups are listed.
@@ -349,6 +377,9 @@ behaviour or adding a new file type.
 - `-Dl2sp.*` launch settings are out of scope: the launcher regenerates its flags file on every start.
 - Characters: only inventory items (no warehouse, skills, stats yet). Deliveries need `CustomMailManagerEnabled` on and the world restarted after turning it on; the base inventory limit ignores in-game inventory-expansion skills (so it is slightly conservative).
 - `build_custom_config.py` reads the install's current files, so regenerating on a machine with edited settings counts those edits as release changes.
+- Full backups are taken with the button only; the app cannot know an update is pending (the launcher checks online).
+- `IniDocument` splits lines on the file's own newline style; a hand-edited file with mixed CRLF/LF line endings can hide
+  keys from both the editor and the comparison.
 - No app icon yet. (There will be no installer — the app is a standalone exe by design.)
 
 ---
@@ -369,4 +400,5 @@ behaviour or adding a new file type.
 | 2026-09-14 | Characters tab: edit inventory adena of offline player characters in the running world's database (MySqlConnector). |
 | 2026-09-14 | Inventory editor (change/remove items offline; add items via server delivery with inventory-limit checks), Backups tab with restore (files only while stopped, rows only for offline characters), row-level database backups, flat backup folders with manifest, setting relations on cards. |
 | 2026-09-14 | Version 1.0.0: GitHub `README.md`; two release variants (standalone and needs-dotnet single-file exes), zipped with SHA-256 hashes and release notes. README screenshots from a demo world; snapshot mode `--backups <dir>`. |
+| 2026-09-15 | Full backups: *Back up everything* to a user-chosen folder, compare with now setting by setting (backup / now / shipped), restore ticked settings; checked against the real 0.5.19 → 0.5.20 update (findings in the knowledge base). |
 | 2026-09-13 | No local paths in the repository or its history: this PC's folders moved to git-ignored `CLAUDE.local.md` and `test-paths.local.json`. |

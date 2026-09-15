@@ -93,6 +93,32 @@ The launcher treats config as a three-way merge (`org.l2sp.launcher.config.Playe
 ➡ A manager should **edit the player copies** (and mirror into `game\config` when the world is stopped), never
 Database.ini/ClassMaster.xml/LoginPort, and should show which keys the launcher will override.
 
+### What a launcher update does (observed 0.5.19+1.0.48 → 0.5.20+1.0.82, 2026-09-15)
+
+Measured with SHA-256 fingerprints of the install, `L2Everdream-data` and the whole client before and after:
+
+- The MSI replaces the install in place. 81 install files changed: jars, launcher, `launch-world.ps1`, tools, and every
+  `game\config` / `login\config` file. Before replacing, the launcher's update guard copies the install to
+  `your-files\backup-<stamp>\install-root\` (skipping runtime, app, geodata, `datapack.zip`, logs) and zips the player's
+  edited config files (`mine/` + `base/`) to `your-files\rescue-<version>-<ms>.zip`; `last-update-report.json` records
+  captured / merged / keptYours / conflicted / lost counts.
+- **The new release strips almost all comments from the install config files** (`Player.ini` 880 → 360 lines, `Rates.ini`
+  236 → 113; XML comment blocks removed). The launcher's protected copies and `.shipped-baseline` keep their comments, so
+  install and protected copy now differ textually but not in values.
+- **No setting value changed** for the player: every key in every `.ini` had the same value after the update. One shipped
+  default moved in `.shipped-baseline` (`General.ini GMGiveSpecialSkills` False → True). Both `Database.ini` URLs were back
+  to the stock `jdbc:mysql://localhost/l2jmobiusinterlude` until the next Start rewrites them.
+- The launcher log's "we also changed X in this update and yours was kept" lines are printed on every start and list keys
+  where the player's value differs from what ships — they are **not** a list of what the update changed.
+- New `game\datapack.zip` (19 MB); `game\data` itself was untouched. Of 1,827 files that differ between the zip and
+  `game\data`, 1,613 are comment/whitespace-only (attribution and ticket references scrubbed) and the rest are sim data
+  (`l2sp\zones`, economy, catalogs); item and skill XML content is identical.
+- The client was not touched. `world-profile.json` unchanged. Separately, "Launch without update" re-pointed client
+  `l2.ini ServerAddr` at the public server (it follows the play mode).
+
+Consequences for this app: compare settings by value (the full-backup comparer does), never assume comment text is
+stable, and do not regenerate catalog descriptions from a post-0.5.20 install (use `seed-data/` and upstream Mobius).
+
 ## 4. Boot sequence
 
 `LauncherApp.onStart` → patch DB/port/classmaster files → write arg files → spawn console running

@@ -612,6 +612,319 @@
             </Border>
         </DataTemplate>
 
+        <!-- ===== Full backups ================================================================== -->
+        <DataTemplate DataType="{x:Type vm:FullBackupRowViewModel}">
+            <Border Margin="0,0,14,10" Padding="18,14" CornerRadius="12" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <WrapPanel>
+                            <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" VerticalAlignment="Center" />
+                            <Border Style="{StaticResource Badge}" Background="{StaticResource ArcaneWashBrush}" BorderBrush="#739D8CF0">
+                                <TextBlock Text="{Binding VersionText}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource ArcaneBrush}" />
+                            </Border>
+                        </WrapPanel>
+                        <TextBlock FontSize="12" Foreground="{StaticResource CaptionBrush}" Margin="0,3,0,0" TextWrapping="Wrap">
+                            <Run Text="{Binding When, Mode=OneWay}" /><Run Text="   ·   " /><Run Text="{Binding FolderName, Mode=OneWay}" FontFamily="{StaticResource MonoFont}" />
+                        </TextBlock>
+                        <TextBlock Text="{Binding Summary}" FontSize="12" Foreground="{StaticResource DimLabelBrush}" Margin="0,4,0,0" />
+                        <TextBlock Text="{Binding UpdatedNotice}" FontSize="12.5" Foreground="{StaticResource EmberBrush}" Margin="0,8,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding UpdatedNotice, Converter={StaticResource VisibleWhen}}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Top">
+                        <Button Style="{StaticResource GhostButton}" Content="Compare with now" Command="{Binding CompareCommand}" Padding="16,6" FontSize="12.5" />
+                        <Button Style="{StaticResource LinkButton}" Content="Open folder" Command="{Binding OpenFolderCommand}" HorizontalAlignment="Center" Margin="0,6,0,0" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:ComparisonHeading}">
+            <StackPanel Margin="2,14,14,8">
+                <TextBlock Text="{Binding Title}" FontFamily="{StaticResource DisplayFont}" FontSize="17" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
+                <Border Height="1" Margin="0,6,0,0" Background="{StaticResource SoftVioletHairBrush}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:DifferenceRowViewModel}">
+            <Border x:Name="Card" Margin="0,0,14,8" Padding="14,11" CornerRadius="12" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40" />
+                        <ColumnDefinition Width="*" MinWidth="220" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <CheckBox Style="{StaticResource TickBox}" IsChecked="{Binding IsSelected, Mode=TwoWay}" IsEnabled="{Binding CanRestore}" VerticalAlignment="Top" Margin="0,1,0,0"
+                              AutomationProperties.Name="{Binding Name}" ToolTip="Tick to put this setting back to the value in the backup" />
+                    <StackPanel Grid.Column="1">
+                        <WrapPanel>
+                            <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                            <Border x:Name="KindBadge" Style="{StaticResource Badge}" Background="Transparent" BorderBrush="#4D7C6FB0">
+                                <TextBlock x:Name="KindText" Text="{Binding KindWord}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource LabelBrush}" />
+                            </Border>
+                        </WrapPanel>
+                        <TextBlock Text="{Binding Breadcrumb}" Style="{StaticResource CaptionText}" Margin="0,2,0,0" />
+                        <Border CornerRadius="6" Background="#40100E22" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1" Padding="7,2" Margin="0,6,0,0" HorizontalAlignment="Left">
+                            <TextBlock Text="{Binding Location}" Style="{StaticResource MonoChipText}" TextTrimming="CharacterEllipsis" />
+                        </Border>
+                        <TextBlock Text="{Binding Reason}" FontSize="12" Foreground="{StaticResource DimLabelBrush}" Margin="0,6,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding Reason, Converter={StaticResource VisibleWhen}}" />
+                    </StackPanel>
+                    <Grid Grid.Column="3" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="125" />
+                            <ColumnDefinition Width="125" />
+                            <ColumnDefinition Width="150" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,12,0">
+                            <TextBlock Text="IN THE BACKUP" Style="{StaticResource KickerText}" />
+                            <TextBlock Text="{Binding BackupText}" FontFamily="{StaticResource MonoFont}" FontSize="13" Margin="0,3,0,0" TextWrapping="Wrap" Foreground="{StaticResource EmberBrush}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                            <TextBlock Text="NOW" Style="{StaticResource KickerText}" />
+                            <TextBlock Text="{Binding NowText}" FontFamily="{StaticResource MonoFont}" FontSize="13" Margin="0,3,0,0" TextWrapping="Wrap" Foreground="{StaticResource StarlightBrush}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Visibility="{Binding ShippedText, Converter={StaticResource VisibleWhen}}">
+                            <TextBlock Text="L2EVERDREAM SHIPS" Style="{StaticResource KickerText}" />
+                            <TextBlock Text="{Binding ShippedText}" FontFamily="{StaticResource MonoFont}" FontSize="13" Margin="0,3,0,0" TextWrapping="Wrap" Foreground="{StaticResource CaptionBrush}" />
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsChangedFilter}" Value="True">
+                    <Setter TargetName="KindBadge" Property="Background" Value="{StaticResource LanternWashBrush}" />
+                    <Setter TargetName="KindBadge" Property="BorderBrush" Value="{StaticResource LanternHairBrush}" />
+                    <Setter TargetName="KindText" Property="Foreground" Value="{StaticResource EmberBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsShippedChange}" Value="True">
+                    <Setter TargetName="KindBadge" Property="Background" Value="{StaticResource ArcaneWashBrush}" />
+                    <Setter TargetName="KindBadge" Property="BorderBrush" Value="#739D8CF0" />
+                    <Setter TargetName="KindText" Property="Foreground" Value="{StaticResource ArcaneBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                    <Setter TargetName="Card" Property="BorderBrush" Value="{StaticResource ArcaneBrush}" />
+                    <Setter TargetName="Card" Property="Background" Value="{StaticResource SelectedWashBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:FileDifferenceRowViewModel}">
+            <Border x:Name="Card" Margin="0,0,14,8" Padding="14,11" CornerRadius="12" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <CheckBox Style="{StaticResource TickBox}" IsChecked="{Binding IsSelected, Mode=TwoWay}" IsEnabled="{Binding CanRestore}" VerticalAlignment="Top" Margin="0,1,0,0"
+                              AutomationProperties.Name="{Binding Difference.FileLabel}" />
+                    <StackPanel Grid.Column="1">
+                        <WrapPanel>
+                            <TextBlock Text="{Binding Difference.FileLabel}" FontFamily="{StaticResource MonoFont}" FontSize="13.5" Foreground="{StaticResource StarlightBrush}" VerticalAlignment="Center" />
+                            <Border Style="{StaticResource Badge}" Background="{StaticResource LanternWashBrush}" BorderBrush="{StaticResource LanternHairBrush}">
+                                <TextBlock Text="{Binding KindWord}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource EmberBrush}" />
+                            </Border>
+                        </WrapPanel>
+                        <TextBlock Text="{Binding Reason}" FontSize="12" Foreground="{StaticResource DimLabelBrush}" Margin="0,4,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding Reason, Converter={StaticResource VisibleWhen}}" />
+                        <ItemsControl ItemsSource="{Binding Lines}" Margin="0,6,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" FontFamily="{StaticResource MonoFont}" FontSize="11.5" Foreground="{StaticResource SoftTextBrush}" TextTrimming="CharacterEllipsis" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Text="{Binding MoreLines}" FontSize="11.5" Foreground="{StaticResource DimLabelBrush}" Visibility="{Binding MoreLines, Converter={StaticResource VisibleWhen}}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                    <Setter TargetName="Card" Property="BorderBrush" Value="{StaticResource ArcaneBrush}" />
+                    <Setter TargetName="Card" Property="Background" Value="{StaticResource SelectedWashBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:ComparisonViewModel}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid Margin="2,0,24,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Style="{StaticResource GhostButton}" Content="← All full backups" Command="{Binding BackCommand}" Padding="12,6" FontSize="12" VerticalAlignment="Top" />
+                    <StackPanel Grid.Column="1" Margin="16,0,0,0">
+                        <TextBlock Text="{Binding Title}" FontFamily="{StaticResource DisplayFont}" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" TextWrapping="Wrap" />
+                        <TextBlock x:Name="Release" Text="{Binding ReleaseText}" FontSize="12.5" Foreground="{StaticResource CaptionBrush}" Margin="0,2,0,0" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding SummaryText}" FontSize="12.5" Foreground="{StaticResource SoftTextBrush}" Margin="0,2,0,0" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Row="1" Margin="2,0,24,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="280" />
+                    </Grid.ColumnDefinitions>
+                    <WrapPanel VerticalAlignment="Center">
+                        <RadioButton Style="{StaticResource FilterRadio}" GroupName="CompareFilter" IsChecked="{Binding IsChangedFilter, Mode=OneWay}" Command="{Binding FilterCommand}" CommandParameter="changed"
+                                     ToolTip="Settings whose value is different now from the backup">
+                            <TextBlock Text="{Binding ChangedCount, StringFormat=Different from the backup ({0})}" />
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource FilterRadio}" GroupName="CompareFilter" IsChecked="{Binding IsShippedFilter, Mode=OneWay}" Command="{Binding FilterCommand}" CommandParameter="shipped"
+                                     ToolTip="Your value is unchanged, but what L2Everdream ships for it changed">
+                            <TextBlock Text="{Binding ShippedCount, StringFormat=Shipped defaults changed ({0})}" />
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource FilterRadio}" GroupName="CompareFilter" IsChecked="{Binding IsNewFilter, Mode=OneWay}" Command="{Binding FilterCommand}" CommandParameter="new"
+                                     ToolTip="Settings that were not in the backup (usually added by an update)">
+                            <TextBlock Text="{Binding NewCount, StringFormat=New since the backup ({0})}" />
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource FilterRadio}" GroupName="CompareFilter" IsChecked="{Binding IsAllFilter, Mode=OneWay}" Command="{Binding FilterCommand}" CommandParameter="all">
+                            <TextBlock Text="{Binding AllCount, StringFormat=Everything ({0})}" />
+                        </RadioButton>
+                    </WrapPanel>
+                    <Grid Grid.Column="1">
+                        <TextBox x:Name="CompareSearch" Style="{StaticResource SearchBox}" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=150}" AutomationProperties.Name="Search differences" />
+                        <TextBlock Text="⌕" Margin="11,0,0,1" VerticalAlignment="Center" FontSize="15" Foreground="{StaticResource LabelBrush}" IsHitTestVisible="False" />
+                        <TextBlock Text="Search settings or real names…" Margin="31,0,0,0" VerticalAlignment="Center" FontSize="13" IsHitTestVisible="False" Foreground="{StaticResource DimLabelBrush}"
+                                   Visibility="{Binding Text, ElementName=CompareSearch, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
+                    </Grid>
+                </Grid>
+
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="330" />
+                    </Grid.ColumnDefinitions>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <StackPanel Margin="0,0,14,4">
+                            <ItemsControl ItemsSource="{Binding Warnings}" Visibility="{Binding HasWarnings, Converter={StaticResource VisibleWhen}}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" FontSize="12" Foreground="{StaticResource LanternBrush}" TextWrapping="Wrap" Margin="0,0,0,4" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Border Padding="12,8" CornerRadius="10" Background="{StaticResource ArcaneWashBrush}" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1" Margin="0,0,0,6"
+                                    Visibility="{Binding CommentOnlyText, Converter={StaticResource VisibleWhen}}">
+                                <TextBlock Text="{Binding CommentOnlyText}" FontSize="12" Foreground="{StaticResource CaptionBrush}" TextWrapping="Wrap" LineHeight="17" />
+                            </Border>
+                        </StackPanel>
+                        <ListBox Grid.Row="1" ItemsSource="{Binding Rows}" Background="Transparent" BorderThickness="0" ItemContainerStyle="{StaticResource PlainListItem}"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="True"
+                                 VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"
+                                 KeyboardNavigation.TabNavigation="Continue" Visibility="{Binding HasRows, Converter={StaticResource VisibleWhen}}" />
+                        <TextBlock Grid.Row="1" Text="{Binding EmptyText}" Style="{StaticResource CaptionText}" FontSize="13.5" Margin="2,20,24,0" TextWrapping="Wrap"
+                                   Visibility="{Binding HasRows, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
+                    </Grid>
+
+                    <Border Grid.Column="2" Padding="16,14" CornerRadius="14" Background="{StaticResource CardGradientBrush}" BorderBrush="{StaticResource VioletHairBrush}" BorderThickness="1" Margin="0,0,14,10"
+                            VerticalAlignment="Top">
+                        <StackPanel>
+                            <TextBlock Text="Put settings back" FontFamily="{StaticResource DisplayFont}" FontSize="19" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
+                            <TextBlock Style="{StaticResource CaptionText}" Margin="0,6,0,0" LineHeight="17" TextWrapping="Wrap"
+                                       Text="Tick the settings you want back. Only those values are written — comments and settings added since the backup stay. Server settings are saved to both the install and the launcher's protected copy, and everything replaced is backed up first." />
+                            <TextBlock Text="{Binding BlockedText}" FontSize="12" Foreground="{StaticResource LanternBrush}" Margin="0,8,0,0" TextWrapping="Wrap" LineHeight="17"
+                                       Visibility="{Binding BlockedText, Converter={StaticResource VisibleWhen}}" />
+                            <StackPanel Orientation="Horizontal" Margin="-4,8,0,0">
+                                <Button Style="{StaticResource LinkButton}" Content="Tick all shown" Command="{Binding SelectAllCommand}" />
+                                <Button Style="{StaticResource LinkButton}" Content="Clear" Command="{Binding ClearCommand}" />
+                            </StackPanel>
+                            <Button Style="{StaticResource PrimaryButton}" Content="{Binding RestoreText}" Command="{Binding RestoreCommand}" HorizontalAlignment="Left" Margin="0,8,0,0" />
+                            <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto" Margin="0,12,0,0" Visibility="{Binding HasResults, Converter={StaticResource VisibleWhen}}">
+                                <ItemsControl ItemsSource="{Binding Results}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock x:Name="Result" Text="{Binding Message}" FontSize="12" Foreground="{StaticResource VerdanceBrush}" TextWrapping="Wrap" Margin="0,1,0,2" />
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding Ok}" Value="False">
+                                                    <Setter TargetName="Result" Property="Foreground" Value="{StaticResource LanternBrush}" />
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding ReleaseChanged}" Value="True">
+                    <Setter TargetName="Release" Property="Foreground" Value="{StaticResource EmberBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:FullBackupsViewModel}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Border Margin="2,0,24,12" Padding="16,12" CornerRadius="12" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1"
+                        Visibility="{Binding IsListVisible, Converter={StaticResource VisibleWhen}}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="FULL BACKUP FOLDER" Style="{StaticResource KickerText}" />
+                            <TextBlock Text="{Binding FolderText}" FontFamily="{StaticResource MonoFont}" FontSize="12.5" Foreground="{StaticResource SoftTextBrush}" Margin="0,3,0,0"
+                                       TextTrimming="CharacterEllipsis" ToolTip="{Binding FolderText}" />
+                            <TextBlock Text="{Binding FolderProblem}" FontSize="12" Foreground="{StaticResource LanternBrush}" Margin="0,3,0,0" TextWrapping="Wrap"
+                                       Visibility="{Binding FolderProblem, Converter={StaticResource VisibleWhen}}" />
+                            <TextBlock Text="{Binding InstalledText}" FontSize="12" Foreground="{StaticResource DimLabelBrush}" Margin="0,4,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+                            <Button Style="{StaticResource GhostButton}" Content="Change folder…" Command="{Binding ChooseFolderCommand}" Padding="12,6" FontSize="12" Margin="0,0,8,0" />
+                            <Button Style="{StaticResource GhostButton}" Content="Open folder" Command="{Binding OpenFolderCommand}" Padding="12,6" FontSize="12" Margin="0,0,12,0"
+                                    Visibility="{Binding HasFolder, Converter={StaticResource VisibleWhen}}" />
+                            <Button Style="{StaticResource PrimaryButton}" Content="Back up everything" Command="{Binding BackUpCommand}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Grid Grid.Row="1" Margin="2,0,24,10" Visibility="{Binding IsListVisible, Converter={StaticResource VisibleWhen}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Summary}" FontSize="12" Foreground="{StaticResource DimLabelBrush}" />
+                        <TextBlock x:Name="Status" Text="{Binding Status}" FontSize="12.5" Foreground="{StaticResource VerdanceBrush}" TextWrapping="Wrap" Margin="0,2,0,0"
+                                   Visibility="{Binding Status, Converter={StaticResource VisibleWhen}}" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Style="{StaticResource GhostButton}" Content="↻ Refresh" Command="{Binding RefreshCommand}" Padding="14,6" FontSize="12" />
+                </Grid>
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Visibility="{Binding IsListVisible, Converter={StaticResource VisibleWhen}}">
+                    <ItemsControl ItemsSource="{Binding Rows}" />
+                </ScrollViewer>
+                <ContentControl Grid.RowSpan="3" Content="{Binding Comparison}" Focusable="False"
+                                Visibility="{Binding IsListVisible, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding StatusIsError}" Value="True">
+                    <Setter TargetName="Status" Property="Foreground" Value="{StaticResource LanternBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
         <DataTemplate DataType="{x:Type vm:BackupsViewModel}">
             <Grid Margin="24,0,10,0">
                 <Grid.RowDefinitions>
@@ -620,13 +933,32 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <StackPanel Margin="2,0,24,12">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="⟲" FontSize="22" Foreground="{StaticResource ArcaneBrush}" VerticalAlignment="Center" Margin="0,0,10,0" />
-                        <TextBlock Text="{Binding Title}" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
-                    </StackPanel>
-                    <TextBlock Text="{Binding Intro}" Style="{StaticResource CaptionText}" FontSize="13" Margin="0,4,0,0" LineHeight="19" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="⟲" FontSize="22" Foreground="{StaticResource ArcaneBrush}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                            <TextBlock Text="{Binding Title}" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="20,4,0,0">
+                            <RadioButton Style="{StaticResource FilterRadio}" GroupName="BackupMode" IsChecked="{Binding IsChangeMode, Mode=OneWay}"
+                                         Command="{Binding ModeCommand}" CommandParameter="changes" Content="Change backups"
+                                         ToolTip="Taken automatically before every save, character change and restore" />
+                            <RadioButton Style="{StaticResource FilterRadio}" GroupName="BackupMode" IsChecked="{Binding IsFullMode, Mode=OneWay}"
+                                         Command="{Binding ModeCommand}" CommandParameter="full" Content="Full backups"
+                                         ToolTip="Everything at once — take one before updating L2Everdream, then compare and restore" />
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock Text="{Binding Intro}" Style="{StaticResource CaptionText}" FontSize="13" Margin="0,6,0,0" LineHeight="19"
+                               Visibility="{Binding IsFullMode, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
+                    <TextBlock Text="{Binding FullBackups.Intro}" Style="{StaticResource CaptionText}" FontSize="13" Margin="0,6,0,0" LineHeight="19"
+                               Visibility="{Binding IsFullMode, Converter={StaticResource VisibleWhen}}" />
                 </StackPanel>
-                <Grid Grid.Row="1" Margin="2,0,24,12">
+                <ContentControl Grid.Row="1" Grid.RowSpan="2" Content="{Binding FullBackups}" Focusable="False"
+                                Visibility="{Binding IsFullMode, Converter={StaticResource VisibleWhen}}" />
+                <Grid Grid.Row="1" Margin="2,0,24,12" Visibility="{Binding IsFullMode, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
@@ -639,7 +971,7 @@
                     <Button Grid.Column="1" Style="{StaticResource GhostButton}" Content="Open backups folder" Command="{Binding OpenRootCommand}" Padding="14,6" FontSize="12" Margin="0,0,8,0" />
                     <Button Grid.Column="2" Style="{StaticResource GhostButton}" Content="↻ Refresh" Command="{Binding RefreshCommand}" Padding="14,6" FontSize="12" />
                 </Grid>
-                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Visibility="{Binding IsFullMode, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}">
                     <ItemsControl ItemsSource="{Binding Rows}" />
                 </ScrollViewer>
             </Grid>
