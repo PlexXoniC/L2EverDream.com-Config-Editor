@@ -80,8 +80,8 @@ server-game|Player.ini|RespawnRestoreMP|MP restored on revival|%|
 server-game|Player.ini|HpRegenMultiplier|HP regeneration speed|%|
 server-game|Player.ini|MpRegenMultiplier|MP regeneration speed|%|
 server-game|Player.ini|CpRegenMultiplier|CP regeneration speed|%|
-server-game|Player.ini|EnableModifySkillDuration|Use custom buff durations||
-server-game|Player.ini|SkillDurationList|Custom buff durations||Format: skillId,seconds;skillId,seconds. Only used when custom buff durations are on.
+server-game|Player.ini|EnableModifySkillDuration|Use custom skill durations||Turns on the list of skills with their own duration below. Takes effect the next time the world starts.
+server-game|Player.ini|SkillDurationList|Custom skill durations||Choose skills and how long their effect lasts, up to 12 hours. The server uses the new duration for everyone who casts the skill (you, simulated players and monsters). Takes effect the next time the world starts.
 server-game|Player.ini|EnableModifySkillReuse|Use custom skill cooldowns||
 server-game|Player.ini|SkillReuseList|Custom skill cooldowns||Format: skillId,milliseconds;skillId,milliseconds.
 server-game|Player.ini|AutoLearnSkills|Learn class skills automatically||

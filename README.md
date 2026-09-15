@@ -26,6 +26,7 @@ also edits your player characters' adena and inventories, and it backs up everyt
 - [Getting started](#getting-started)
 - [What you can do](#what-you-can-do)
   - [Server settings](#server-settings)
+  - [Custom skill durations: longer (or shorter) buffs](#custom-skill-durations-longer-or-shorter-buffs)
   - [Client settings](#client-settings)
   - [How settings affect each other](#how-settings-affect-each-other)
   - [Custom Config: what L2Everdream changed](#custom-config-what-l2everdream-changed)
@@ -117,6 +118,23 @@ with a plain-language reason, and **Save changes** refuses them. Lists are check
 of the week, colours, IP addresses, and percentage splits that must add up to 100.
 
 The limits are never stricter than what actually ships. An automated test fails if any value in a real install would be rejected.
+
+### Custom skill durations: longer (or shorter) buffs
+
+Switch on **Use custom skill durations** (Skills & Combat), then click **Edit skill durations…** on the *Custom skill durations* card.
+A page lists every skill with a duration (983 in L2Everdream: buffs, songs and dances, debuffs, and NPC and monster skills). Each row
+shows the skill's normal duration, including what "+Time" enchanting adds. Type your own duration, such as `1h`, `45m` or `1h 30m`, up to
+12 hours, or leave the box empty to keep the normal one.
+
+- **Filters and search:** show player and buffer buffs (the default), songs and dances, debuffs, NPC and monster skills, or only the
+  ones you changed. Search by name or ID.
+- **Set many at once:** set every skill shown to 2× or 3× its normal duration, 1 hour, 2 hours or any duration you type, or put them all
+  back to normal.
+![The skill durations page: player and buffer buffs with their normal and enchanted durations, three of them set to longer durations, and the "Set many at once" panel](docs/images/skill-durations.png)
+
+- **Good to know:** the new duration is used by everyone who casts that skill — you, the simulated players and monsters — so a longer
+  debuff also lasts longer on you. Enchanted "+Time" levels add your duration on top of their own. The world uses the new durations
+  after its next start.
 
 ### Client settings
 
@@ -242,6 +260,8 @@ check that for yourself, and put back anything that was lost.
 4. Tick the settings you want back and click **Restore**. Only those values are written. The update's new settings stay, and so does
    everything else in the files. Server settings go to both the install and the launcher's protected copy, so the launcher keeps them.
 
+![Comparing a full backup taken before the 0.5.20 update with the files afterwards: no setting lost, one shipped default changed, and 42 files that only lost comments](docs/images/full-backup-compare.png)
+
 Files whose text changed but whose settings didn't (updates often rewrite comments) are summarised in one line, with nothing to restore.
 The same safety rules apply as above: nothing is restored while your world is running or Lineage 2 is open. Values the launcher sets
 itself are never restored, and what gets replaced is backed up first so a restore can be undone.
@@ -317,6 +337,10 @@ It depends on another setting that is currently off. Click **Show →** to jump 
 Open **Backups › Full backups** and click **Back up everything**, then update. Afterwards, **Compare with now** shows whether the update
 changed any of your settings, and lets you tick the ones you want back.
 
+**Can I make buffs last longer?**
+Yes. Switch on **Use custom skill durations** in Server › Skills & Combat, then click **Edit skill durations…**. Set durations one by one,
+or pick a filter and use **Set many at once** (for example, every player and buffer buff to 1 hour). Save, then restart your world.
+
 **Can I edit the XML configs, `user.ini` key bindings, warehouses or skills?**
 Not yet. The XML configs are listed but not editable, and the Characters tab covers adena and inventory items for now.
 
@@ -372,7 +396,7 @@ The Release configuration defaults to the standalone build, so `dotnet publish s
 |---|---|
 | `src/L2Config.Core` | No UI. Catalog model and search, line-preserving INI editor, client ini codec, settings store with validation and dual-copy saves, backups and restore, world database access, item catalog and inventory rules |
 | `src/L2Config.App` | The WPF application (MVVM, no UI libraries), styled after the L2Everdream site and launcher |
-| `tests/L2Config.Core.Tests` | 69 xUnit tests |
+| `tests/L2Config.Core.Tests` | 93 xUnit tests |
 | `catalog/` | The friendly layer: hand-curated names and relations (`*.tsv`), the Python generators, and the generated `catalog.json` and `custom-config.json` |
 | `research/` | How L2Everdream, its launcher, L2J Mobius and the client work, extracted schema data, and the stock Mobius configs used for comparison |
 

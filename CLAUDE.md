@@ -112,6 +112,9 @@ under `%LOCALAPPDATA%\L2EverdreamConfig\backups`.
 - Client `l2.ini`/`user.ini` are `Lineage2Ver413` (RSA blocks + zlib + CRC32 tail); `Localization.ini`/`TTFontInfo.ini`
   are `Lineage2Ver111` (XOR 0xAC); `Option.ini` is plain. `Core/Ini/L2IniCodec.cs` reproduces the files byte-for-byte.
 - The client ships `IsL2AutoLogOn=Ture` (typo); toggles treat anything but "true" as off.
+- `SkillDurationList` (edited on its own page, max 12 h per the user) is keyed by skill id for every caster, never affects
+  toggles, and is **added** to enchanted "+Time" levels 100–139 (see the knowledge base). Skills come from the datapack
+  (`Skills/SkillCatalog.cs`), not the catalog.
 - l2jmobius.org is behind a Cloudflare bot check — do not try to get past it; use the GitLab API
   (`gitlab.com/MobiusDevelopment/L2J_Mobius`) for upstream source. Stock configs for Custom Config are in
   `research/upstream-mobius/59097d4d05f0/`.

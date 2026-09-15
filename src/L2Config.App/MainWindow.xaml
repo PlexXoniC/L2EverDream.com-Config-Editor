@@ -80,11 +80,23 @@
             </StackPanel>
         </DataTemplate>
 
+        <DataTemplate x:Key="SkillDurationsEditor" DataType="{x:Type vm:SettingViewModel}">
+            <StackPanel>
+                <TextBlock Text="{Binding EditorSummary}" FontSize="12.5" Foreground="{StaticResource SoftTextBrush}" TextWrapping="Wrap" />
+                <Button Style="{StaticResource GhostButton}" Content="Edit skill durations…" Command="{Binding OpenEditorCommand}" HorizontalAlignment="Left"
+                        Padding="14,6" FontSize="12.5" Margin="0,8,0,0" />
+                <StackPanel Orientation="Horizontal" Margin="0,6,0,0" Visibility="{Binding EditorBlockedText, Converter={StaticResource VisibleWhen}}">
+                    <TextBlock Text="{Binding EditorBlockedText}" FontSize="12" Foreground="{StaticResource LanternBrush}" TextWrapping="Wrap" MaxWidth="290" VerticalAlignment="Center" />
+                    <Button Style="{StaticResource LinkButton}" Content="Show →" Command="{Binding ShowGateCommand}" VerticalAlignment="Center" />
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
         <infra:SettingEditorSelector x:Key="EditorSelector"
                                      Toggle="{StaticResource ToggleEditor}" Number="{StaticResource NumberEditor}"
                                      Slider="{StaticResource SliderEditor}" Choice="{StaticResource ChoiceEditor}"
                                      Text="{StaticResource TextEditor}" Secret="{StaticResource SecretEditor}"
-                                     ReadOnly="{StaticResource ReadOnlyEditor}" />
+                                     ReadOnly="{StaticResource ReadOnlyEditor}" SkillDurations="{StaticResource SkillDurationsEditor}" />
 
         <!-- ===== A setting row ================================================================ -->
         <DataTemplate DataType="{x:Type vm:SettingViewModel}">
@@ -1080,6 +1092,182 @@
             </Grid>
         </DataTemplate>
 
+        <!-- ===== Skill durations page ======================================================== -->
+        <DataTemplate DataType="{x:Type vm:SkillDurationRowViewModel}">
+            <Border x:Name="Card" Margin="0,0,14,6" Padding="14,9" CornerRadius="11" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" MinWidth="220" />
+                        <ColumnDefinition Width="170" />
+                        <ColumnDefinition Width="300" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center">
+                        <WrapPanel>
+                            <TextBlock Text="{Binding Name}" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" VerticalAlignment="Center" />
+                            <Border x:Name="KindBadge" Style="{StaticResource Badge}" Background="{StaticResource ArcaneWashBrush}" BorderBrush="#739D8CF0">
+                                <TextBlock x:Name="KindText" Text="{Binding KindWord}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource ArcaneBrush}" />
+                            </Border>
+                        </WrapPanel>
+                        <TextBlock FontSize="11.5" Foreground="{StaticResource CaptionBrush}" Margin="0,2,0,0" TextTrimming="CharacterEllipsis">
+                            <Run Text="{Binding IdText, Mode=OneWay}" /><Run Text="  ·  " /><Run Text="{Binding UsedBy, Mode=OneWay}" />
+                        </TextBlock>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="NORMAL DURATION" Style="{StaticResource KickerText}" />
+                        <TextBlock Text="{Binding DefaultText}" FontFamily="{StaticResource MonoFont}" FontSize="12.5" Foreground="{StaticResource SoftTextBrush}" Margin="0,2,0,0" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding EnchantText}" FontSize="11" Foreground="{StaticResource DimLabelBrush}" TextWrapping="Wrap" Visibility="{Binding EnchantText, Converter={StaticResource VisibleWhen}}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <Grid Width="150">
+                                <TextBox x:Name="Box" Style="{StaticResource FieldTextBox}" FontFamily="{StaticResource MonoFont}" TextAlignment="Right"
+                                         Text="{Binding Text, UpdateSourceTrigger=PropertyChanged, Delay=250}" AutomationProperties.Name="{Binding Name}"
+                                         ToolTip="Type a duration such as 90s, 20m, 1h 30m or 1:30:00. Leave empty for the normal duration." />
+                                <TextBlock Text="normal" Margin="0,0,12,0" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12" IsHitTestVisible="False"
+                                           Foreground="{StaticResource DimLabelBrush}" Visibility="{Binding Text, ElementName=Box, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
+                            </Grid>
+                            <Button Style="{StaticResource LinkButton}" Content="↺ Normal" Command="{Binding ResetCommand}" Margin="6,0,0,0" VerticalAlignment="Center"
+                                    ToolTip="Use the skill's normal duration (removes it from the list)" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding PreviewText}" FontSize="11.5" Foreground="{StaticResource EmberBrush}" Margin="2,3,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding PreviewText, Converter={StaticResource VisibleWhen}}" />
+                        <TextBlock Text="{Binding Error}" FontSize="11.5" Foreground="{StaticResource LanternBrush}" Margin="2,3,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding HasError, Converter={StaticResource VisibleWhen}}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsDebuff}" Value="True">
+                    <Setter TargetName="KindBadge" Property="Background" Value="Transparent" />
+                    <Setter TargetName="KindBadge" Property="BorderBrush" Value="#4D7C6FB0" />
+                    <Setter TargetName="KindText" Property="Foreground" Value="{StaticResource LabelBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsChanged}" Value="True">
+                    <Setter TargetName="Card" Property="BorderBrush" Value="{StaticResource LanternHairBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding HasError}" Value="True">
+                    <Setter TargetName="Card" Property="BorderBrush" Value="{StaticResource LanternBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:SkillDurationsViewModel}">
+            <Grid Margin="24,0,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid Margin="0,0,24,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Style="{StaticResource GhostButton}" Content="← Back to settings" Command="{Binding CloseCommand}" Padding="12,6" FontSize="12" VerticalAlignment="Top" />
+                    <StackPanel Grid.Column="1" Margin="16,0,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="⏳" FontSize="20" Foreground="{StaticResource ArcaneBrush}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                            <TextBlock Text="{Binding Title}" FontFamily="{StaticResource DisplayFont}" FontSize="26" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
+                        </StackPanel>
+                        <Border CornerRadius="6" Background="#40100E22" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1" Padding="7,2" Margin="0,4,0,0" HorizontalAlignment="Left">
+                            <TextBlock Text="{Binding Location}" Style="{StaticResource MonoChipText}" />
+                        </Border>
+                        <TextBlock Text="{Binding Summary}" FontSize="13" Foreground="{StaticResource EmberBrush}" Margin="0,6,0,0" TextWrapping="Wrap" />
+                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0" Visibility="{Binding UnknownText, Converter={StaticResource VisibleWhen}}">
+                            <TextBlock Text="{Binding UnknownText}" FontSize="12.5" Foreground="{StaticResource LanternBrush}" TextWrapping="Wrap" VerticalAlignment="Center" MaxWidth="720" />
+                            <Button Style="{StaticResource LinkButton}" Content="Remove them from the list" Command="{Binding RemoveUnknownCommand}" VerticalAlignment="Center" Margin="6,0,0,0" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding UnreadableText}" FontSize="12.5" Foreground="{StaticResource LanternBrush}" TextWrapping="Wrap" Margin="0,4,0,0" MaxWidth="900" HorizontalAlignment="Left"
+                                   Visibility="{Binding UnreadableText, Converter={StaticResource VisibleWhen}}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0" Visibility="{Binding GateText, Converter={StaticResource VisibleWhen}}">
+                            <TextBlock Text="{Binding GateText}" FontSize="12.5" Foreground="{StaticResource LanternBrush}" TextWrapping="Wrap" VerticalAlignment="Center" MaxWidth="620" />
+                            <Button Style="{StaticResource GhostButton}" Content="Switch it on" Command="{Binding SwitchOnCommand}" Padding="10,4" FontSize="12" Margin="10,0,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Row="1" Margin="0,0,24,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="260" />
+                    </Grid.ColumnDefinitions>
+                    <WrapPanel VerticalAlignment="Center">
+                        <RadioButton Style="{StaticResource FilterRadio}" GroupName="SkillFilter" IsChecked="{Binding IsPlayersFilter, Mode=OneWay}" Command="{Binding FilterCommand}" CommandParameter="players"
+                                     ToolTip="Buffs, songs and dances players learn or get from the buffer NPC">
+                            <TextBlock Text="{Binding PlayersCount, StringFormat=Player and buffer buffs ({0})}" />
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource FilterRadio}" GroupName="SkillFilter" IsChecked="{Binding IsSongsFilter, Mode=OneWay}" Command="{Binding FilterCommand}" CommandParameter="songs">
+                            <TextBlock Text="{Binding SongsCount, StringFormat=Songs and dances ({0})}" />
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource FilterRadio}" GroupName="SkillFilter" IsChecked="{Binding IsDebuffsFilter, Mode=OneWay}" Command="{Binding FilterCommand}" CommandParameter="debuffs">
+                            <TextBlock Text="{Binding DebuffsCount, StringFormat=Debuffs ({0})}" />
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource FilterRadio}" GroupName="SkillFilter" IsChecked="{Binding IsNpcFilter, Mode=OneWay}" Command="{Binding FilterCommand}" CommandParameter="npc">
+                            <TextBlock Text="{Binding NpcCount, StringFormat=NPC and monster skills ({0})}" />
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource FilterRadio}" GroupName="SkillFilter" IsChecked="{Binding IsChangedFilter, Mode=OneWay}" Command="{Binding FilterCommand}" CommandParameter="changed">
+                            <TextBlock Text="{Binding ChangedCount, StringFormat=Custom duration ({0})}" />
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource FilterRadio}" GroupName="SkillFilter" IsChecked="{Binding IsAllFilter, Mode=OneWay}" Command="{Binding FilterCommand}" CommandParameter="all">
+                            <TextBlock Text="{Binding AllCount, StringFormat=All ({0})}" />
+                        </RadioButton>
+                    </WrapPanel>
+                    <Grid Grid.Column="1">
+                        <TextBox x:Name="SkillSearch" Style="{StaticResource SearchBox}" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=150}" AutomationProperties.Name="Search skills" />
+                        <TextBlock Text="⌕" Margin="11,0,0,1" VerticalAlignment="Center" FontSize="15" Foreground="{StaticResource LabelBrush}" IsHitTestVisible="False" />
+                        <TextBlock Text="Search skills by name or ID…" Margin="31,0,0,0" VerticalAlignment="Center" FontSize="13" IsHitTestVisible="False" Foreground="{StaticResource DimLabelBrush}"
+                                   Visibility="{Binding Text, ElementName=SkillSearch, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
+                    </Grid>
+                </Grid>
+
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="320" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Reading the skill list…" Style="{StaticResource CaptionText}" FontSize="13.5" Margin="2,20,0,0" Visibility="{Binding IsLoading, Converter={StaticResource VisibleWhen}}" />
+                    <ListBox ItemsSource="{Binding Visible}" Background="Transparent" BorderThickness="0" ItemContainerStyle="{StaticResource PlainListItem}"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="True"
+                             VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"
+                             KeyboardNavigation.TabNavigation="Continue" Visibility="{Binding HasVisible, Converter={StaticResource VisibleWhen}}" />
+
+                    <Border Grid.Column="2" Padding="16,14" CornerRadius="14" Background="{StaticResource CardGradientBrush}" BorderBrush="{StaticResource VioletHairBrush}" BorderThickness="1"
+                            Margin="0,0,14,10" VerticalAlignment="Top">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,4,0">
+                        <StackPanel>
+                            <TextBlock Text="Set many at once" FontFamily="{StaticResource DisplayFont}" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
+                            <TextBlock Text="{Binding ShownText, StringFormat=Applies to the {0} in the list (use the filters and search to choose them).}" Style="{StaticResource CaptionText}" Margin="0,4,0,0" TextWrapping="Wrap" LineHeight="17" />
+                            <WrapPanel Margin="0,8,0,0">
+                                <Button Style="{StaticResource GhostButton}" Content="2× normal" Command="{Binding BulkCommand}" CommandParameter="x2" Padding="10,5" FontSize="12" Margin="0,0,6,6" />
+                                <Button Style="{StaticResource GhostButton}" Content="3× normal" Command="{Binding BulkCommand}" CommandParameter="x3" Padding="10,5" FontSize="12" Margin="0,0,6,6" />
+                                <Button Style="{StaticResource GhostButton}" Content="1 hour" Command="{Binding BulkCommand}" CommandParameter="1h" Padding="10,5" FontSize="12" Margin="0,0,6,6" />
+                                <Button Style="{StaticResource GhostButton}" Content="2 hours" Command="{Binding BulkCommand}" CommandParameter="2h" Padding="10,5" FontSize="12" Margin="0,0,6,6" />
+                            </WrapPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                <TextBox Style="{StaticResource FieldTextBox}" Width="120" FontFamily="{StaticResource MonoFont}" Text="{Binding BulkText, UpdateSourceTrigger=PropertyChanged}"
+                                         AutomationProperties.Name="Duration for all shown skills" ToolTip="e.g. 45m, 1h 30m, 3600" />
+                                <Button Style="{StaticResource GhostButton}" Content="Set all shown" Command="{Binding BulkCommand}" CommandParameter="custom" Padding="10,5" FontSize="12" Margin="8,0,0,0" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding BulkProblem}" FontSize="12" Foreground="{StaticResource LanternBrush}" Margin="0,4,0,0" TextWrapping="Wrap" Visibility="{Binding BulkProblem, Converter={StaticResource VisibleWhen}}" />
+                            <Button Style="{StaticResource LinkButton}" Content="↺ Put all shown back to normal" Command="{Binding BulkCommand}" CommandParameter="reset" HorizontalAlignment="Left" Margin="-4,8,0,0" />
+                            <TextBlock Text="{Binding Message}" FontSize="12" Foreground="{StaticResource VerdanceBrush}" Margin="0,8,0,0" TextWrapping="Wrap" Visibility="{Binding Message, Converter={StaticResource VisibleWhen}}" />
+
+                            <Border Height="1" Margin="0,12,0,10" Background="{StaticResource SoftVioletHairBrush}" />
+                            <ItemsControl ItemsSource="{Binding Notes}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding StringFormat=•  {0}}" FontSize="12" Foreground="{StaticResource CaptionBrush}" TextWrapping="Wrap" LineHeight="17" Margin="0,0,0,6" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
         <!-- ===== A whole tab ================================================================= -->        <DataTemplate DataType="{x:Type vm:TabViewModel}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -1125,8 +1313,11 @@
                     </StackPanel>
                 </Border>
 
+                <!-- A page that replaces the settings (skill durations) -->
+                <ContentControl Grid.Row="1" Content="{Binding Page}" Focusable="False" Visibility="{Binding Page, Converter={StaticResource VisibleWhen}}" />
+
                 <!-- Section list + settings -->
-                <Grid Grid.Row="1" Visibility="{Binding HasFolder, Converter={StaticResource VisibleWhen}}">
+                <Grid Grid.Row="1" Visibility="{Binding ShowSettings, Converter={StaticResource VisibleWhen}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="290" />
                         <ColumnDefinition Width="*" />

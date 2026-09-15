@@ -528,7 +528,11 @@ KNOWN_FORMATS = {
     "LoginHost": "host", "GameserverHostname": "host", "LoginserverHostname": "host", "LoginHostname": "host",
     "BanChatChannels": "word-list;", "MultiLangAllowed": "word-list;", "ForbiddenNames": "word-list",
     "ExcludedPacketList": "word-list", "DualboxCheckWhitelist": "ip-list",
+    "SkillDurationList": "skill-duration-list",
 }
+
+# Keys with a dedicated editor in the app instead of a text box.
+KNOWN_EDITORS = {"SkillDurationList": "skill-durations"}
 
 # Keys whose value picks from a fixed set the comments describe only loosely.
 KNOWN_CHOICES = {
@@ -718,7 +722,7 @@ def main():
             "group": gid,
             "name": name,
             "description": over.get("description") or desc,
-            "editor": over.get("editor") or editor,
+            "editor": over.get("editor") or KNOWN_EDITORS.get(e["key"]) or editor,
             "valueType": vtype,
             "options": options,
             "unit": unit,

@@ -172,6 +172,16 @@ Format: `Key = Value`, `#` comments, sections are `# ----` / `# Title` / `# ----
 `\` line continuation. Types via `ConfigReader.getBoolean/Byte/Int/Long/Float/Double/String`. The comment
 format is inconsistent enough that section detection needs heuristics (some descriptions start with a banner).
 
+**`Player.ini SkillDurationList`** (read by `PlayerConfig`: split on `;`, then `,` into id → seconds; bad entries are logged
+and skipped, a repeated id keeps the last value). Applied in the `Skill(StatSet)` constructor when `EnableModifySkillDuration` is
+on, the id is listed and the skill is not a toggle (`operateType T`): levels below 100 and above 140 get the listed seconds as
+`abnormalTime`; levels 100–139 (the "+Time" enchant route) get the listed seconds **added** to their enchanted `abnormalTime`.
+It is keyed by skill id, so it changes the skill for every caster (players, sims, NPCs, monsters). In the 1.0.82 datapack 983
+skills have an `abnormalTime` (none of them toggles): 347 in player skill trees (`stats\players\skillTrees`), all 85
+`SchemeBufferSkills.xml` buffs, 443 flagged `isDebuff`; songs/dances are `abnormalType SONG_*` / `DANCE_*`. Durations are
+seconds; `abnormalTime` may be a `#table` per level and enchant routes use `<enchantN name="abnormalTime">`. The app caps
+listed durations at 12 hours.
+
 Notable L2Everdream deviations from Mobius defaults (current install):
 
 | Setting | Value | Why (from comments) |

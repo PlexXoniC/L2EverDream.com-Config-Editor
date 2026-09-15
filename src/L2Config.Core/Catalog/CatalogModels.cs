@@ -118,6 +118,9 @@ public enum SettingEditor
 	[JsonStringEnumMemberName("toggle")] Toggle,
 	[JsonStringEnumMemberName("choice")] Choice,
 	[JsonStringEnumMemberName("secret")] Secret,
+
+	/// <summary>Player.ini SkillDurationList: a list of every skill with a duration, edited in its own page.</summary>
+	[JsonStringEnumMemberName("skill-durations")] SkillDurations,
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter<SettingValueType>))]

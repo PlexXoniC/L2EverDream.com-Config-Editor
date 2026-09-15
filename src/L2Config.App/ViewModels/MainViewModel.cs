@@ -4,6 +4,7 @@ using L2Config.App.Infrastructure;
 using L2Config.Core.Backups;
 using L2Config.Core.Catalog;
 using L2Config.Core.Characters;
+using L2Config.Core.Skills;
 using L2Config.Core.Storage;
 
 namespace L2Config.App.ViewModels;
@@ -289,7 +290,10 @@ public sealed class MainViewModel : ObservableObject
 			}
 			(isClient ? client : server).Add(vm);
 		}
-		LinkRelations(server.Concat(client).ToDictionary(s => s.Definition.Id));
+		var byId = server.Concat(client).ToDictionary(s => s.Definition.Id);
+		LinkRelations(byId);
+		AttachPageEditors(byId);
+		ServerTab.Page = null;
 		ServerTab.SetSettings(server);
 		ClientTab.SetSettings(client);
 		CustomTab?.UpdateCurrentValues(_store, _catalog, locations.HasServer);
@@ -318,6 +322,37 @@ public sealed class MainViewModel : ObservableObject
 				}
 			}
 		}
+	}
+
+	/// <summary>Settings edited on their own page (the skill durations list), opened from their card while their on/off switch is on.</summary>
+	private void AttachPageEditors(Dictionary<string, SettingViewModel> byId)
+	{
+		foreach (var setting in byId.Values.Where(s => s.Definition.Editor == SettingEditor.SkillDurations))
+		{
+			var gateId = setting.Definition.Relations.FirstOrDefault(r => r.IsRequirement && r.Value == "true")?.Id;
+			var gate = gateId is null ? null : byId.GetValueOrDefault(gateId);
+			setting.AttachPageEditor(gate, () => OpenSkillDurations(setting, gate), ShowSetting);
+		}
+	}
+
+	private (string Root, Task<SkillCatalog> Load)? _skills;
+
+	/// <summary>The datapack's skills, read once per server folder in the background.</summary>
+	private Task<SkillCatalog> LoadSkillsAsync()
+	{
+		var root = _store!.Locations.ServerRoot!;
+		if (_skills is not { } cached || cached.Root != root || cached.Load.IsFaulted)
+		{
+			_skills = (root, Task.Run(() => SkillCatalog.LoadFromServer(root)));
+		}
+		return _skills.Value.Load;
+	}
+
+	public void OpenSkillDurations(SettingViewModel setting, SettingViewModel? gate)
+	{
+		var tab = SettingTargets.IsClient(setting.Definition.Target) ? ClientTab : ServerTab;
+		tab.Page = new SkillDurationsViewModel(setting, gate, LoadSkillsAsync, () => tab.Page = null, _dialogs, ShowSetting);
+		SelectedTab = tab;
 	}
 
 	private string? ReadServerValue(string key)

@@ -42,6 +42,7 @@ public sealed class SettingEditorSelector : DataTemplateSelector
 	public DataTemplate? Text { get; set; }
 	public DataTemplate? Secret { get; set; }
 	public DataTemplate? ReadOnly { get; set; }
+	public DataTemplate? SkillDurations { get; set; }
 
 	public override DataTemplate? SelectTemplate(object item, DependencyObject container)
 	{
@@ -60,6 +61,7 @@ public sealed class SettingEditorSelector : DataTemplateSelector
 			SettingEditor.Slider => Slider,
 			SettingEditor.Choice => Choice,
 			SettingEditor.Secret => Secret,
+			SettingEditor.SkillDurations => SkillDurations,
 			_ => Text,
 		};
 	}

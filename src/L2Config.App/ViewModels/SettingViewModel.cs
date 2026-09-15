@@ -116,6 +116,46 @@ public sealed class SettingViewModel : ObservableObject
 	public RelayCommand ResetToDefaultCommand { get; }
 	public RelayCommand UndoCommand { get; }
 
+	// ------------------------------------------------------------------ settings edited on their own page (skill durations)
+
+	private SettingViewModel? _gate;
+	private RelayCommand? _openEditorCommand;
+	private RelayCommand? _showGateCommand;
+
+	/// <summary>Gives this setting a page editor, available only while <paramref name="gate"/> (an on/off setting) is on.</summary>
+	public void AttachPageEditor(SettingViewModel? gate, Action open, Action<string> showSetting)
+	{
+		_gate = gate;
+		_openEditorCommand = new RelayCommand(open, () => CanOpenEditor);
+		_showGateCommand = new RelayCommand(() => { if (_gate is not null) showSetting(_gate.Definition.Id); });
+		if (gate is not null)
+		{
+			gate.PropertyChanged += (_, e) =>
+			{
+				if (e.PropertyName == nameof(Value))
+				{
+					OnPropertyChanged(nameof(CanOpenEditor));
+					OnPropertyChanged(nameof(EditorBlockedText));
+				}
+			};
+		}
+	}
+
+	public RelayCommand? OpenEditorCommand => _openEditorCommand;
+	public RelayCommand? ShowGateCommand => _showGateCommand;
+	public bool CanOpenEditor => IsEditable && (_gate is null || SettingValues.IsTrue(_gate.Value));
+
+	public string? EditorBlockedText => _gate is not null && !SettingValues.IsTrue(_gate.Value)
+		? $"Switch on “{_gate.Name}” to choose skill durations."
+		: null;
+
+	public string EditorSummary => Core.Skills.SkillDurationList.Parse(_value).Durations.Count switch
+	{
+		0 => "No skill has a custom duration yet.",
+		1 => "1 skill has a custom duration.",
+		var n => $"{n} skills have a custom duration.",
+	};
+
 	/// <summary>Called after a successful save: what is on disk is now the edited value.</summary>
 	public void AcceptSaved()
 	{
@@ -135,6 +175,7 @@ public sealed class SettingViewModel : ObservableObject
 		OnPropertyChanged(nameof(IsChangedFromDefault));
 		OnPropertyChanged(nameof(CanResetToDefault));
 		OnPropertyChanged(nameof(StateWord));
+		OnPropertyChanged(nameof(EditorSummary));
 	}
 
 	private string FormatForDisplay(string raw)

@@ -81,6 +81,8 @@ public static partial class SettingValues
 				return value.Length == 0 || IntListSemicolon().IsMatch(value) ? null : "Enter numbers separated by semicolons, e.g. 100;30;0.";
 			case "pair-list":
 				return value.Length == 0 || PairList().IsMatch(value) ? null : "Use id,value pairs separated by semicolons, e.g. 57,2;4037,1.5";
+			case "skill-duration-list":
+				return Skills.SkillDurationList.Parse(value).Problems is [var first, ..] ? first : null;
 			case "boss-drop-list":
 				return value.Length == 0 || BossDropList().IsMatch(value) ? null : "Use itemId,min,max,chance separated by semicolons, e.g. 4356,1,2,100;";
 			case "range-list":

@@ -33,7 +33,7 @@ game:Rates.ini:KarmaRateDrop|affects|game:PVP.ini:MinimumPKRequiredToDrop||Items
 game:Player.ini:RecoverVitalityOnReconnect|requires|game:Player.ini:EnableVitality|true|The vitality system is off.
 game:Player.ini:StartingVitalityPoints|requires|game:Player.ini:EnableVitality|true|The vitality system is off.
 game:Player.ini:RaidbossUseVitality|requires|game:Player.ini:EnableVitality|true|The vitality system is off.
-game:Player.ini:SkillDurationList|requires|game:Player.ini:EnableModifySkillDuration|true|This list is ignored until custom buff durations are switched on.
+game:Player.ini:SkillDurationList|requires|game:Player.ini:EnableModifySkillDuration|true|This list is ignored until custom skill durations are switched on.
 game:Player.ini:SkillReuseList|requires|game:Player.ini:EnableModifySkillReuse|true|This list is ignored until custom skill cooldowns are switched on.
 game:Player.ini:AutoLearnSkillsWithoutItems|requires|game:Player.ini:AutoLearnSkills|true|Only applies while skills are learned automatically.
 game:Player.ini:AutoLearnForgottenScrollSkills|requires|game:Player.ini:AutoLearnSkills|true|Only applies while skills are learned automatically.

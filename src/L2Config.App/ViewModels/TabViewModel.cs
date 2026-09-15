@@ -73,6 +73,7 @@ public sealed class TabViewModel : ObservableObject
 			if (Set(ref _folderPath, value))
 			{
 				OnPropertyChanged(nameof(HasFolder));
+				OnPropertyChanged(nameof(ShowSettings));
 			}
 		}
 	}
@@ -86,11 +87,29 @@ public sealed class TabViewModel : ObservableObject
 			if (Set(ref _folderProblem, value))
 			{
 				OnPropertyChanged(nameof(HasFolder));
+				OnPropertyChanged(nameof(ShowSettings));
 			}
 		}
 	}
 
 	public bool HasFolder => FolderPath is not null && FolderProblem is null;
+
+	private object? _page;
+
+	/// <summary>A page that replaces the settings list (the skill durations editor), or null.</summary>
+	public object? Page
+	{
+		get => _page;
+		set
+		{
+			if (Set(ref _page, value))
+			{
+				OnPropertyChanged(nameof(ShowSettings));
+			}
+		}
+	}
+
+	public bool ShowSettings => HasFolder && Page is null;
 
 	/// <summary>"Your world is running…" / "The game client is open…", or null.</summary>
 	public string? RuntimeNotice
@@ -112,6 +131,7 @@ public sealed class TabViewModel : ObservableObject
 		{
 			if (Set(ref _searchText, value ?? ""))
 			{
+				Page = null;
 				OnPropertyChanged(nameof(IsSearching));
 				Refresh();
 			}
@@ -175,6 +195,7 @@ public sealed class TabViewModel : ObservableObject
 
 	public void SelectCategory(CategoryNode category)
 	{
+		Page = null;
 		if (IsSearching)
 		{
 			var header = Rows.OfType<GroupHeaderRow>().FirstOrDefault(r => category.Groups.Any(g => g.Id == r.GroupId));
@@ -198,6 +219,7 @@ public sealed class TabViewModel : ObservableObject
 
 	public void SelectGroup(GroupNode group)
 	{
+		Page = null;
 		if (!IsSearching && group.Category != SelectedCategory)
 		{
 			SelectedCategory = group.Category;

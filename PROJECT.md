@@ -75,7 +75,11 @@ dotnet publish src/L2Config.App -c Release -r win-x64 --self-contained false -p:
 - `README.md` is the user-facing GitHub page. Keep its numbers (settings, tests, sizes) in step with this file.
 
 **README screenshots** (`docs/images/*.png`) must show no real folders, account or character names. They are made in snapshot mode
-(1280x820 at 125 % scaling) from a demo world, never from a real install:
+(1280x820 at 125 % scaling). Screens that show no folder path or character (the full-backup comparison,
+`full-backup-compare.png`: `--tab backups --compare latest --filter all`) may come straight from a real install. Screens whose only
+private detail is the folder path in the folder bar may also come from a real install with that path covered by a solid black bar
+(`skill-durations.png`: `--tab server --skill-durations --edit "SkillDurationList=1085,3600;1087,3600;1354,5400"`, bar over the path at
+x 152–672, y 122–150 of the 1600×1025 image). Screens showing characters or accounts come from a demo world:
 
 1. Copy an install's `game\config`, `login\config`, `game\data\stats\items`, the data folder's `db\config` and
    `worlds\world-profile.json`, and a client's `system\*.ini`, into a neutral tree, e.g. `D:\Games\L2Everdream`,
@@ -93,7 +97,7 @@ dotnet publish src/L2Config.App -c Release -r win-x64 --self-contained false -p:
 L2EverdreamConfig.exe --snapshot out.png --server "<server folder>" --client "<client folder>" --tab server --category rates --search "party xp" --edit RateXp=3 --advanced --size 1280x820
 ```
 
-`--backups <dir>` lists backups from another folder instead of `%LOCALAPPDATA%\L2EverdreamConfig\backups`; `--backups-mode full` opens Full backups, `--full-backups <dir>` sets their folder, `--compare <backup folder|latest>` opens a comparison (with `--filter changed|shipped|new|all` and `--search`; nothing is restored); `--inventory <character>` opens that character's inventory (with `--item-search`, `--item <id>`, `--amount` to fill the add panel; nothing is applied); `--tab` is `server`, `client`, `custom`, `characters` or `backups`; `--group <group id>` scrolls to a group; `--edit key=value` shows an
+`--backups <dir>` lists backups from another folder instead of `%LOCALAPPDATA%\L2EverdreamConfig\backups`; `--backups-mode full` opens Full backups, `--full-backups <dir>` sets their folder, `--compare <backup folder|latest>` opens a comparison (with `--filter changed|shipped|new|all` and `--search`; nothing is restored); `--skill-durations` opens the skill durations page (with `--filter players|songs|debuffs|npc|changed|all` and `--search`); `--inventory <character>` opens that character's inventory (with `--item-search`, `--item <id>`, `--amount` to fill the add panel; nothing is applied); `--tab` is `server`, `client`, `custom`, `characters` or `backups`; `--group <group id>` scrolls to a group; `--edit key=value` shows an
 unsaved edit in memory.
 
 ---
@@ -146,6 +150,7 @@ tests/L2Config.Core.Tests/       xUnit
 | `Storage/RuntimeStatus.cs` | Read-only: is the world listening on its game port, is `L2.exe` running. |
 | `Characters/WorldDatabase.cs` | The world's database (from `game\config\Database.ini`, MySqlConnector): characters, inventory, queued deliveries; set/remove item counts and queue/cancel deliveries inside transactions that lock the character and back up rows first; restore rows (offline only; re-create a removed item with its original ID only if the world has not restarted since the backup). |
 | `Characters/ItemCatalog.cs`, `Characters/InventoryRules.cs` | Every item from `game\data\stats\items` (name, type, stackable, grade); the server's inventory limit (race, Game Master access levels from `AccessLevels.xml`) and slot counting incl. pending deliveries. |
+| `Skills/SkillCatalog.cs` | Every skill with a duration from `game\data\stats\skills` (custom last), whether players learn it (`stats\players\skillTrees`) or the buffer gives it (`SchemeBufferSkills.xml`), kind (buff, song/dance, debuff), durations by level and "+Time" enchant maximum; `SkillDurationList` parse/format, plain-word durations (`90s`, `1h 30m`, `1:30:00`). |
 
 ### App (`src/L2Config.App`)
 
@@ -159,6 +164,7 @@ tests/L2Config.Core.Tests/       xUnit
 | `ViewModels/CharactersViewModel.cs`, `ViewModels/InventoryViewModel.cs` | Characters list with adena editor; inventory editor: items with Set count / Remove, waiting deliveries with Cancel, item search over the full list, amount/enchant, live slot and stack checks, the plain delivery explanation. |
 | `ViewModels/BackupsViewModel.cs`, `ViewModels/RelationViewModel.cs` | Backups tab (Change backups: list, what changed, restore with a plan and per-item results); live "depends on / has no effect right now / controls / works with" lines on setting cards. |
 | `ViewModels/FullBackupsViewModel.cs` | Backups tab › Full backups: folder choice, *Back up everything*, list with "updated since this backup", and the comparison checklist (filters, search, tick, *Restore selected*, results). |
+| `ViewModels/SkillDurationsViewModel.cs` | The skill durations page (opened from the "Custom skill durations" card while "Use custom skill durations" is on): filters, search, a duration box per skill with its normal and enchanted duration, "Set many at once" (2×, 3×, 1 h, 2 h, typed, back to normal), unknown ids and unreadable entries. Edits go into the setting value, so the normal save bar saves them. |
 | `ViewModels/CustomConfigViewModel.cs` | Read-only differences with stock / shipped / current values and filters. |
 | `Theme/Colors.xaml`, `Theme/Controls.xaml` | The design system (see §8). |
 | `Infrastructure/*` | `ObservableObject`, `RelayCommand`, app preferences, converters, editor template selector, numeric input filter, password binding. |
@@ -200,7 +206,7 @@ tests/L2Config.Core.Tests/       xUnit
 | client-l2ini (`l2.ini`) | 23 |
 | world-profile | 5 |
 
-Editors: 750 number, 420 on/off, 98 list, 92 text, 40 choice, 7 slider, 1 secret. 359 are marked **Advanced**
+Editors: 750 number, 420 on/off, 97 list, 92 text, 40 choice, 7 slider, 1 secret, 1 skill-durations page. 359 are marked **Advanced**
 (hidden until the Advanced filter is on), 25 are launcher-managed.
 
 ### Categories (grouped by what a setting does, not by file)
@@ -232,7 +238,7 @@ attributions removed).
 - Choices: from the comments ("Available Options", `0 = …` lists, `NAME - …` lists) and `KNOWN_CHOICES`.
 - Formats (`SettingValues.ValidateFormat`): `int-list`, `int-list;`, `pair-list`, `boss-drop-list`, `range-list`,
   `percent-split-4` (must total 100), `time-list`, `weekday-list`, `hex-color`, `coordinates`, `buffer-list`,
-  `word-list`, `word-list;`, `ip-list`, `host`, `regex`.
+  `word-list`, `word-list;`, `ip-list`, `host`, `regex`, `skill-duration-list` (skill id, 1 s–12 h).
 - Guard rail: the test `EveryCurrentValueIsWithinItsLimits` fails if any value in the real install or client would be
   rejected, so a limit can never be stricter than what actually ships.
 
@@ -330,6 +336,7 @@ change backups above.
 - **Filters**: *Changed only* (differs from default or edited), *Advanced*.
 - **Setting card**: name, state word (*Unsaved* / *Changed*), *Set by the launcher* lock, *Advanced* tag, description,
   real-name chip, default, allowed range, the editor, error text, *Undo* and *Reset to default*.
+- **Skill durations page**: "Custom skill durations" (Player.ini `SkillDurationList`) opens a page in the Server tab listing all 983 skills with a duration — filters *Player and buffer buffs* (default), *Songs and dances*, *Debuffs*, *NPC and monster skills*, *Custom duration*, *All* — each with its normal duration (by level, +Time enchant maximum) and a box for your duration (empty = normal, 1 s–12 h). *Set many at once* applies 2×/3× normal, 1 h, 2 h or a typed duration to every skill shown (with a confirmation). The page explains that durations apply to everyone casting the skill (players, sims, monsters), that +Time enchanted levels add the listed seconds, and that the world must restart.
 - **Editors**: on/off switch (also says On/Off), number box that refuses letters, slider + number, dropdown,
   text/list box, password box.
 - **Save bar**: status, backups link, unsaved count, *Discard*, *Save changes* (the one gold action).
@@ -400,5 +407,7 @@ behaviour or adding a new file type.
 | 2026-09-14 | Characters tab: edit inventory adena of offline player characters in the running world's database (MySqlConnector). |
 | 2026-09-14 | Inventory editor (change/remove items offline; add items via server delivery with inventory-limit checks), Backups tab with restore (files only while stopped, rows only for offline characters), row-level database backups, flat backup folders with manifest, setting relations on cards. |
 | 2026-09-14 | Version 1.0.0: GitHub `README.md`; two release variants (standalone and needs-dotnet single-file exes), zipped with SHA-256 hashes and release notes. README screenshots from a demo world; snapshot mode `--backups <dir>`. |
+| 2026-09-15 | Skill durations page for `SkillDurationList` (all skills with a duration, normal/enchanted durations, filters, bulk set, 12-hour limit); settings renamed "Use custom skill durations" / "Custom skill durations". README screenshot with the folder path blacked out. |
+| 2026-09-15 | README screenshot of the real 0.5.19 → 0.5.20 full-backup comparison. |
 | 2026-09-15 | Full backups: *Back up everything* to a user-chosen folder, compare with now setting by setting (backup / now / shipped), restore ticked settings; checked against the real 0.5.19 → 0.5.20 update (findings in the knowledge base). |
 | 2026-09-13 | No local paths in the repository or its history: this PC's folders moved to git-ignored `CLAUDE.local.md` and `test-paths.local.json`. |
