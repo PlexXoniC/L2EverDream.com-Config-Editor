@@ -6,10 +6,10 @@ The **Client** tab edits your Lineage 2 client's settings: **81 settings** from 
 
 | Category | Groups |
 |---|---|
-| Graphics | Display · Detail & effects · Draw distance · Window |
-| Sound | Volume |
-| Gameplay & Interface | Names shown · Chat & messages · Camera & controls · Interface · Language & font |
-| Connection & Login | Server · Automatic login |
+| [Graphics](Settings-Graphics) | Display · Detail & effects · Draw distance · Window |
+| [Sound](Settings-Sound) | Volume |
+| [Gameplay & Interface](Settings-Gameplay-Interface) | Names shown · Chat & messages · Camera & controls · Interface · Language & font |
+| [Connection & Login](Settings-Connection-Login) | Server · Automatic login |
 
 The section list, search, filters and setting cards work exactly as on the [Server tab](Server-Settings).
 

@@ -73,7 +73,9 @@ dotnet publish src/L2Config.App -c Release -r win-x64 --self-contained false -p:
   the exe and `LICENSE.txt`. The release notes list SHA-256 hashes (`certutil -hashfile <zip> SHA256`).
 - Both variants were verified by running the exe alone from an empty folder.
 - `README.md` is the user-facing GitHub page. Keep its numbers (settings, tests, sizes) in step with this file.
-- **Wiki:** `docs/wiki/` is the source of the GitHub wiki (13 pages plus `_Sidebar.md` and `_Footer.md`). Pages link to each other by
+- **Wiki:** `docs/wiki/` is the source of the GitHub wiki: 14 hand-written guide pages, 20 generated settings-reference pages
+  (`Settings-<Category>.md`) plus `Settings-Reference.md` from `python catalog/build_wiki.py`, and `_Sidebar.md` / `_Footer.md`.
+  Regenerate the reference after changing the catalog; never hand-edit the generated pages. Pages link to each other by
   page name and to images on the main branch (`raw.githubusercontent.com/…/main/docs/images/`). Keep it in step with the app and the README.
   To publish: create the first wiki page once on GitHub (Wiki › Create the first page), then clone
   `https://github.com/PlexXoniC/L2EverDream.com-Config-Editor.wiki.git`, copy `docs/wiki/*.md` into it, commit and push.
@@ -255,6 +257,9 @@ python catalog/build_catalog.py
 ```bash
 python catalog/build_custom_config.py "%LOCALAPPDATA%\L2Everdream"
 ```
+```bash
+python catalog/build_wiki.py
+```
 
 `build_catalog.py` warns about `friendly-names.tsv` rows that match no setting; `build_custom_config.py` warns about
 differences without a summary in `custom-config-notes.tsv`. Rebuild or republish the app afterwards (the JSON is embedded at build).
@@ -412,6 +417,7 @@ behaviour or adding a new file type.
 | 2026-09-14 | Characters tab: edit inventory adena of offline player characters in the running world's database (MySqlConnector). |
 | 2026-09-14 | Inventory editor (change/remove items offline; add items via server delivery with inventory-limit checks), Backups tab with restore (files only while stopped, rows only for offline characters), row-level database backups, flat backup folders with manifest, setting relations on cards. |
 | 2026-09-14 | Version 1.0.0: GitHub `README.md`; two release variants (standalone and needs-dotnet single-file exes), zipped with SHA-256 hashes and release notes. README screenshots from a demo world; snapshot mode `--backups <dir>`. |
+| 2026-09-15 | Wiki settings reference generated from the catalog (`catalog/build_wiki.py`, 20 category pages + index, every setting with default, allowed values and relations); README and release notes trimmed to point at the wiki. |
 | 2026-09-15 | Version 1.1.0 (full backups, custom skill durations); release notes in `publish/release/release-notes-v1.1.0.md`. |
 | 2026-09-15 | GitHub wiki source in `docs/wiki` (13 pages: install, server and client settings, skill durations, relations, Custom Config, characters, backups, full backups and updates, file locations, troubleshooting, privacy, developers). |
 | 2026-09-15 | Skill durations page for `SkillDurationList` (all skills with a duration, normal/enchanted durations, filters, bulk set, 12-hour limit); settings renamed "Use custom skill durations" / "Custom skill durations". README screenshot with the folder path blacked out. |

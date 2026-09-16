@@ -7,26 +7,27 @@ launcher's **5 world settings** (from `world-profile.json`, such as how many sim
 
 ## Categories
 
-Settings are grouped by what they do, not by which file they happen to live in:
+Settings are grouped by what they do, not by which file they happen to live in. Each category has a reference page listing every
+setting it holds, with defaults, allowed values and related settings:
 
 | Category | Groups |
 |---|---|
-| Your World | Population · World rules |
-| Rates & Rewards | Experience & skill points · Quest rewards · Monster drops · Drops vs. level difference · Vitality bonus · Pets · Extra raid boss drops |
-| Characters | New characters · Names & character slots · Levels & death · Classes & subclasses · Stat limits · Inventory & storage · Looting · Parties · Travel & teleports · Vitality system · Pets & summons · Other player rules |
-| Skills & Combat | Skills & learning (including [custom skill durations](Custom-Skill-Durations)) · Buffs & effects · Damage · Class balance multipliers · Cancelled buff return |
-| Items & Enchanting | Enchanting · Augmentation · Soul crystals · Crafting · Dropped items · Transmogrification · Other item rules |
-| Economy & Trade | NPC shops & multisell · Private stores · Offline trade & craft · Selling buffs · Manor · Banking · Scheme buffer · Other |
-| PvP & Karma | Peace zones · Karma rules · Item loss on death · Anti-feed · Fame · PvP rewards & announcements · PvP title colors · Faction system · Other |
-| Clans & Sieges | Clans & alliances · Clan reputation points · Castle sieges · Castle tower spawns · Castle, fortress and clan hall functions & fees · Contestable clan halls · Mounts during sieges |
-| Olympiad & Heroes | Olympiad · Custom period |
-| Events & Activities | Seven Signs & Festival of Darkness · Dimensional Rift · Lottery · Fishing championship · Item auction · Weddings · Instances · Cursed weapons |
-| Monsters & Bosses | NPCs · Monsters · Champion monsters · NPC stat multipliers · Raid bosses · Grand bosses · Boss announcements · Random spawns · Guards |
-| Chat & Community | Chat · Community Board · Languages · Welcome & info messages · Mail (including queued item delivery) |
-| Convenience Features | Auto play · Auto potions · Offline auto play · Premium & PC Café points · Service NPCs · Free mounts · Mobius fake players · Account |
-| GM & Administration | Game Masters · Punishments & jail · Logging & audits |
-| Protection & Anti-cheat | Flood protection · Captcha · Dual-box limits · Hardware ID · Login security · Bot protection |
-| Server & Performance | Network & ports · General · Automatic restarts · Saving & memory · Geodata & pathfinding · Threads · Network buffers · Object IDs · Database · Custom data · Development & debugging · Login server · Server console window |
+| [Your World](Settings-Your-World) | Population · World rules |
+| [Rates & Rewards](Settings-Rates-Rewards) | Experience & skill points · Quest rewards · Monster drops · Drops vs. level difference · Vitality bonus · Pets · Extra raid boss drops |
+| [Characters](Settings-Characters) | New characters · Names & character slots · Levels & death · Classes & subclasses · Stat limits · Inventory & storage · Looting · Parties · Travel & teleports · Vitality system · Pets & summons · Other player rules |
+| [Skills & Combat](Settings-Skills-Combat) | Skills & learning (including [custom skill durations](Custom-Skill-Durations)) · Buffs & effects · Damage · Class balance multipliers · Cancelled buff return |
+| [Items & Enchanting](Settings-Items-Enchanting) | Enchanting · Augmentation · Soul crystals · Crafting · Dropped items · Transmogrification · Other item rules |
+| [Economy & Trade](Settings-Economy-Trade) | NPC shops & multisell · Private stores · Offline trade & craft · Selling buffs · Manor · Banking · Scheme buffer · Other |
+| [PvP & Karma](Settings-PvP-Karma) | Peace zones · Karma rules · Item loss on death · Anti-feed · Fame · PvP rewards & announcements · PvP title colors · Faction system · Other |
+| [Clans & Sieges](Settings-Clans-Sieges) | Clans & alliances · Clan reputation points · Castle sieges · Castle tower spawns · Castle, fortress and clan hall functions & fees · Contestable clan halls · Mounts during sieges |
+| [Olympiad & Heroes](Settings-Olympiad-Heroes) | Olympiad · Custom period |
+| [Events & Activities](Settings-Events-Activities) | Seven Signs & Festival of Darkness · Dimensional Rift · Lottery · Fishing championship · Item auction · Weddings · Instances · Cursed weapons |
+| [Monsters & Bosses](Settings-Monsters-Bosses) | NPCs · Monsters · Champion monsters · NPC stat multipliers · Raid bosses · Grand bosses · Boss announcements · Random spawns · Guards |
+| [Chat & Community](Settings-Chat-Community) | Chat · Community Board · Languages · Welcome & info messages · Mail (including queued item delivery) |
+| [Convenience Features](Settings-Convenience-Features) | Auto play · Auto potions · Offline auto play · Premium & PC Café points · Service NPCs · Free mounts · Mobius fake players · Account |
+| [GM & Administration](Settings-GM-Administration) | Game Masters · Punishments & jail · Logging & audits |
+| [Protection & Anti-cheat](Settings-Protection-Anti-cheat) | Flood protection · Captcha · Dual-box limits · Hardware ID · Login security · Bot protection |
+| [Server & Performance](Settings-Server-Performance) | Network & ports · General · Automatic restarts · Saving & memory · Geodata & pathfinding · Threads · Network buffers · Object IDs · Database · Custom data · Development & debugging · Login server · Server console window |
 
 Click a group in the section list to jump to it.
 

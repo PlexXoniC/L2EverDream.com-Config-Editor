@@ -79,6 +79,9 @@ python catalog/build_catalog.py
 ```bash
 python catalog/build_custom_config.py "%LOCALAPPDATA%\L2Everdream"
 ```
+```bash
+python catalog/build_wiki.py
+```
 
 Regenerate the catalog after editing `catalog/*.tsv` or the generators, then rebuild (the JSON is embedded).
 `build_custom_config.py` compares against the install's current files, so on a machine where settings were edited it
