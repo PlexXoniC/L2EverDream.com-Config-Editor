@@ -5,6 +5,7 @@
 
 **Settings**
 - [Server settings](Server-Settings)
+- [Rates and drops](Rates-and-Drops)
 - [Custom skill durations](Custom-Skill-Durations)
 - [Client settings](Client-Settings)
 - [How settings affect each other](How-Settings-Affect-Each-Other)

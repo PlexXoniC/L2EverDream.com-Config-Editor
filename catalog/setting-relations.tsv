@@ -4,11 +4,11 @@
 # Settings are written target:file:key (targets: game, login, option, l2ini, world). Keep notes plain and short.
 setting|kind|other|value|note
 # ---------------------------------------------------------------- rates
-game:Rates.ini:RatePartyXp|affects|game:Rates.ini:RateXp||Party experience is the normal experience rate plus this bonus, so both multiply what a party earns.
-game:Rates.ini:RatePartySp|affects|game:Rates.ini:RateSp||Party skill points are the normal skill point rate plus this bonus.
-game:Rates.ini:DeathDropChanceMultiplier|affects|game:Rates.ini:DeathDropAmountMultiplier||Chance and amount multiply: 5 × 5 means about 25 times the drops.
+game:Rates.ini:RatePartyXp|affects|game:Rates.ini:RateXp||The experience rate multiplies the experience itself; this one only multiplies the extra a party gets for its size.
+game:Rates.ini:RatePartySp|affects|game:Rates.ini:RateSp||The skill point rate multiplies the skill points themselves; this one only multiplies the extra a party gets for its size.
+game:Rates.ini:DeathDropChanceMultiplier|affects|game:Rates.ini:DeathDropAmountMultiplier||Chance and amount multiply together, so 5 and 5 is 25 times the drops — but chance stops helping once a drop is certain, while amount never does.
 game:Rates.ini:SpoilDropChanceMultiplier|affects|game:Rates.ini:SpoilDropAmountMultiplier||Chance and amount multiply: 5 × 5 means about 25 times the spoils.
-game:Rates.ini:DropAmountMultiplierByItemId|affects|game:Rates.ini:DeathDropAmountMultiplier||Items listed here (adena is 57) use their own amount instead of the general drop amount.
+game:Rates.ini:DropAmountMultiplierByItemId|affects|game:Rates.ini:DeathDropAmountMultiplier||Items listed here (adena is 57) use their own amount instead of the general drop amount, so adena needs raising here too.
 game:Rates.ini:DropChanceMultiplierByItemId|affects|game:Rates.ini:DeathDropChanceMultiplier||Items listed here use their own chance instead of the general drop chance.
 game:Rates.ini:RateKarmaLost|affects|game:Rates.ini:RateXp||-1 means "use the experience rate".
 game:Rates.ini:RateVitalityLevel1|requires|game:Player.ini:EnableVitality|true|Vitality rates do nothing while the vitality system is off.
@@ -176,3 +176,5 @@ l2ini:l2.ini:L2Passwd|requires|l2ini:l2.ini:IsL2AutoLogOn|true|Automatic login i
 l2ini:l2.ini:L2Slot|requires|l2ini:l2.ini:IsL2AutoLogOn|true|Automatic login is off.
 l2ini:l2.ini:Dist|requires|l2ini:l2.ini:Name|true|Names above characters are hidden.
 option:Option.ini:OtherPCName|affects|l2ini:l2.ini:Dist||Names only show within the name display distance.
+game:Rates.ini:DeathDropChanceMultiplier|affects|game:Rates.ini:DropMaxOccurrencesNormal||However often drops happen, one kill still gives at most this many different items.
+game:Rates.ini:DeathDropAmountMultiplier|affects|game:Rates.ini:DropMaxOccurrencesNormal||Past the limit on different items, bigger amounts are what raised rates still give you.

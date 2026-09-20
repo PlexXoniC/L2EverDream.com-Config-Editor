@@ -17,8 +17,9 @@ name, is grouped by what it does, and is limited to values the server accepts.
 
 1. [Installation and first run](Installation-and-First-Run): download, run, choose your folders.
 2. [Server settings](Server-Settings): find, change and save a setting.
-3. Look up any setting in the [settings reference](Settings-Reference).
-4. Before you update L2Everdream, read [Full backups and launcher updates](Full-Backups-and-Launcher-Updates).
+3. [Rates and drops](Rates-and-Drops): set how fast your world is with one number, and see what it does to a real monster.
+4. Look up any setting in the [settings reference](Settings-Reference).
+5. Before you update L2Everdream, read [Full backups and launcher updates](Full-Backups-and-Launcher-Updates).
 
 ## Guides
 
@@ -27,6 +28,7 @@ name, is grouped by what it does, and is limited to values the server accepts.
 | [Settings reference](Settings-Reference) | Every one of the 1,408 settings: what it does, its default, allowed values and related settings |
 | [Installation and first run](Installation-and-First-Run) | Which download to pick, Windows SmartScreen, choosing the server and client folders, updating the program |
 | [Server settings](Server-Settings) | The section list, search, filters, setting cards, valid values, saving, when changes take effect |
+| [Rates and drops](Rates-and-Drops) | One number for how fast your world is, why drop chance and drop amount are not the same thing, and a before/after preview of a real monster |
 | [Custom skill durations](Custom-Skill-Durations) | Making buffs (or any skill) last longer or shorter, one by one or many at once |
 | [Client settings](Client-Settings) | Graphics, sound, interface and connection settings in `Option.ini` and the encrypted `l2.ini` |
 | [How settings affect each other](How-Settings-Affect-Each-Other) | The *Depends on*, *Has no effect right now*, *Controls* and *Works with* lines |

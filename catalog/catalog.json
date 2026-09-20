@@ -18733,8 +18733,8 @@
    "key": "RatePartyXp",
    "category": "rates",
    "group": "rates.xp",
-   "name": "Party experience rate",
-   "description": "Multiplies the extra experience a party gets. Bigger parties feel this more.",
+   "name": "Extra experience for being in a party",
+   "description": "Multiplies only the size bonus a party gets, not the experience itself. The experience rate does that. At 1 a party still earns the normal party bonus.",
    "editor": "number",
    "valueType": "decimal",
    "options": null,
@@ -18752,7 +18752,7 @@
      "id": "server-game:Rates.ini:RateXp",
      "kind": "affects",
      "value": null,
-     "note": "Party experience is the normal experience rate plus this bonus, so both multiply what a party earns."
+     "note": "The experience rate multiplies the experience itself; this one only multiplies the extra a party gets for its size."
     }
    ]
   },
@@ -18763,8 +18763,8 @@
    "key": "RatePartySp",
    "category": "rates",
    "group": "rates.xp",
-   "name": "Party skill point rate",
-   "description": "Multiplies the extra skill points a party gets.",
+   "name": "Extra skill points for being in a party",
+   "description": "Multiplies only the size bonus a party gets, not the skill points themselves. The skill point rate does that.",
    "editor": "number",
    "valueType": "decimal",
    "options": null,
@@ -18782,7 +18782,7 @@
      "id": "server-game:Rates.ini:RateSp",
      "kind": "affects",
      "value": null,
-     "note": "Party skill points are the normal skill point rate plus this bonus."
+     "note": "The skill point rate multiplies the skill points themselves; this one only multiplies the extra a party gets for its size."
     }
    ]
   },
@@ -19226,8 +19226,8 @@
    "key": "DeathDropAmountMultiplier",
    "category": "rates",
    "group": "rates.drops",
-   "name": "Drop amount",
-   "description": "How many items a monster drops when killed.",
+   "name": "Drop amount (how much per drop)",
+   "description": "Multiplies the size of each drop. This keeps working however high you set it, so it is the safe way to raise rates.",
    "editor": "number",
    "valueType": "decimal",
    "options": null,
@@ -19240,7 +19240,14 @@
    "advanced": false,
    "managedReason": null,
    "l2everdream": false,
-   "relations": []
+   "relations": [
+    {
+     "id": "server-game:Rates.ini:DropMaxOccurrencesNormal",
+     "kind": "affects",
+     "value": null,
+     "note": "Past the limit on different items, bigger amounts are what raised rates still give you."
+    }
+   ]
   },
   {
    "id": "server-game:Rates.ini:SpoilDropAmountMultiplier",
@@ -19318,8 +19325,8 @@
    "key": "DeathDropChanceMultiplier",
    "category": "rates",
    "group": "rates.drops",
-   "name": "Drop chance",
-   "description": "How likely a monster is to drop each item. Combined with drop amount, 5 × 5 = 25× drops.",
+   "name": "Drop chance (how often something drops)",
+   "description": "Multiplies how often a drop happens. Each drop is rolled once, so anything above a 100% chance is wasted: past that point only the drop amount still helps. The Rates tab works this out for you.",
    "editor": "number",
    "valueType": "decimal",
    "options": null,
@@ -19337,7 +19344,13 @@
      "id": "server-game:Rates.ini:DeathDropAmountMultiplier",
      "kind": "affects",
      "value": null,
-     "note": "Chance and amount multiply: 5 × 5 means about 25 times the drops."
+     "note": "Chance and amount multiply together, so 5 and 5 is 25 times the drops — but chance stops helping once a drop is certain, while amount never does."
+    },
+    {
+     "id": "server-game:Rates.ini:DropMaxOccurrencesNormal",
+     "kind": "affects",
+     "value": null,
+     "note": "However often drops happen, one kill still gives at most this many different items."
     }
    ]
   },
@@ -19425,7 +19438,7 @@
    "category": "rates",
    "group": "rates.drops",
    "name": "Drop amount for specific items (adena is item 57)",
-   "description": "Format: itemId,multiplier;itemId,multiplier. Overrides the general drop amount for those items.",
+   "description": "Format: itemId,multiplier;itemId,multiplier. Items listed here use this instead of the general drop amount, not as well as it.",
    "editor": "list",
    "valueType": "string",
    "options": null,
@@ -19443,7 +19456,7 @@
      "id": "server-game:Rates.ini:DeathDropAmountMultiplier",
      "kind": "affects",
      "value": null,
-     "note": "Items listed here (adena is 57) use their own amount instead of the general drop amount."
+     "note": "Items listed here (adena is 57) use their own amount instead of the general drop amount, so adena needs raising here too."
     }
    ]
   },
@@ -19455,7 +19468,7 @@
    "category": "rates",
    "group": "rates.drops",
    "name": "Drop chance for specific items (adena is item 57)",
-   "description": "Format: itemId,multiplier;itemId,multiplier.",
+   "description": "Format: itemId,multiplier;itemId,multiplier. Items listed here use this instead of the general drop chance, not as well as it.",
    "editor": "list",
    "valueType": "string",
    "options": null,
@@ -19485,7 +19498,7 @@
    "category": "rates",
    "group": "rates.drops",
    "name": "Most different items a normal monster can drop at once",
-   "description": "Maximum drop occurrences.\nNote: Items that have 100% drop chance without server rate multipliers\nare not counted by this value. They will drop as extra drops.\nAlso grouped drops with total chance over 100% break this configuration.",
+   "description": "A kill stops here however high the rates go, so raising the drop amount gives bigger piles rather than more kinds of item.",
    "editor": "number",
    "valueType": "int",
    "options": null,

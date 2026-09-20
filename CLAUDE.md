@@ -21,7 +21,7 @@ The project owner knows the user is building it.
    XML configs and `user.ini` are next. `-Dl2sp.*` JVM flags are out of scope (the launcher regenerates them each start).
 4. **Non-programmer UX.** Friendly names linked to the real `File › [Section] › Key`; grouping by type of setting, not by
    file; search across friendly and real names; a category → group section list on the left of the main window.
-5. **Separate tabs:** Server, Client, a read-only **Custom Config** tab (how the release differs from stock L2J Mobius),
+5. **Separate tabs:** Server, Client, **Rates**, a read-only **Custom Config** tab (how the release differs from stock L2J Mobius),
    **Characters** and **Backups**.
    - **Characters** edits player characters in the running world's database: adena, plus an inventory editor that changes,
      removes and adds items from the full item list. Existing rows are written only while the character is offline (the
@@ -42,6 +42,12 @@ The project owner knows the user is building it.
      backup with now is **by setting value, not by file** (updates rewrite comments), shows backup / now / shipped, and
      restores **ticked settings one value at a time** (both server copies; XML/text files whole). Same restore rules as
      above, launcher-managed values never restored, and a normal "before restore" backup is taken first.
+   - **Rates**: one number (presets 1/3/5/15/20 or typed) written across every experience and drop setting, because
+     Mobius's separate chance and amount multipliers confuse players. The rate is split so that `chance x amount = rate`
+     while the chance never goes past the point where it is wasted (a drop group is rolled once, so chance saturates at
+     100% and only amount keeps scaling); adena needs its own entry in `DropAmountMultiplierByItemId`. A monster preview
+     shows before/after per kill with item icons read from the player's own client. Herbs, vitality, premium, the party
+     bonus, level-gap penalties, manor and fishing are deliberately left alone.
    - **Explain how settings affect each other.** Setting cards show "depends on / has no effect right now / controls /
      works with" lines from `catalog/setting-relations.tsv` plus derived rules, evaluated live.
 6. **The user chooses both folders.** No default or auto-detected server/client paths.
@@ -115,6 +121,13 @@ under `%LOCALAPPDATA%\L2EverdreamConfig\backups`.
 - Client `l2.ini`/`user.ini` are `Lineage2Ver413` (RSA blocks + zlib + CRC32 tail); `Localization.ini`/`TTFontInfo.ini`
   are `Lineage2Ver111` (XOR 0xAC); `Option.ini` is plain. `Core/Ini/L2IniCodec.cs` reproduces the files byte-for-byte.
 - The client ships `IsL2AutoLogOn=Ture` (typo); toggles treat anything but "true" as off.
+- Rate semantics, read from the shipped `GameServer.jar`: experience is `template exp x RateXp`; `RatePartyXp` multiplies
+  **only** the party-size bonus, not the experience. Drop chance and amount each follow an **else-if** chain (by item id,
+  herb, raid, death), so a per-item rate **replaces** the general one — the shipped `DropAmountMultiplierByItemId = 57,1`
+  means adena ignores the general drop amount. Each drop group is rolled once, so chance above 100% is wasted, and
+  `DropMaxOccurrencesNormal`/`Raidboss` cap how many different items one kill can give.
+- Item icons come from the player's own client (`systextures\Icon.utx`, `Lineage2Ver121` XOR by filename, then a UE2
+  package with DXT1/DXT3 textures) - nothing is bundled. Monsters have no 2D artwork in the client, only 3D meshes.
 - `SkillDurationList` (edited on its own page, max 12 h per the user) is keyed by skill id for every caster, never affects
   toggles, and is **added** to enchanted "+Time" levels 100–139 (see the knowledge base). Skills come from the datapack
   (`Skills/SkillCatalog.cs`), not the catalog.

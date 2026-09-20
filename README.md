@@ -38,6 +38,7 @@ The first time, each tab asks for a folder: your L2Everdream install (the one wi
 | | |
 |---|---|
 | **[Server settings](../../wiki/Server-Settings)** | 1,322 game and login settings plus the launcher's world settings, in 16 categories with search, filters and plain-English names. Every value is checked before it is saved. |
+| **[Rates and drops](../../wiki/Rates-and-Drops)** | One number sets how fast your world is — experience, drops, spoil, adena and quest rewards together — split between drop chance and drop amount so none of it is wasted, with a before/after preview of any monster in the game. |
 | **[Custom skill durations](../../wiki/Custom-Skill-Durations)** | Make buffs, songs and dances last longer (or shorter), one by one or hundreds at a time. |
 | **[Client settings](../../wiki/Client-Settings)** | Graphics, sound, interface and connection settings, including the encrypted `l2.ini`. |
 | **[How settings affect each other](../../wiki/How-Settings-Affect-Each-Other)** | Cards say what a setting depends on, when it has no effect right now, and what it controls. |
@@ -45,6 +46,8 @@ The first time, each tab asks for a folder: your L2Everdream install (the one wi
 | **[Characters and inventories](../../wiki/Characters-and-Inventories)** | Adena and items of logged-out characters. New items are handed to the server to deliver, never written behind its back, and inventory limits are enforced as the server counts them. |
 | **[Backups and restore](../../wiki/Backups-and-Restore)** | Every save, character change and restore is backed up first, and can be put back. |
 | **[Full backups](../../wiki/Full-Backups-and-Launcher-Updates)** | Back up every settings file before an L2Everdream update, then compare afterwards and tick what you want restored. |
+
+![The Rates tab](docs/images/rates.png)
 
 ![Comparing a full backup with the files after an L2Everdream update](docs/images/full-backup-compare.png)
 
@@ -80,7 +83,7 @@ dotnet run --project src/L2Config.App
 |---|---|
 | `src/L2Config.Core` | No UI: catalog, INI editing and the client ini codec, saving, backups and restore, world database, skill and item catalogs |
 | `src/L2Config.App` | The WPF app (MVVM, no UI libraries) |
-| `tests/L2Config.Core.Tests` | 93 xUnit tests |
+| `tests/L2Config.Core.Tests` | 106 xUnit tests |
 | `catalog/` | The friendly layer: curated names and relations, the Python generators, the generated catalog |
 | `docs/wiki/` | The source of the [wiki](../../wiki), including the generated settings reference |
 

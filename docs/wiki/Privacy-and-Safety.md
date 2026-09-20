@@ -22,6 +22,7 @@ whether `L2.exe` is running, by looking at the process list.
 | Queue new items for the server to deliver | Write new item rows into the database while the server runs |
 | Back up everything before every change, and take full backups when you ask | Delete your backups |
 | Refuse values the server would reject, with a reason | Let an invalid value reach a config file |
+| Read your client's own item icons to show them in the Rates tab (read-only; nothing is bundled or downloaded) | Change anything in your client except the settings files you save |
 | Show values the launcher owns | Change them (the launcher would overwrite them anyway) |
 | Restore backups | Restore files while the world runs, or client files while the game is open |
 

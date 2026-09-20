@@ -4,6 +4,8 @@ How fast characters level and how much monsters and quests give.
 
 **50 settings** in the **Rates & Rewards** category of the Server tab. [All categories](Settings-Reference) · [How to read this page](Settings-Reference#how-to-read-these-pages)
 
+> **Setting these by hand is easy to get wrong.** The [Rates and drops](Rates-and-Drops) tab turns one number into all of them, splits it between drop chance and drop amount so none of it is wasted, and shows you what it does to a real monster.
+
 ## Experience & skill points
 
 ### Experience (XP) rate (RateXp)
@@ -14,7 +16,7 @@ How fast characters gain experience from monsters. 1 = retail.
 
 - **Default:** `1`
 - **Allowed:** 0 or more times
-- **Works with:** [Party experience rate](Settings-Rates-Rewards#party-experience-rate-ratepartyxp)
+- **Works with:** [Extra experience for being in a party](Settings-Rates-Rewards#extra-experience-for-being-in-a-party-ratepartyxp)
 - **Works with:** [Karma lost per death or kill](Settings-PvP-Karma#karma-lost-per-death-or-kill-ratekarmalost)
 
 ### Skill point (SP) rate (RateSp)
@@ -25,27 +27,27 @@ How fast characters gain skill points from monsters. 1 = retail.
 
 - **Default:** `1`
 - **Allowed:** 0 or more times
-- **Works with:** [Party skill point rate](Settings-Rates-Rewards#party-skill-point-rate-ratepartysp)
+- **Works with:** [Extra skill points for being in a party](Settings-Rates-Rewards#extra-skill-points-for-being-in-a-party-ratepartysp)
 
-### Party experience rate (RatePartyXp)
+### Extra experience for being in a party (RatePartyXp)
 
 `Rates.ini › RatePartyXp` · number · times
 
-Multiplies the extra experience a party gets. Bigger parties feel this more.
+Multiplies only the size bonus a party gets, not the experience itself. The experience rate does that. At 1 a party still earns the normal party bonus.
 
 - **Default:** `1`
 - **Allowed:** 0 or more times
-- **Works with:** [Experience (XP) rate](Settings-Rates-Rewards#experience-xp-rate-ratexp) — Party experience is the normal experience rate plus this bonus, so both multiply what a party earns.
+- **Works with:** [Experience (XP) rate](Settings-Rates-Rewards#experience-xp-rate-ratexp) — The experience rate multiplies the experience itself; this one only multiplies the extra a party gets for its size.
 
-### Party skill point rate (RatePartySp)
+### Extra skill points for being in a party (RatePartySp)
 
 `Rates.ini › RatePartySp` · number · times
 
-Multiplies the extra skill points a party gets.
+Multiplies only the size bonus a party gets, not the skill points themselves. The skill point rate does that.
 
 - **Default:** `1`
 - **Allowed:** 0 or more times
-- **Works with:** [Skill point (SP) rate](Settings-Rates-Rewards#skill-point-sp-rate-ratesp) — Party skill points are the normal skill point rate plus this bonus.
+- **Works with:** [Skill point (SP) rate](Settings-Rates-Rewards#skill-point-sp-rate-ratesp) — The skill point rate multiplies the skill points themselves; this one only multiplies the extra a party gets for its size.
 
 ### No experience from monsters more than this many levels below you (MonsterExpMaxLevelDifference)
 
@@ -159,15 +161,16 @@ Modify the rate of reward of all extractable items and skills.
 - **Default:** `1`
 - **Allowed:** 0 or more times
 
-### Drop amount (DeathDropAmountMultiplier)
+### Drop amount (how much per drop) (DeathDropAmountMultiplier)
 
 `Rates.ini › DeathDropAmountMultiplier` · number · times
 
-How many items a monster drops when killed.
+Multiplies the size of each drop. This keeps working however high you set it, so it is the safe way to raise rates.
 
 - **Default:** `1`
 - **Allowed:** 0 or more times
-- **Works with:** [Drop chance](Settings-Rates-Rewards#drop-chance-deathdropchancemultiplier)
+- **Works with:** [Most different items a normal monster can drop at once](Settings-Rates-Rewards#most-different-items-a-normal-monster-can-drop-at-once-dropmaxoccurrencesnormal) — Past the limit on different items, bigger amounts are what raised rates still give you.
+- **Works with:** [Drop chance (how often something drops)](Settings-Rates-Rewards#drop-chance-how-often-something-drops-deathdropchancemultiplier)
 - **Works with:** [Drop amount for specific items (adena is item 57)](Settings-Rates-Rewards#drop-amount-for-specific-items-adena-is-item-57-dropamountmultiplierbyitemid)
 
 ### Spoil amount (SpoilDropAmountMultiplier)
@@ -196,15 +199,16 @@ Multiplies the amount of items rewarded from monsters when they die.
 - **Default:** `1`
 - **Allowed:** 0 or more times
 
-### Drop chance (DeathDropChanceMultiplier)
+### Drop chance (how often something drops) (DeathDropChanceMultiplier)
 
 `Rates.ini › DeathDropChanceMultiplier` · number · times
 
-How likely a monster is to drop each item. Combined with drop amount, 5 × 5 = 25× drops.
+Multiplies how often a drop happens. Each drop is rolled once, so anything above a 100% chance is wasted: past that point only the drop amount still helps. The Rates tab works this out for you.
 
 - **Default:** `1`
 - **Allowed:** 0 or more times
-- **Works with:** [Drop amount](Settings-Rates-Rewards#drop-amount-deathdropamountmultiplier) — Chance and amount multiply: 5 × 5 means about 25 times the drops.
+- **Works with:** [Drop amount (how much per drop)](Settings-Rates-Rewards#drop-amount-how-much-per-drop-deathdropamountmultiplier) — Chance and amount multiply together, so 5 and 5 is 25 times the drops — but chance stops helping once a drop is certain, while amount never does.
+- **Works with:** [Most different items a normal monster can drop at once](Settings-Rates-Rewards#most-different-items-a-normal-monster-can-drop-at-once-dropmaxoccurrencesnormal) — However often drops happen, one kill still gives at most this many different items.
 - **Works with:** [Drop chance for specific items (adena is item 57)](Settings-Rates-Rewards#drop-chance-for-specific-items-adena-is-item-57-dropchancemultiplierbyitemid)
 
 ### Spoil chance (SpoilDropChanceMultiplier)
@@ -237,29 +241,31 @@ Multiplies the chance of items that can be rewarded from monsters when they die.
 
 `Rates.ini › DropAmountMultiplierByItemId` · list
 
-Format: itemId,multiplier;itemId,multiplier. Overrides the general drop amount for those items.
+Format: itemId,multiplier;itemId,multiplier. Items listed here use this instead of the general drop amount, not as well as it.
 
 - **Default:** `57,1`
 - **Allowed:** `id,value` pairs separated by semicolons, e.g. `57,2;4037,1.5`
-- **Works with:** [Drop amount](Settings-Rates-Rewards#drop-amount-deathdropamountmultiplier) — Items listed here (adena is 57) use their own amount instead of the general drop amount.
+- **Works with:** [Drop amount (how much per drop)](Settings-Rates-Rewards#drop-amount-how-much-per-drop-deathdropamountmultiplier) — Items listed here (adena is 57) use their own amount instead of the general drop amount, so adena needs raising here too.
 
 ### Drop chance for specific items (adena is item 57) (DropChanceMultiplierByItemId)
 
 `Rates.ini › DropChanceMultiplierByItemId` · list
 
-Format: itemId,multiplier;itemId,multiplier.
+Format: itemId,multiplier;itemId,multiplier. Items listed here use this instead of the general drop chance, not as well as it.
 
 - **Allowed:** `id,value` pairs separated by semicolons, e.g. `57,2;4037,1.5`
-- **Works with:** [Drop chance](Settings-Rates-Rewards#drop-chance-deathdropchancemultiplier) — Items listed here use their own chance instead of the general drop chance.
+- **Works with:** [Drop chance (how often something drops)](Settings-Rates-Rewards#drop-chance-how-often-something-drops-deathdropchancemultiplier) — Items listed here use their own chance instead of the general drop chance.
 
 ### Most different items a normal monster can drop at once (DropMaxOccurrencesNormal)
 
 `Rates.ini › DropMaxOccurrencesNormal` · number · %
 
-Maximum drop occurrences. Note: Items that have 100% drop chance without server rate multipliers are not counted by this value. They will drop as extra drops. Also grouped drops with total chance over 100% break this configuration.
+A kill stops here however high the rates go, so raising the drop amount gives bigger piles rather than more kinds of item.
 
 - **Default:** `2`
 - **Allowed:** 0 – 100 %
+- **Works with:** [Drop amount (how much per drop)](Settings-Rates-Rewards#drop-amount-how-much-per-drop-deathdropamountmultiplier)
+- **Works with:** [Drop chance (how often something drops)](Settings-Rates-Rewards#drop-chance-how-often-something-drops-deathdropchancemultiplier)
 
 ### Most different items a raid boss can drop at once (DropMaxOccurrencesRaidboss)
 

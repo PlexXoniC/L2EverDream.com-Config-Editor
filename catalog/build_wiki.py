@@ -16,6 +16,13 @@ CATALOG = os.path.join(HERE, "catalog.json")
 WIKI = os.path.join(ROOT, "docs", "wiki")
 INDEX = "Settings-Reference"
 
+# A line added under the heading of a few category pages, pointing at the guide that covers them.
+CATEGORY_NOTES = {
+    "rates": "> **Setting these by hand is easy to get wrong.** The [Rates and drops](Rates-and-Drops) tab turns one "
+             "number into all of them, splits it between drop chance and drop amount so none of it is wasted, and shows "
+             "you what it does to a real monster.",
+}
+
 TARGET_WORDS = {
     "server-game": "game server",
     "server-login": "login server",
@@ -149,6 +156,8 @@ def main():
             f"[All categories]({INDEX}) · [How to read this page]({INDEX}#how-to-read-these-pages)",
             "",
         ]
+        if c["id"] in CATEGORY_NOTES:
+            lines += [CATEGORY_NOTES[c["id"]], ""]
         for group in c["groups"]:
             in_group = [s for s in in_category if s["group"] == group["id"]]
             if not in_group:

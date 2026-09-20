@@ -22,6 +22,7 @@ A standalone Windows desktop app (C# / WPF, one self-contained `.exe`, no instal
 | **Valid values only** | Every setting has a type, range and/or format; editors refuse bad input and Save refuses out-of-range values with a plain-language reason. |
 | **Friendly first, real name always visible** | Each setting shows a plain-English name, and a chip with the real `File › [Section] › Key` it is saved to. Search matches both. |
 | **No personal names** | Nobody (owner, comment authors, anyone) is named in the app, catalog, docs or messages. The catalog generator strips attributions from config comments. |
+| **One rate for the whole world** | The Rates tab turns a single number (3×, 5×, 15×, 20× or typed) into every experience and drop setting it needs, splitting it between drop *chance* and drop *amount* so that chance never climbs past the point where it is wasted, and previews a real monster before and after. It fills in the Server tab; the normal save bar saves it. |
 | **Custom Config is read-only** | The tab shows how L2Everdream differs from stock L2J Mobius; it never writes. |
 | **Characters edit the live world carefully** | The Characters tab changes adena and inventory items of player characters in the running world's database. Existing rows change only while the character is **offline** (character row locked, `online = 0` re-checked in the same transaction). **Item rows are never inserted while the server runs** — new items are queued in `custom_mail` and the server delivers them when the character is online (needs `CustomMailManagerEnabled`, explained in the UI). The inventory limit is enforced as the server counts it, including queued deliveries. Sims are hidden. |
 | **Settings explain each other** | Cards show what a setting depends on (and whether it currently has any effect), what it controls and what it works with. |
@@ -103,7 +104,7 @@ x 152–672, y 122–150 of the 1600×1025 image). Screens showing characters or
 L2EverdreamConfig.exe --snapshot out.png --server "<server folder>" --client "<client folder>" --tab server --category rates --search "party xp" --edit RateXp=3 --advanced --size 1280x820
 ```
 
-`--backups <dir>` lists backups from another folder instead of `%LOCALAPPDATA%\L2EverdreamConfig\backups`; `--backups-mode full` opens Full backups, `--full-backups <dir>` sets their folder, `--compare <backup folder|latest>` opens a comparison (with `--filter changed|shipped|new|all` and `--search`; nothing is restored); `--skill-durations` opens the skill durations page (with `--filter players|songs|debuffs|npc|changed|all` and `--search`); `--inventory <character>` opens that character's inventory (with `--item-search`, `--item <id>`, `--amount` to fill the add panel; nothing is applied); `--tab` is `server`, `client`, `custom`, `characters` or `backups`; `--group <group id>` scrolls to a group; `--edit key=value` shows an
+`--backups <dir>` lists backups from another folder instead of `%LOCALAPPDATA%\L2EverdreamConfig\backups`; `--backups-mode full` opens Full backups, `--full-backups <dir>` sets their folder, `--compare <backup folder|latest>` opens a comparison (with `--filter changed|shipped|new|all` and `--search`; nothing is restored); `--tab rates` opens the Rates tab (with `--rate <number>`, `--delivery 0|1` and `--monster <name>`); `--skill-durations` opens the skill durations page (with `--filter players|songs|debuffs|npc|changed|all` and `--search`); `--inventory <character>` opens that character's inventory (with `--item-search`, `--item <id>`, `--amount` to fill the add panel; nothing is applied); `--tab` is `server`, `client`, `rates`, `custom`, `characters` or `backups`; `--group <group id>` scrolls to a group; `--edit key=value` shows an
 unsaved edit in memory.
 
 ---
@@ -157,6 +158,10 @@ tests/L2Config.Core.Tests/       xUnit
 | `Storage/RuntimeStatus.cs` | Read-only: is the world listening on its game port, is `L2.exe` running. |
 | `Characters/WorldDatabase.cs` | The world's database (from `game\config\Database.ini`, MySqlConnector): characters, inventory, queued deliveries; set/remove item counts and queue/cancel deliveries inside transactions that lock the character and back up rows first; restore rows (offline only; re-create a removed item with its original ID only if the world has not restarted since the backup). |
 | `Characters/ItemCatalog.cs`, `Characters/InventoryRules.cs` | Every item from `game\data\stats\items` (name, type, stackable, grade); the server's inventory limit (race, Game Master access levels from `AccessLevels.xml`) and slot counting incl. pending deliveries. |
+| `Rates/MonsterCatalog.cs` | Every monster from `game\data\stats\npcs` (level, type, experience, skill points, HP, drop and spoil groups) with item names and icon names from `game\data\stats\items`; herbs recognised by `ex_immediate_effect`. |
+| `Rates/RatePlan.cs` | Turns one rate into the settings that produce it: `RateOptions` (rate, and how much of it goes to chance rather than amount) computes the chance multiplier — never past the point where chance is wasted — and the amount multiplier that makes up the rest, plus a gentler raid rate; `RatePlan.Build` lists the 16 values it writes (with adena's own amount, because `DropAmountMultiplierByItemId` replaces the general one) and what it deliberately leaves alone. |
+| `Rates/DropPreview.cs` | What one monster gives before and after, exactly as the server works it out: a single roll per drop group (so chance stops at 100%), amounts multiplied, herbs and the limit on different items per kill honoured, raid multipliers for raid and grand bosses. |
+| `Client/IconLibrary.cs` | Reads item icons out of the player's own client: decrypts `systextures\Icon.utx` (`Lineage2Ver121`, XOR by filename), walks the Unreal package's name/export tables and decodes the DXT1/DXT3 textures. Nothing is bundled with the app. |
 | `Skills/SkillCatalog.cs` | Every skill with a duration from `game\data\stats\skills` (custom last), whether players learn it (`stats\players\skillTrees`) or the buffer gives it (`SchemeBufferSkills.xml`), kind (buff, song/dance, debuff), durations by level and "+Time" enchant maximum; `SkillDurationList` parse/format, plain-word durations (`90s`, `1h 30m`, `1:30:00`). |
 
 ### App (`src/L2Config.App`)
@@ -164,7 +169,7 @@ tests/L2Config.Core.Tests/       xUnit
 | File | Responsibility |
 |---|---|
 | `App.xaml.cs` | Loads the embedded `catalog.json` + `custom-config.json`, builds the main view model; snapshot mode. |
-| `MainWindow.xaml` | Chromeless window: "L2Everdreamconfig" wordmark ("config" styled like "L2"), **Server / Client / Custom Config / Characters / Backups** tabs, folder bar, left section list with search and filters, virtualized settings list, save bar. All editor, row and page templates. |
+| `MainWindow.xaml` | Chromeless window: "L2Everdreamconfig" wordmark ("config" styled like "L2"), **Server / Client / Rates / Custom Config / Characters / Backups** tabs, folder bar, left section list with search and filters, virtualized settings list, save bar. All editor, row and page templates. |
 | `ViewModels/MainViewModel.cs` | Tabs, folder choice and validation, reload, save/discard, runtime notices, "Show in editor" jump. |
 | `ViewModels/TabViewModel.cs` | One Server or Client tab: categories → groups, counts, search, "Changed only", advanced filter, rows. |
 | `ViewModels/SettingViewModel.cs` | One setting: value, dirty/changed state (as words), validation error, range text, undo, reset to default. |
@@ -172,6 +177,8 @@ tests/L2Config.Core.Tests/       xUnit
 | `ViewModels/BackupsViewModel.cs`, `ViewModels/RelationViewModel.cs` | Backups tab (Change backups: list, what changed, restore with a plan and per-item results); live "depends on / has no effect right now / controls / works with" lines on setting cards. |
 | `ViewModels/FullBackupsViewModel.cs` | Backups tab › Full backups: folder choice, *Back up everything*, list with "updated since this backup", and the comparison checklist (filters, search, tick, *Restore selected*, results). |
 | `ViewModels/SkillDurationsViewModel.cs` | The skill durations page (opened from the "Custom skill durations" card while "Use custom skill durations" is on): filters, search, a duration box per skill with its normal and enchanted duration, "Set many at once" (2×, 3×, 1 h, 2 h, typed, back to normal), unknown ids and unreadable entries. Edits go into the setting value, so the normal save bar saves them. |
+| `ViewModels/RatesViewModel.cs` | The Rates tab: preset pills and a typed rate, the *how it arrives* slider, the list of settings it will write (old → new), the monster search and the before/after preview rows with icons; *Apply* fills in the Server tab as unsaved changes. |
+| `Infrastructure/ItemIcon.cs` | Caches icons decoded from the client as frozen WPF images; cleared when the client folder changes. |
 | `ViewModels/CustomConfigViewModel.cs` | Read-only differences with stock / shipped / current values and filters. |
 | `Theme/Colors.xaml`, `Theme/Controls.xaml` | The design system (see §8). |
 | `Infrastructure/*` | `ObservableObject`, `RelayCommand`, app preferences, converters, editor template selector, numeric input filter, password binding. |
@@ -333,8 +340,9 @@ change backups above.
 
 ## 7. What the UI does
 
-- **Tabs**: Server, Client, Custom Config, Characters, Backups. The Server and Client tab pills show a count of unsaved changes.
+- **Tabs**: Server, Client, Rates, Custom Config, Characters, Backups. The Server and Client tab pills show a count of unsaved changes.
 - **Setting cards** also show how other settings affect them: *Depends on* (green when met), *Has no effect right now* (amber, e.g. vitality rates while the vitality system is off), *Controls* and *Works with*, each with a *Show →* jump.
+- **Rates**: one number for the whole world. Preset pills (1×, 3×, 5×, 15×, 20×) or a typed rate from 0.1 to 100; a *how it arrives* slider between "drops happen more often" and "drops come in bigger piles"; a plain summary of what the rate means; *What this writes* listing all 16 settings with their old → new values and a one-line reason, and what is deliberately left alone (herbs, vitality, premium, the party bonus, level-gap penalties, manor and fishing); a monster search with a before/after preview — experience, skill points, each drop's chance, amount and average per kill with its real multiplier, item icons read from the player's own client, spoil marked, herbs marked unchanged, and a note when a drop is already certain so extra chance would be wasted. *Apply* fills the values into the Server tab as unsaved changes, saved by the normal save bar.
 - **Characters**: each player character with level, account, inventory slots used of the limit, adena editor (offline only) and *Inventory…*.
 - **Inventory**: items in the inventory (equipped marked) with *Set count* for stacks and *Remove* (confirmed); *Waiting for the server to deliver* with *Cancel delivery*; *Add items*: search every item by name or ID, amount, enchant for weapons/armor, a line saying exactly what will happen and how many slots it needs, and the reason when it can't. Adding to a stack the character already carries changes that stack immediately; anything else is queued for the server, with a highlighted explanation and the live state of the delivery setting.
 - **Backups**: *Change backups* / *Full backups* switch. Change backups: every backup newest first with what changed (from → to), what it contains, *Restore…* (with a plan of what will and won't be restored right now) and *Open folder*; results per item after a restore.
@@ -397,6 +405,7 @@ behaviour or adding a new file type.
 - Full backups are taken with the button only; the app cannot know an update is pending (the launcher checks online).
 - `IniDocument` splits lines on the file's own newline style; a hand-edited file with mixed CRLF/LF line endings can hide
   keys from both the editor and the comparison.
+- Rates: the preview reads the datapack, so it describes a freshly started world — it does not know about a boss already killed or a player's own bonuses (premium, vitality, level gap). Monsters are shown with their item icons only: the client has no 2D artwork for them, only 3D meshes and skins.
 - No app icon yet. (There will be no installer — the app is a standalone exe by design.)
 
 ---
@@ -424,3 +433,4 @@ behaviour or adding a new file type.
 | 2026-09-15 | README screenshot of the real 0.5.19 → 0.5.20 full-backup comparison. |
 | 2026-09-15 | Full backups: *Back up everything* to a user-chosen folder, compare with now setting by setting (backup / now / shipped), restore ticked settings; checked against the real 0.5.19 → 0.5.20 update (findings in the knowledge base). |
 | 2026-09-13 | No local paths in the repository or its history: this PC's folders moved to git-ignored `CLAUDE.local.md` and `test-paths.local.json`. |
+| 2026-09-20 | Rates tab: one rate for the whole world, split between drop chance and amount, with a before/after preview of a real monster using item icons read from the player's own client; clearer names for the drop chance/amount and party bonus settings. |

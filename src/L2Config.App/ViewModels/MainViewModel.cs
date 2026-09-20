@@ -4,6 +4,7 @@ using L2Config.App.Infrastructure;
 using L2Config.Core.Backups;
 using L2Config.Core.Catalog;
 using L2Config.Core.Characters;
+using L2Config.Core.Rates;
 using L2Config.Core.Skills;
 using L2Config.Core.Storage;
 
@@ -32,6 +33,7 @@ public sealed class MainViewModel : ObservableObject
 		ServerTab = new TabViewModel("server", catalog, () => ShowAdvanced, () => ChooseFolder(isServer: true));
 		ClientTab = new TabViewModel("client", catalog, () => ShowAdvanced, () => ChooseFolder(isServer: false));
 		CustomTab = customConfig is null ? null : new CustomConfigViewModel(customConfig, ShowSetting);
+		RatesTab = new RatesViewModel(() => ServerTab.Settings, () => _store?.Locations, LoadMonstersAsync, ShowSetting, OnSettingChanged);
 		CharactersTab = new CharactersViewModel(BuildServerFacts, dialogs, ShowSetting);
 		var fullBackups = new FullBackupsViewModel(catalog, appSettings, () => _store?.Locations, ReadRestoreConditionsAsync, dialogs, () => Reload());
 		BackupsTab = new BackupsViewModel(ReadRestoreConditionsAsync, CharactersTab, fullBackups, dialogs, () => Reload());
@@ -55,6 +57,7 @@ public sealed class MainViewModel : ObservableObject
 	public TabViewModel ClientTab { get; }
 	public CustomConfigViewModel? CustomTab { get; }
 	public bool HasCustomTab => CustomTab is not null;
+	public RatesViewModel RatesTab { get; }
 	public CharactersViewModel CharactersTab { get; }
 	public BackupsViewModel BackupsTab { get; }
 
@@ -86,6 +89,7 @@ public sealed class MainViewModel : ObservableObject
 
 	public bool IsServerTab => SelectedTab == ServerTab;
 	public bool IsClientTab => SelectedTab == ClientTab;
+	public bool IsRatesTab => SelectedTab == RatesTab;
 	public bool IsCustomTab => CustomTab is not null && SelectedTab == CustomTab;
 	public bool IsCharactersTab => SelectedTab == CharactersTab;
 	public bool IsBackupsTab => SelectedTab == BackupsTab;
@@ -93,6 +97,7 @@ public sealed class MainViewModel : ObservableObject
 	private object TabFor(string? name) => name switch
 	{
 		"client" => ClientTab,
+		"rates" => RatesTab,
 		"custom" when CustomTab is not null => CustomTab,
 		"characters" => CharactersTab,
 		"backups" => BackupsTab,
@@ -101,7 +106,11 @@ public sealed class MainViewModel : ObservableObject
 
 	private void RefreshTabData(object tab)
 	{
-		if (tab == CharactersTab)
+		if (tab == RatesTab)
+		{
+			_ = RatesTab.LoadAsync();
+		}
+		else if (tab == CharactersTab)
 		{
 			_ = CharactersTab.RefreshAsync();
 		}
@@ -333,6 +342,19 @@ public sealed class MainViewModel : ObservableObject
 			var gate = gateId is null ? null : byId.GetValueOrDefault(gateId);
 			setting.AttachPageEditor(gate, () => OpenSkillDurations(setting, gate), ShowSetting);
 		}
+	}
+
+	private (string Root, Task<MonsterCatalog> Load)? _monsters;
+
+	/// <summary>The datapack's monsters and their drops, read once per server folder in the background.</summary>
+	private Task<MonsterCatalog> LoadMonstersAsync()
+	{
+		var root = _store!.Locations.ServerRoot!;
+		if (_monsters is not { } cached || cached.Root != root || cached.Load.IsFaulted)
+		{
+			_monsters = (root, Task.Run(() => MonsterCatalog.LoadFromServer(root)));
+		}
+		return _monsters.Value.Load;
 	}
 
 	private (string Root, Task<SkillCatalog> Load)? _skills;

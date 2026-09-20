@@ -96,6 +96,29 @@ public partial class App : Application
 					skills.SearchText = snapshot.Search ?? "";
 					window.UpdateLayout();
 				}
+				if (snapshot.Tab == "rates")
+				{
+					// --tab rates: wait for the monster list, then pick a monster with --monster and a rate with --rate / --delivery.
+					until = DateTime.Now.AddSeconds(20);
+					var rates = viewModel.RatesTab;
+					Pump(() => rates.IsLoading);
+					if (snapshot.Rate is { } rate)
+					{
+						rates.Rate = rate;
+					}
+					if (snapshot.Delivery is { } delivery)
+					{
+						rates.Delivery = delivery;
+					}
+					if (snapshot.Monster is { } monster)
+					{
+						rates.SearchText = monster;
+						rates.Selected = rates.Monsters.FirstOrDefault(m => string.Equals(m.Name, monster, StringComparison.OrdinalIgnoreCase))
+							?? rates.Monsters.FirstOrDefault();
+					}
+					Pump(() => !rates.HasPreview);
+					window.UpdateLayout();
+				}
 				if (snapshot.Tab == "characters")
 				{
 					// The character list loads from the database after the first render.
@@ -135,7 +158,7 @@ public partial class App : Application
 	/// <summary>
 	/// Developer aid: L2EverdreamConfig.exe --snapshot out.png [--server dir] [--client dir] [--tab client] [--search text]
 	/// [--category id] [--group id] [--advanced] [--size 1280x820] [--backups dir] [--backups-mode full] [--full-backups dir]
-	/// [--compare folder|latest] [--filter changed|shipped|new|all] [--skill-durations]. Renders the window to a PNG and exits. Never saves settings.
+	/// [--compare folder|latest] [--filter changed|shipped|new|all] [--skill-durations] [--tab rates --rate 5 --delivery 1 --monster name]. Renders the window to a PNG and exits. Never saves settings.
 	/// </summary>
 	private sealed class SnapshotOptions
 	{
@@ -160,6 +183,9 @@ public partial class App : Application
 		public string? Compare { get; private set; }
 		public string? Filter { get; private set; }
 		public bool SkillDurations { get; private set; }
+		public double? Rate { get; private set; }
+		public double? Delivery { get; private set; }
+		public string? Monster { get; private set; }
 
 		public static SnapshotOptions? Parse(string[] args)
 		{
@@ -191,6 +217,9 @@ public partial class App : Application
 			options.Compare = Next("--compare");
 			options.Filter = Next("--filter");
 			options.SkillDurations = args.Contains("--skill-durations");
+			options.Rate = double.TryParse(Next("--rate"), System.Globalization.CultureInfo.InvariantCulture, out var rateValue) ? rateValue : null;
+			options.Delivery = double.TryParse(Next("--delivery"), System.Globalization.CultureInfo.InvariantCulture, out var deliveryValue) ? deliveryValue : null;
+			options.Monster = Next("--monster");
 			options.Advanced = args.Contains("--advanced");
 			if (Next("--size") is { } size && size.Split('x') is [var w, var h])
 			{
@@ -202,6 +231,11 @@ public partial class App : Application
 
 		public void Apply(MainViewModel viewModel)
 		{
+			if (Tab == "rates")
+			{
+				viewModel.SelectedTab = viewModel.RatesTab;
+				return;
+			}
 			if (Tab is "characters" or "backups")
 			{
 				viewModel.SelectedTab = Tab == "backups" ? viewModel.BackupsTab : viewModel.CharactersTab;

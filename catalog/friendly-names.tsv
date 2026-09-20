@@ -9,8 +9,8 @@ target|file|key|name|unit|description
 # ---------------------------------------------------------------- Rates.ini
 server-game|Rates.ini|RateXp|Experience (XP) rate|times|How fast characters gain experience from monsters. 1 = retail.
 server-game|Rates.ini|RateSp|Skill point (SP) rate|times|How fast characters gain skill points from monsters. 1 = retail.
-server-game|Rates.ini|RatePartyXp|Party experience rate|times|Multiplies the extra experience a party gets. Bigger parties feel this more.
-server-game|Rates.ini|RatePartySp|Party skill point rate|times|Multiplies the extra skill points a party gets.
+server-game|Rates.ini|RatePartyXp|Extra experience for being in a party|times|Multiplies only the size bonus a party gets, not the experience itself. The experience rate does that. At 1 a party still earns the normal party bonus.
+server-game|Rates.ini|RatePartySp|Extra skill points for being in a party|times|Multiplies only the size bonus a party gets, not the skill points themselves. The skill point rate does that.
 server-game|Rates.ini|RateDropManor|Manor crop harvest rate|times|
 server-game|Rates.ini|RateKarmaLost|Karma lost per death or kill|times|
 server-game|Rates.ini|RateKarmaExpLost|Experience lost while carrying karma|times|
@@ -28,17 +28,17 @@ server-game|Rates.ini|RateQuestRewardScroll|Quest reward scrolls|times|
 server-game|Rates.ini|RateQuestRewardRecipe|Quest reward recipes|times|
 server-game|Rates.ini|RateQuestRewardMaterial|Quest reward materials|times|
 server-game|Rates.ini|MonsterExpMaxLevelDifference|No experience from monsters more than this many levels below you|levels|
-server-game|Rates.ini|DeathDropAmountMultiplier|Drop amount|times|How many items a monster drops when killed.
-server-game|Rates.ini|DeathDropChanceMultiplier|Drop chance|times|How likely a monster is to drop each item. Combined with drop amount, 5 × 5 = 25× drops.
+server-game|Rates.ini|DeathDropAmountMultiplier|Drop amount (how much per drop)|times|Multiplies the size of each drop. This keeps working however high you set it, so it is the safe way to raise rates.
+server-game|Rates.ini|DeathDropChanceMultiplier|Drop chance (how often something drops)|times|Multiplies how often a drop happens. Each drop is rolled once, so anything above a 100% chance is wasted: past that point only the drop amount still helps. The Rates tab works this out for you.
 server-game|Rates.ini|SpoilDropAmountMultiplier|Spoil amount|times|
 server-game|Rates.ini|SpoilDropChanceMultiplier|Spoil chance|times|
 server-game|Rates.ini|HerbDropAmountMultiplier|Herb drop amount|times|
 server-game|Rates.ini|HerbDropChanceMultiplier|Herb drop chance|times|
 server-game|Rates.ini|RaidDropAmountMultiplier|Raid boss drop amount|times|
 server-game|Rates.ini|RaidDropChanceMultiplier|Raid boss drop chance|times|
-server-game|Rates.ini|DropAmountMultiplierByItemId|Drop amount for specific items (adena is item 57)||Format: itemId,multiplier;itemId,multiplier. Overrides the general drop amount for those items.
-server-game|Rates.ini|DropChanceMultiplierByItemId|Drop chance for specific items (adena is item 57)||Format: itemId,multiplier;itemId,multiplier.
-server-game|Rates.ini|DropMaxOccurrencesNormal|Most different items a normal monster can drop at once||
+server-game|Rates.ini|DropAmountMultiplierByItemId|Drop amount for specific items (adena is item 57)||Format: itemId,multiplier;itemId,multiplier. Items listed here use this instead of the general drop amount, not as well as it.
+server-game|Rates.ini|DropChanceMultiplierByItemId|Drop chance for specific items (adena is item 57)||Format: itemId,multiplier;itemId,multiplier. Items listed here use this instead of the general drop chance, not as well as it.
+server-game|Rates.ini|DropMaxOccurrencesNormal|Most different items a normal monster can drop at once||A kill stops here however high the rates go, so raising the drop amount gives bigger piles rather than more kinds of item.
 server-game|Rates.ini|DropMaxOccurrencesRaidboss|Most different items a raid boss can drop at once||
 server-game|Rates.ini|DropAdenaMinLevelDifference|Adena starts dropping less when you are this many levels above the monster|levels|
 server-game|Rates.ini|DropAdenaMaxLevelDifference|Adena drop reaches its lowest at this many levels above the monster|levels|
