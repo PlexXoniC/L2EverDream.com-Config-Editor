@@ -222,6 +222,75 @@ public class RatesTests
 	}
 }
 
+public class MonsterArtTests
+{
+	[LocalInstallFact]
+	public void TheClientSaysWhichModelBelongsToAnNpc()
+	{
+		var models = L2Config.Core.Client.NpcGrp.Read(TestPaths.RealLocations.ClientSystemDir);
+
+		Assert.InRange(models.Count, 5000, 10000);
+		var antharas = models[29019];
+		Assert.Equal("LineageMonsters.antaras_m00", antharas.Mesh);
+		Assert.Equal("LineageMonsters", antharas.MeshPackage);
+		Assert.Equal("antaras_m00", antharas.MeshName);
+		Assert.NotEmpty(antharas.Textures);
+		// Every Antharas shares the one model.
+		Assert.Equal(antharas.Mesh, models[29068].Mesh);
+	}
+
+	[LocalInstallFact]
+	public void AMonsterIsDrawnFromTheClientsOwnModel()
+	{
+		using var art = L2Config.Core.Client.MonsterArtLibrary.ForClient(TestPaths.RealLocations.ClientSystemDir);
+		Assert.NotNull(art);
+
+		var picture = art!.Render(29019, size: 128);
+
+		Assert.NotNull(picture);
+		Assert.Equal(128, picture!.Width);
+		Assert.Equal(128 * 128 * 4, picture.Bgra.Length);
+		// A drawn monster fills a good part of its frame, and the second read comes from the cache.
+		var drawn = picture.Bgra.Where((_, i) => i % 4 == 3).Count(a => a > 0);
+		Assert.InRange(drawn, 128 * 128 / 10, 128 * 128);
+		Assert.Same(picture, art.Render(29019, size: 128));
+	}
+
+	[LocalInstallFact]
+	public void AMonsterIsPaintedWithItsOwnSkins()
+	{
+		using var art = L2Config.Core.Client.MonsterArtLibrary.ForClient(TestPaths.RealLocations.ClientSystemDir);
+		var turn = art!.Turn(29019, size: 220, frames: 6);
+
+		Assert.NotNull(turn);
+		Assert.Equal(6, turn!.Count);
+		// A painted monster is made of many colours; an unpainted one is a single tint.
+		var colours = new HashSet<int>();
+		var frame = turn[0].Bgra;
+		for (var i = 0; i < frame.Length; i += 4)
+		{
+			if (frame[i + 3] > 0)
+			{
+				colours.Add((frame[i] << 16) | (frame[i + 1] << 8) | frame[i + 2]);
+			}
+		}
+		Assert.InRange(colours.Count, 500, int.MaxValue);
+
+		// Turning shows different sides: no two steps of the turn are the same picture.
+		Assert.Equal(turn.Count, turn.Select(f => Convert.ToBase64String(System.Security.Cryptography.SHA256.HashData(f.Bgra))).Distinct().Count());
+	}
+
+	[Fact]
+	public void AClientWithoutModelsHasNoPictures()
+	{
+		var empty = Path.Combine(Path.GetTempPath(), "l2config-tests", Guid.NewGuid().ToString("N"), "system");
+		Directory.CreateDirectory(empty);
+
+		Assert.Null(L2Config.Core.Client.MonsterArtLibrary.ForClient(empty));
+		Assert.Empty(L2Config.Core.Client.NpcGrp.Read(empty));
+	}
+}
+
 public class IconTests
 {
 	[LocalInstallFact]

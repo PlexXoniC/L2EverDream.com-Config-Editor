@@ -43,6 +43,9 @@ usual, the old values are backed up first. The world has to be restarted for the
 Every monster in your world, searchable by name or id. Pick one and you get:
 
 - **Experience and skill points** per kill, and **adena per kill on average**.
+- **The monster itself**, drawn from the model in your own game client, painted with its own skins and turning slowly on
+  the spot. Lineage 2 has no pictures of monsters, only 3D models, so one is drawn when you pick it; a monster your
+  client has no model for shows its level and kind instead.
 - One row per drop, with the item's **icon read from your own game client** (nothing is bundled with this program — if you
   have not chosen your client folder yet, the rows simply have no pictures).
 - **How often it drops in words**: "about 1 in 6 kills", or "every kill".
@@ -53,6 +56,7 @@ Every monster in your world, searchable by name or id. Pick one and you get:
 - A note when a drop is **already certain**, because that is where extra chance would be wasted.
 - A note when a monster has more drops than one kill can give, since a kill is capped at 2 different items (7 for raid
   bosses) however high the rates go.
+- Drop groups holding the same item added into one row: a grand boss can have seven that all give adena.
 
 ![The Drops tab](https://raw.githubusercontent.com/PlexXoniC/L2EverDream.com-Config-Editor/main/docs/images/drops.png)
 
@@ -136,9 +140,11 @@ Applying a rate replaces them.
 **Why is the chance never multiplied by more than 2?** Past that, ordinary drops are already certain and the extra is
 thrown away. The rate is not lost: it goes into the amount instead, where it still does something.
 
-**Can I see the monster itself?** Not yet. The game client stores monsters as 3D models and skins rather than pictures, so
-there is no artwork to simply show; the frame on the monster card is where a rendered one would go. Item icons are real,
-read from your client.
+**Where does the picture of the monster come from?** Your own game client. It has no pictures of monsters — only 3D
+models — so the program reads the model the client would use for that npc and draws it. Nothing is bundled with the
+program and nothing is downloaded, so choosing your client folder is what makes the pictures (and the item icons) appear.
+Monsters stand still and turn on the spot — they do not walk or attack, though the client's animations are in the same
+files, so that could follow.
 
 **Do I have to restart the world?** Yes — rate settings are read when the world starts.
 

@@ -34,6 +34,11 @@ public sealed class DropsViewModel : ObservableObject
 	private readonly Func<Task<MonsterCatalog>> _loadMonsters;
 	private MonsterCatalog? _monsters;
 	private IconLibrary? _icons;
+	private MonsterArtLibrary? _art;
+	private IReadOnlyList<System.Windows.Media.ImageSource>? _turn;
+	private System.Windows.Threading.DispatcherTimer? _turning;
+	private int _frame;
+	private int _artFor;
 	private MonsterRowViewModel? _selected;
 	private DropComparison _comparison = DropComparison.RetailToNow;
 	private string _searchText = "";
@@ -160,12 +165,16 @@ public sealed class DropsViewModel : ObservableObject
 	public string? MonsterHealth => Preview is { Monster.Hp: > 0 } p ? $"{p.Monster.Hp:N0} HP" : null;
 
 	/// <summary>
-	/// The monster's own artwork, once there is something to show. The game client stores monsters as 3D models and
-	/// skins rather than pictures, so this is null today and the frame shows what is known about the monster instead.
+	/// The monster itself, drawn from the model in the player's own game client. The client has no pictures of
+	/// monsters, only 3D models, so one is drawn on demand; until it is ready (or when this client has no model for
+	/// this monster) the frame shows what is known about it instead.
 	/// </summary>
-	public System.Windows.Media.ImageSource? MonsterArt => null;
+	public System.Windows.Media.ImageSource? MonsterArt => _turn is { Count: > 0 } ? _turn[_frame % _turn.Count] : null;
 
-	public bool HasMonsterArt => MonsterArt is not null;
+	public bool HasMonsterArt => _turn is { Count: > 0 };
+
+	/// <summary>True while a monster is being drawn, so a screenshot can wait for it.</summary>
+	public bool IsDrawing { get; private set; }
 
 	public string? ExperienceText => Preview is { } p
 		? $"{p.ExpBefore:N0} → {p.ExpAfter:N0} XP   ·   {p.SpBefore:N0} → {p.SpAfter:N0} SP"
@@ -201,7 +210,10 @@ public sealed class DropsViewModel : ObservableObject
 		try
 		{
 			_monsters = await _loadMonsters();
-			_icons = IconLibrary.ForClient(_locations()?.ClientSystemDir);
+			var clientSystem = _locations()?.ClientSystemDir;
+			_icons = IconLibrary.ForClient(clientSystem);
+			_art ??= await Task.Run(() => MonsterArtLibrary.ForClient(clientSystem));
+			_rates.Reset();                      // so "planned" starts at the rate this world already runs
 			FilterMonsters();
 			Selected ??= Monsters.FirstOrDefault();
 		}
@@ -221,6 +233,71 @@ public sealed class DropsViewModel : ObservableObject
 	{
 		OnPropertyChanged(nameof(PlannedPillText));
 		RaisePreview();
+	}
+
+	/// <summary>Draws the selected monster in the background; a later selection wins over an earlier one.</summary>
+	private async Task DrawSelectedAsync()
+	{
+		var monster = _selected?.Monster;
+		if (_art is null || monster is null || monster.Id == _artFor)
+		{
+			return;
+		}
+		_artFor = monster.Id;
+		_turn = null;
+		_frame = 0;
+		Turning(false);
+		IsDrawing = true;
+		OnPropertyChanged(nameof(MonsterArt));
+		OnPropertyChanged(nameof(HasMonsterArt));
+
+		var frames = await Infrastructure.MonsterArt.TurnAsync(_art, monster.Id);
+		if (_artFor != monster.Id)
+		{
+			return;                              // the user moved on while it was being drawn
+		}
+		_turn = frames;
+		_frame = 0;
+		IsDrawing = false;
+		OnPropertyChanged(nameof(MonsterArt));
+		OnPropertyChanged(nameof(HasMonsterArt));
+		Turning(frames is { Count: > 1 });
+	}
+
+	/// <summary>Stops the turn on the frame that faces the viewer — what a screenshot should catch.</summary>
+	public void ShowFacingFrame()
+	{
+		Turning(false);
+		_frame = 0;
+		OnPropertyChanged(nameof(MonsterArt));
+	}
+
+	/// <summary>The monster turns on the spot while you look at it; a still monster costs nothing to show.</summary>
+	private void Turning(bool on)
+	{
+		if (!on)
+		{
+			_turning?.Stop();
+			return;
+		}
+		_turning ??= new System.Windows.Threading.DispatcherTimer(System.Windows.Threading.DispatcherPriority.Background)
+		{
+			Interval = TimeSpan.FromMilliseconds(80),
+		};
+		_turning.Tick -= Turn;
+		_turning.Tick += Turn;
+		_turning.Start();
+	}
+
+	private void Turn(object? sender, EventArgs e)
+	{
+		if (_turn is not { Count: > 1 })
+		{
+			_turning?.Stop();
+			return;
+		}
+		_frame = (_frame + 1) % _turn.Count;
+		OnPropertyChanged(nameof(MonsterArt));
 	}
 
 	private int MaxDifferentItems(Monster monster) =>
@@ -257,6 +334,27 @@ public sealed class DropsViewModel : ObservableObject
 		}
 	}
 
+	/// <summary>
+	/// Several drop groups holding one item, as a single row: the chance becomes the chance of getting it at all, and
+	/// the amount is what it gives on the kills where it drops, so the average per kill still adds up.
+	/// </summary>
+	private static DropRow Combine(IReadOnlyList<DropRow> rows)
+	{
+		double MissAll(Func<DropRow, double> chance) => rows.Aggregate(1.0, (miss, r) => miss * (1 - Math.Clamp(chance(r), 0, 100) / 100));
+		var chanceBefore = (1 - MissAll(r => r.ChanceBefore)) * 100;
+		var chanceAfter = (1 - MissAll(r => r.ChanceAfter)) * 100;
+		var perKillBefore = rows.Sum(r => r.PerKillBefore);
+		var perKillAfter = rows.Sum(r => r.PerKillAfter);
+		var first = rows[0];
+		return first with
+		{
+			ChanceBefore = chanceBefore,
+			ChanceAfter = chanceAfter,
+			AmountBefore = chanceBefore <= 0 ? 0 : perKillBefore / (chanceBefore / 100),
+			AmountAfter = chanceAfter <= 0 ? 0 : perKillAfter / (chanceAfter / 100),
+		};
+	}
+
 	public string MonsterCountText => Monsters.Count switch
 	{
 		0 => "No monster matches.",
@@ -269,11 +367,18 @@ public sealed class DropsViewModel : ObservableObject
 		DropRows.Clear();
 		if (Preview is { } preview)
 		{
-			foreach (var row in preview.Drops.Concat(preview.Spoil).OrderByDescending(r => r.PerKillAfter))
+			// A monster can give the same item from several drop groups (Antharas has five that hold adena); each is
+			// rolled on its own, so they are added up into one row rather than listed over and over.
+			var groups = preview.Drops.Concat(preview.Spoil)
+				.GroupBy(r => (r.ItemId, r.IsSpoil))
+				.Select(g => (Row: g.Count() == 1 ? g.First() : Combine(g.ToList()), Groups: g.Count()))
+				.OrderByDescending(r => r.Row.PerKillAfter);
+			foreach (var (row, count) in groups)
 			{
-				DropRows.Add(new DropRowViewModel(row, _icons, _monsters));
+				DropRows.Add(new DropRowViewModel(row, _icons, _monsters, count));
 			}
 		}
+		_ = DrawSelectedAsync();
 		foreach (var name in new[]
 		{
 			nameof(Preview), nameof(HasPreview), nameof(MonsterName), nameof(MonsterKind), nameof(MonsterLevel),
@@ -297,9 +402,10 @@ public sealed class MonsterRowViewModel(Monster monster)
 
 public sealed class DropRowViewModel
 {
-	public DropRowViewModel(DropRow row, IconLibrary? icons, MonsterCatalog? catalog)
+	public DropRowViewModel(DropRow row, IconLibrary? icons, MonsterCatalog? catalog, int groups = 1)
 	{
 		Row = row;
+		Groups = groups;
 		Name = row.ItemName;
 		Image = ItemIcon.For(icons, catalog?.IconName(row.ItemId));
 		ChanceText = $"{Format(row.ChanceBefore)}% → {Format(row.ChanceAfter)}%";
@@ -309,13 +415,17 @@ public sealed class DropRowViewModel
 		OddsText = row.ChanceAfter >= 100 ? "every kill"
 			: row.ChanceAfter <= 0 ? "never"
 			: $"about 1 in {Format(Math.Round(100 / row.ChanceAfter))} kills";
-		Note = row.IsHerb ? "Herb — its own rate"
+		Note = groups > 1 ? $"{groups} drop groups added up"
+			: row.IsHerb ? "Herb — its own rate"
 			: row.ChanceIsFull ? "Always drops; more chance would be wasted"
 			: row.IsAdena ? "Adena uses its own rate" : null;
 	}
 
 	public DropRow Row { get; }
 	public string Name { get; }
+
+	/// <summary>How many of the monster's drop groups this row adds up.</summary>
+	public int Groups { get; }
 
 	/// <summary>The item's icon from the player's own game client, when it can be read.</summary>
 	public System.Windows.Media.ImageSource? Image { get; }
@@ -332,12 +442,16 @@ public sealed class DropRowViewModel
 	public bool IsSpoil => Row.IsSpoil;
 	public string KindWord => Row.IsSpoil ? "Spoil" : "Drop";
 
+	/// <summary>Short enough to read at a glance: a boss gives billions, a rare drop a hundredth of an item.</summary>
 	private static string Format(double value) => value switch
 	{
 		0 => "0",
 		< 0.01 => value.ToString("0.####", CultureInfo.InvariantCulture),
 		< 1 => value.ToString("0.##", CultureInfo.InvariantCulture),
 		< 1000 => value.ToString("0.#", CultureInfo.InvariantCulture),
-		_ => value.ToString("N0", CultureInfo.InvariantCulture),
+		< 100_000 => value.ToString("N0", CultureInfo.InvariantCulture),
+		< 1_000_000 => (value / 1_000).ToString("0.#", CultureInfo.InvariantCulture) + "K",
+		< 1_000_000_000 => (value / 1_000_000).ToString("0.##", CultureInfo.InvariantCulture) + "M",
+		_ => (value / 1_000_000_000).ToString("0.##", CultureInfo.InvariantCulture) + "B",
 	};
 }

@@ -163,6 +163,12 @@ tests/L2Config.Core.Tests/       xUnit
 | `Rates/RateSettings.cs` | The multipliers actually in force — read from a world's files, built from a rate plan, or retail (all 1) — with the server's else-if chain (by item id, herb, raid, then the general rates) resolved once, so adena's own entry replaces the general one rather than adding to it. |
 | `Rates/RatePlan.cs` | Turns one rate into the settings that produce it: `RateOptions` (rate, and how much of it goes to chance rather than amount) computes the chance multiplier — never past the point where chance is wasted — and the amount multiplier that makes up the rest, plus a gentler raid rate; `RatePlan.Build` lists the 16 values it writes (with adena's own amount, because `DropAmountMultiplierByItemId` replaces the general one) and what it deliberately leaves alone. |
 | `Rates/DropPreview.cs` | What one monster gives under **any two** sets of rates (retail → now, now → planned, retail → planned), exactly as the server works it out: a single roll per drop group (so chance stops at 100%), amounts multiplied, herbs and the limit on different items per kill honoured, raid multipliers for raid and grand bosses. |
+| `Client/UePackage.cs` | A Lineage 2 Unreal package read without loading it: the mesh packages are 100-200 MB, so only the header, the name table, the export table and the one object asked for are decrypted (XOR 0xAC, or the file-name key). |
+| `Client/NpcGrp.cs` | The client's `npcgrp.dat` (encrypted like `l2.ini`): for every npc id, the model and skin textures the client draws it with. |
+| `Client/MonsterMesh.cs` | A Lineage 2 skeletal mesh out of a `.ukx` package. The stock UE2 point, wedge and face arrays are empty in this game: the geometry is in the LOD models, as 52-byte wedges (position, a normal of length 512, texture coordinates, bones and weights) plus a triangle index buffer. Those positions are the reference pose, so a still needs no skinning; the smallest LOD that still looks right is used. |
+| `Client/MeshRenderer.cs` | Draws a model into a small picture: orthographic, depth-buffered, painted from the model's own skins, one light, no graphics card — so it looks the same everywhere, including in snapshot mode. `Turntable` draws a whole turn, and `FacingYaw` is the angle that shows a Lineage 2 model three-quarters on (they look along +Y). |
+| `Client/MonsterArtLibrary.cs` | Ties those together: npc id → model and skins → a turn of pictures, with the packages kept open and the frames cached. A skin named by the client is usually a Shader, so its `Diffuse` texture is followed. |
+| `Client/UeTexture.cs` | One texture out of a package: the property list gives size and format, then the mipmaps (DXT1, DXT3 or plain). Shared by the item icons and the monster skins. |
 | `Client/IconLibrary.cs` | Reads item icons out of the player's own client: decrypts `systextures\Icon.utx` (`Lineage2Ver121`, XOR by filename), walks the Unreal package's name/export tables and decodes the DXT1/DXT3 textures. Nothing is bundled with the app. |
 | `Skills/SkillCatalog.cs` | Every skill with a duration from `game\data\stats\skills` (custom last), whether players learn it (`stats\players\skillTrees`) or the buffer gives it (`SchemeBufferSkills.xml`), kind (buff, song/dance, debuff), durations by level and "+Time" enchant maximum; `SkillDurationList` parse/format, plain-word durations (`90s`, `1h 30m`, `1:30:00`). |
 
@@ -182,6 +188,7 @@ tests/L2Config.Core.Tests/       xUnit
 | `ViewModels/RatesViewModel.cs` | The Rates tab: preset pills and a typed rate, the *how it arrives* slider, and the settings it will write in two columns (old → new); *Apply* fills them into the Server tab as unsaved changes. Raises `RatesChanged`, which the Drops tab follows. |
 | `ViewModels/DropsViewModel.cs` | The Drops tab: the monster search and list, which two sets of rates are compared, the monster card (level, kind, HP, experience, adena per kill, and the frame a rendered monster would go in) and a row per drop with its icon, chance, amount, average per kill, real multiplier and how often it drops in words. |
 | `Infrastructure/ItemIcon.cs` | Caches icons decoded from the client as frozen WPF images; cleared when the client folder changes. |
+| `Infrastructure/MonsterArt.cs` | Draws a monster's whole turn off the interface thread and caches the frozen frames; cleared when the client folder changes. |
 | `ViewModels/CustomConfigViewModel.cs` | Read-only differences with stock / shipped / current values and filters. |
 | `Theme/Colors.xaml`, `Theme/Controls.xaml` | The design system (see §8). |
 | `Infrastructure/*` | `ObservableObject`, `RelayCommand`, app preferences, converters, editor template selector, numeric input filter, password binding. |
@@ -353,11 +360,14 @@ change backups above.
   normal save bar. *See what N× does to a monster →* opens the Drops tab.
 - **Drops**: every monster in the world, searchable by name or id. Three comparisons — *Retail → your world*,
   *N× planned* (your world → the rate picked on the Rates tab) and *Retail → planned* — with a line saying exactly what is
-  being compared and a link back to the Rates tab. The monster card shows level, kind, HP, experience and skill points
-  before → after and adena per kill, in a frame that a rendered monster would sit in. Each drop is a row: the item's icon
+  being compared and a link back to the Rates tab. The monster card shows the monster itself — drawn from the model in the player's own
+  client, painted with its own skins and turning slowly on the spot — with level, kind, HP, experience and skill points
+  before → after and adena per kill. Until a picture is ready
+  (or when the client has no model for that monster) the frame shows its level and kind instead. Each drop is a row: the item's icon
   read from the player's own client, how often it drops in words ("about 1 in 6 kills", "every kill"), chance and amount
   before → after, the average per kill and the multiplier really achieved, with *Spoil* marked, herbs marked as having
-  their own rate, and a note when a drop is already certain so extra chance would be wasted.
+  their own rate, and a note when a drop is already certain so extra chance would be wasted. Drop groups that hold the
+  same item are added into one row (a grand boss can have seven that hold adena), and big numbers are shortened (107M).
 - **Characters**: each player character with level, account, inventory slots used of the limit, adena editor (offline only) and *Inventory…*.
 - **Inventory**: items in the inventory (equipped marked) with *Set count* for stacks and *Remove* (confirmed); *Waiting for the server to deliver* with *Cancel delivery*; *Add items*: search every item by name or ID, amount, enchant for weapons/armor, a line saying exactly what will happen and how many slots it needs, and the reason when it can't. Adding to a stack the character already carries changes that stack immediately; anything else is queued for the server, with a highlighted explanation and the live state of the delivery setting.
 - **Backups**: *Change backups* / *Full backups* switch. Change backups: every backup newest first with what changed (from → to), what it contains, *Restore…* (with a plan of what will and won't be restored right now) and *Open folder*; results per item after a restore.
@@ -420,7 +430,7 @@ behaviour or adding a new file type.
 - Full backups are taken with the button only; the app cannot know an update is pending (the launcher checks online).
 - `IniDocument` splits lines on the file's own newline style; a hand-edited file with mixed CRLF/LF line endings can hide
   keys from both the editor and the comparison.
-- Drops: the preview reads the datapack, so it describes a freshly started world — it does not know about a boss already killed or a player's own bonuses (premium, vitality, level gap). Monsters are shown with their item icons only: the client has no 2D artwork for them, only 3D meshes and skins.
+- Drops: the preview reads the datapack, so it describes a freshly started world — it does not know about a boss already killed or a player's own bonuses (premium, vitality, level gap). Monsters are drawn in their reference pose and turned on the spot; they do not walk or attack, though the client's animation tracks are in the same packages.
 - No app icon yet. (There will be no installer — the app is a standalone exe by design.)
 
 ---
@@ -450,3 +460,5 @@ behaviour or adding a new file type.
 | 2026-09-13 | No local paths in the repository or its history: this PC's folders moved to git-ignored `CLAUDE.local.md` and `test-paths.local.json`. |
 | 2026-09-20 | Rates tab: one rate for the whole world, split between drop chance and amount, with a before/after preview of a real monster using item icons read from the player's own client; clearer names for the drop chance/amount and party bonus settings. |
 | 2026-09-20 | Split the rate picker and the monster browser into Rates and Drops tabs; the Drops tab compares any two sets of rates, including what the world gives right now. |
+| 2026-09-20 | Drops tab: draws the monster itself, read from the model in the player's own game client (npcgrp.dat → the .ukx package → a software render); drop groups holding the same item are added up. |
+| 2026-09-20 | Monsters face the viewer, are painted with their own skins (a skin name is a Shader, so its Diffuse texture is followed) and turn on the spot; the package reader and texture decoder are now shared with the item icons. |

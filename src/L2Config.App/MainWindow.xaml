@@ -856,10 +856,10 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <!-- The monster itself. Until there is artwork to show, the frame carries what is known about it. -->
-                                <Border Width="104" Height="104" CornerRadius="12" Background="#59100E22" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                                <!-- The monster itself, drawn from the client's own model; its details until that is ready. -->
+                                <Border Width="146" Height="146" CornerRadius="12" Background="#59100E22" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
                                     <Grid>
-                                        <Image Source="{Binding MonsterArt}" Stretch="Uniform" Margin="4"
+                                        <Image Source="{Binding MonsterArt}" Stretch="Uniform" Margin="2" RenderOptions.BitmapScalingMode="HighQuality"
                                                Visibility="{Binding HasMonsterArt, Converter={StaticResource VisibleWhen}}" />
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
                                                     Visibility="{Binding HasMonsterArt, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}">

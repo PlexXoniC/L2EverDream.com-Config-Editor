@@ -51,8 +51,8 @@ The project owner knows the user is building it.
    - **Drops** is the Rates tab's other half and follows the rate picked there: every monster with its experience, drops
      and spoil, item icons read from the player's own client, and a choice of which two sets of rates to compare — retail
      (what a drop table site lists), the world as it is set now, or the planned rate (`RateSettings` in Core reads all
-     three). It is where a future monster render goes; the client has only 3D meshes, so the card shows the monster's
-     details in that frame for now.
+     three). The card draws the monster itself from the model in the player's own client - nothing is bundled, the
+     picture is rendered on demand, and a client with no model for a monster simply shows its details instead.
    - **Explain how settings affect each other.** Setting cards show "depends on / has no effect right now / controls /
      works with" lines from `catalog/setting-relations.tsv` plus derived rules, evaluated live.
 6. **The user chooses both folders.** No default or auto-detected server/client paths.
@@ -132,7 +132,15 @@ under `%LOCALAPPDATA%\L2EverdreamConfig\backups`.
   means adena ignores the general drop amount. Each drop group is rolled once, so chance above 100% is wasted, and
   `DropMaxOccurrencesNormal`/`Raidboss` cap how many different items one kill can give.
 - Item icons come from the player's own client (`systextures\Icon.utx`, `Lineage2Ver121` XOR by filename, then a UE2
-  package with DXT1/DXT3 textures) - nothing is bundled. Monsters have no 2D artwork in the client, only 3D meshes.
+  package with DXT1/DXT3 textures) - nothing is bundled.
+- Monsters have no 2D artwork in the client, so they are rendered from the 3D model: `npcgrp.dat` (encrypted like
+  `l2.ini`) maps npc id -> mesh and skins; the mesh is in `animations\Lineage*.ukx` (`Lineage2Ver111`, XOR 0xAC, a UE2
+  package of 100-200 MB, so only its tables and the one export are read); and Lineage 2 keeps the geometry in the LOD
+  models rather than the stock UE2 arrays: 52-byte wedges (position, normal of length 512, UV, bones, weights) plus a
+  triangle index buffer, already in the reference pose. Models look along +Y (`MeshRenderer.FacingYaw` turns them to
+  face the viewer), and the skin the npc table names is a **Shader**, not a texture - follow its `Diffuse` property to
+  the real picture (`antaras_t00` -> `antaras_t00_sp`). A package can hold a stub and the real object under one name,
+  so the largest export wins.
 - `SkillDurationList` (edited on its own page, max 12 h per the user) is keyed by skill id for every caster, never affects
   toggles, and is **added** to enchanted "+Time" levels 100–139 (see the knowledge base). Skills come from the datapack
   (`Skills/SkillCatalog.cs`), not the catalog.

@@ -129,7 +129,8 @@ public partial class App : Application
 							drops.Selected = drops.Monsters.FirstOrDefault(m => string.Equals(m.Name, monster, StringComparison.OrdinalIgnoreCase))
 								?? drops.Monsters.FirstOrDefault();
 						}
-						Pump(() => !drops.HasPreview);
+						Pump(() => !drops.HasPreview || drops.IsDrawing);
+						drops.ShowFacingFrame();
 					}
 					window.UpdateLayout();
 				}
