@@ -68,4 +68,29 @@ public class WorldDatabaseTests
 		}
 		Assert.True((await database.WorldStartedAsync()) < DateTime.Now);
 	}
+	[Fact]
+	public void TheWorldsEnchantCeilingComesFromTheDatapack()
+	{
+		var root = Path.Combine(Path.GetTempPath(), "l2config-tests", Guid.NewGuid().ToString("N"));
+		var data = Path.Combine(root, "game", "data");
+		Directory.CreateDirectory(data);
+		File.WriteAllText(Path.Combine(data, "EnchantItemData.xml"), """
+			<list>
+				<enchant id="729" maxEnchant="16" />
+				<enchant id="730" maxEnchant="20" />
+				<enchant id="731" />
+			</list>
+			""");
+
+		Assert.Equal(20, EnchantRules.MaxInGame(root));
+		Assert.Null(EnchantRules.MaxInGame(Path.Combine(root, "nothing-here")));
+		Assert.Null(EnchantRules.MaxInGame(null));
+	}
+
+	[LocalInstallFact]
+	public void TheInstalledWorldStopsEnchantingAtItsOwnLimit()
+	{
+		Assert.InRange(EnchantRules.MaxInGame(TestPaths.RealLocations.ServerRoot) ?? 0, 1, 100);
+	}
+
 }

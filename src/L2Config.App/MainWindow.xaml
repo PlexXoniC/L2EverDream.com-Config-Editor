@@ -375,8 +375,19 @@
                         <TextBlock Text="{Binding Details}" FontSize="11.5" Foreground="{StaticResource CaptionBrush}" Margin="0,2,0,0" />
                         <TextBlock Text="{Binding CountError}" FontSize="11.5" Foreground="{StaticResource LanternBrush}" Margin="0,3,0,0" TextWrapping="Wrap"
                                    Visibility="{Binding CountError, Converter={StaticResource VisibleWhen}}" />
+                        <TextBlock Text="{Binding EnchantError}" FontSize="11.5" Foreground="{StaticResource LanternBrush}" Margin="0,3,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding EnchantError, Converter={StaticResource VisibleWhen}}" />
+                        <TextBlock Text="{Binding EnchantNote}" FontSize="11.5" Foreground="{StaticResource DimLabelBrush}" Margin="0,3,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding EnchantNote, Converter={StaticResource VisibleWhen}}" />
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,10,0" Visibility="{Binding CanEditEnchant, Converter={StaticResource VisibleWhen}}">
+                            <TextBlock Text="+" VerticalAlignment="Center" FontSize="13" FontFamily="{StaticResource MonoFont}" Foreground="{StaticResource LabelBrush}" Margin="0,0,3,0" />
+                            <TextBox Style="{StaticResource FieldTextBox}" Width="58" TextAlignment="Right" FontFamily="{StaticResource MonoFont}"
+                                     infra:NumericInput.ValueType="Int" Text="{Binding EnchantText, UpdateSourceTrigger=PropertyChanged}"
+                                     AutomationProperties.Name="Enchant level" ToolTip="Enchant level" />
+                            <Button Style="{StaticResource GhostButton}" Content="Set enchant" Command="{Binding ApplyEnchantCommand}" Margin="8,0,0,0" Padding="12,5" FontSize="12" />
+                        </StackPanel>
                         <TextBlock Text="{Binding CountDisplay}" FontFamily="{StaticResource MonoFont}" FontSize="13" Foreground="{StaticResource EmberBrush}"
                                    VerticalAlignment="Center" Margin="0,0,12,0"
                                    Visibility="{Binding CanEditCount, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
@@ -443,6 +454,23 @@
 
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,8,0">
                         <StackPanel>
+                            <Border Padding="12,10" CornerRadius="10" Margin="0,0,0,10" Background="{StaticResource LanternWashBrush}"
+                                    BorderBrush="{StaticResource LanternBrush}" BorderThickness="1"
+                                    Visibility="{Binding HasDeliveryWarning, Converter={StaticResource VisibleWhen}}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="⚠  ITEM DELIVERY IS OFF" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource LanternBrush}" />
+                                        <TextBlock Text="{Binding DeliveryWarning}" FontSize="12.5" Foreground="{StaticResource EmberBrush}" TextWrapping="Wrap"
+                                                   Margin="0,3,0,0" LineHeight="18" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Style="{StaticResource GhostButton}" Content="Open that setting →" Command="{Binding ShowDeliverySettingCommand}"
+                                            Padding="12,5" FontSize="12" Margin="12,0,0,0" VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
                             <TextBlock Text="{Binding Problem}" Style="{StaticResource CaptionText}" FontSize="13" Foreground="{StaticResource LanternBrush}" Margin="0,0,0,10"
                                        Visibility="{Binding HasProblem, Converter={StaticResource VisibleWhen}}" />
                             <Border x:Name="Status" Padding="12,8" CornerRadius="10" Margin="0,0,0,10" Background="{StaticResource ArcaneWashBrush}"

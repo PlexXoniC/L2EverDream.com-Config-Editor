@@ -151,7 +151,8 @@ public sealed class MainViewModel : ObservableObject
 			ReadMaxAdena(),
 			deliveryValue is null ? null : SettingValues.IsTrue(deliveryValue),
 			int.TryParse(ReadServerValue("DatabaseQueryDelay"), out var delay) && delay > 0 ? delay : 30,
-			delivery?.Id);
+			delivery?.Id,
+			EnchantRules.MaxInGame(store.Locations.ServerRoot));
 	}
 
 	/// <summary>Access levels marked isGM="true" in AccessLevels.xml (they get the Game Master inventory limit).</summary>

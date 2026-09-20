@@ -29,8 +29,19 @@ Every change is backed up first (see [Backups and restore](Backups-and-Restore))
 The header shows slots used, slots used once waiting deliveries arrive, and which setting the limit comes from.
 
 - **In the inventory:** everything the character carries, with equipped items marked. Stacks such as adena, arrows or potions have a
-  count box and **Set count**. Every item has **Remove**, which asks first.
+  count box and **Set count**. Weapons, armour and jewellery have an enchant box and **Set enchant**. Every item has **Remove**, which
+  asks first.
 - **Waiting for the server to deliver:** items you've added that haven't arrived yet, each with **Cancel delivery**.
+
+### Changing an enchant level
+
+Type the level you want next to a weapon, a piece of armour or a jewel and click **Set enchant**. The change is written to the character's
+item row straight away — the character must be **logged out**, and the row is backed up first, so the old level can be put back from the
+Backups tab.
+
+Levels run from 0 upwards. If you go higher than your world's own enchanting ever reaches (read from `game/data/EnchantItemData.xml` — +16
+as L2Everdream ships), the box says so but still lets you: the item works, it simply isn't a level a player could have reached by
+enchanting. Stacks and ordinary items have no enchant box, because Lineage 2 does not enchant them.
 
 ## Adding items: read this
 
@@ -47,8 +58,12 @@ Instead, new items are **queued for the server to deliver**:
 
 **Delivery must be switched on.** The server only delivers queued items while **Deliver items queued from the database**
 (`Custom/CustomMailManager.ini › CustomMailManagerEnabled`) is **On**, and it reads that setting when the world starts. It's **off** as
-L2Everdream ships. The inventory screen tells you its current state and has **Open that setting →**. Turn it on, save, then restart your
-world before logging in.
+L2Everdream ships, so while it is off a warning sits across the top of the inventory screen — with **Open that setting →** — and says how
+many items are waiting that will never arrive. Turn it on, **Save changes**, then **restart the world from the launcher** and log the
+character in.
+
+There is no mail window to open: Interlude has none, so the server puts the items straight into the inventory and writes a line in chat.
+The launcher does not keep a protected copy of that file, so check the setting again after an L2Everdream update.
 
 **Adding to a stack you already have is instant.** If the character already carries that stackable item (adena, arrows, potions…), the
 program adds to the existing stack straight away. No new slot and no delivery needed.

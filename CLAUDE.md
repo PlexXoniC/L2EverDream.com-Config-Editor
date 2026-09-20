@@ -24,12 +24,16 @@ The project owner knows the user is building it.
 5. **Separate tabs:** Server, Client, **Rates**, **Drops**, a read-only **Custom Config** tab (how the release differs from stock L2J Mobius),
    **Characters** and **Backups**.
    - **Characters** edits player characters in the running world's database: adena, plus an inventory editor that changes,
-     removes and adds items from the full item list. Existing rows are written only while the character is offline (the
+     removes and adds items from the full item list, and sets the enchant level of weapons, armour and jewellery
+     (`EnchantRules` reads the world's own ceiling from `EnchantItemData.xml`; a level above it is allowed but said so). Existing rows are written only while the character is offline (the
      character row is locked and `online = 0` re-checked inside the writing transaction). Sims (account `$sim`) are never
      listed. **No item rows are ever inserted while the server runs** (it allocates object IDs in memory): new items are
      queued in `custom_mail` and the server's CustomMailManager delivers them when the character is online — this must
      be explained plainly in the UI, including the live state of `CustomMailManagerEnabled` and that it needs a world
-     restart. The inventory limit is enforced exactly as the server counts it (`InventoryRules.cs`), including queued
+     restart; while that setting is off a warning sits across the top of the inventory screen. The server has no mail
+     window in Interlude: `CustomMailManager` polls `custom_mail` every `DatabaseQueryDelay` seconds and adds the items
+     straight to an online character, then deletes the row. The launcher does not keep a protected copy of
+     `Custom/CustomMailManager.ini`, so an update can reset it. The inventory limit is enforced exactly as the server counts it (`InventoryRules.cs`), including queued
      deliveries, and stacks are capped (adena by `MaxAdena`).
    - **Backups**: every settings save, character change and restore first backs up what it replaces — files, and database
      rows as they were — into one flat folder per backup (`yyyyMMdd-HHmmss-title\role__file` + `manifest.json`).

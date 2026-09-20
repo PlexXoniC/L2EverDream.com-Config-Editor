@@ -72,7 +72,7 @@ public sealed class InventoryViewModel : ObservableObject
 
 	public string EditLockText => IsOnline
 		? "This character is logged in, so its items are read-only here: the server keeps a logged-in character's inventory in memory and would overwrite any change. Log out to change or remove items."
-		: "Changes to existing items are written to the database immediately. The rows are backed up first.";
+		: "Counts, enchant levels and removals are written to the database immediately. The rows are backed up first.";
 
 	/// <summary>The plain explanation of how new items get into an inventory, with the live state of the setting it needs.</summary>
 	public string DeliveryExplanation =>
@@ -88,6 +88,29 @@ public sealed class InventoryViewModel : ObservableObject
 	};
 
 	public bool DeliveryDisabled => _facts.DeliveryEnabledInFile != true;
+
+	/// <summary>
+	/// Shown across the inventory itself, not only beside the Add panel: without the setting the server never looks at
+	/// the queue, so an item added here would simply never turn up in game.
+	/// </summary>
+	public string? DeliveryWarning => _facts.DeliveryEnabledInFile switch
+	{
+		true => null,
+		false when Deliveries.Count > 0 =>
+			$"{WaitingCount} waiting to be delivered, and they will not arrive: “Deliver items queued from the database” is off. " +
+			"Turn it on, save, then restart the world from the launcher and log this character in.",
+		false =>
+			"New items added here will not arrive: “Deliver items queued from the database” is off, so the server never looks at " +
+			"the queue. Turn it on, save, then restart the world from the launcher.",
+		null => "Could not read “Deliver items queued from the database” (Custom/CustomMailManager.ini). New items only arrive while it is on.",
+	};
+
+	public bool HasDeliveryWarning => DeliveryWarning is not null;
+
+	private string WaitingCount => Deliveries.Count == 1 ? "1 item is" : $"{Deliveries.Count} deliveries are";
+
+	/// <summary>The world's own enchant ceiling, for warning about levels the game itself never gives out.</summary>
+	public int? MaxEnchantInGame => _facts.MaxEnchantInGame;
 
 	public string? Problem
 	{
@@ -310,6 +333,12 @@ public sealed class InventoryViewModel : ObservableObject
 		await RunAsync($"{Name} {row.DisplayName}", backup => _database.SetItemCountAsync(_character, row.Item, newCount, row.DisplayName, backup));
 	}
 
+	internal async Task SetEnchantAsync(InventoryRowViewModel row, int newEnchant)
+	{
+		await RunAsync($"{Name} {row.DisplayName} enchant",
+			backup => _database.SetItemEnchantAsync(_character, row.Item, newEnchant, row.PlainName, backup));
+	}
+
 	internal async Task CancelDeliveryAsync(DeliveryRowViewModel row)
 	{
 		await RunAsync($"{Name} cancel delivery", backup => _database.CancelDeliveryAsync(_character, row.Delivery, backup));
@@ -408,6 +437,7 @@ public sealed class InventoryRowViewModel : ObservableObject
 {
 	private readonly InventoryViewModel _owner;
 	private string _countText;
+	private string _enchantText;
 
 	public InventoryRowViewModel(InventoryItem item, ItemTemplate? template, InventoryViewModel owner)
 	{
@@ -415,8 +445,10 @@ public sealed class InventoryRowViewModel : ObservableObject
 		Template = template;
 		_owner = owner;
 		_countText = item.Count.ToString(CultureInfo.InvariantCulture);
+		_enchantText = item.Enchant.ToString(CultureInfo.InvariantCulture);
 		ApplyCommand = new RelayCommand(() => _ = owner.SetCountAsync(this, long.Parse(_countText.Trim(), CultureInfo.InvariantCulture)), () => CanApply);
 		RemoveCommand = new RelayCommand(() => _ = owner.SetCountAsync(this, 0), () => CanEdit);
+		ApplyEnchantCommand = new RelayCommand(() => _ = owner.SetEnchantAsync(this, int.Parse(_enchantText.Trim(), CultureInfo.InvariantCulture)), () => CanApplyEnchant);
 	}
 
 	public InventoryItem Item { get; }
@@ -427,6 +459,43 @@ public sealed class InventoryRowViewModel : ObservableObject
 	public string CountDisplay => IsStackable ? $"{Item.Count:N0}" : "1 slot";
 	public bool CanEdit => !_owner.IsOnline && !_owner.IsBusy;
 	public bool CanEditCount => CanEdit && IsStackable;
+
+	/// <summary>The item's name without the "+5" the display adds, so messages read plainly.</summary>
+	public string PlainName => Template?.Name ?? $"Unknown item {Item.ItemId}";
+
+	/// <summary>Weapons, armour and jewellery carry an enchant level; stacks and ordinary items do not.</summary>
+	public bool CanEnchant => !IsStackable && Template?.Type is "Weapon" or "Armor";
+
+	public bool CanEditEnchant => CanEdit && CanEnchant;
+
+	public string EnchantText
+	{
+		get => _enchantText;
+		set
+		{
+			if (Set(ref _enchantText, value ?? ""))
+			{
+				OnPropertyChanged(nameof(EnchantError));
+				OnPropertyChanged(nameof(EnchantNote));
+				OnPropertyChanged(nameof(CanApplyEnchant));
+			}
+		}
+	}
+
+	public string? EnchantError =>
+		!int.TryParse(_enchantText.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out var n) || n > WorldDatabase.MaxEnchantLevel
+			? $"Enter a level from 0 to {WorldDatabase.MaxEnchantLevel}."
+			: null;
+
+	/// <summary>A level the world's own enchanting never reaches is allowed, but it is worth saying so.</summary>
+	public string? EnchantNote =>
+		EnchantError is null && _owner.MaxEnchantInGame is { } max
+			&& int.TryParse(_enchantText.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out var n) && n > max
+			? $"Above +{max}, which is as far as your world's own enchanting goes."
+			: null;
+
+	public bool CanApplyEnchant => CanEditEnchant && EnchantError is null
+		&& int.Parse(_enchantText.Trim(), CultureInfo.InvariantCulture) != Item.Enchant;
 
 	public string CountText
 	{
@@ -450,6 +519,7 @@ public sealed class InventoryRowViewModel : ObservableObject
 
 	public RelayCommand ApplyCommand { get; }
 	public RelayCommand RemoveCommand { get; }
+	public RelayCommand ApplyEnchantCommand { get; }
 }
 
 public sealed class DeliveryRowViewModel

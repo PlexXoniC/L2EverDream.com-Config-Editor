@@ -15,7 +15,8 @@ public sealed record ServerFacts(
 	long MaxAdena,
 	bool? DeliveryEnabledInFile,
 	int DeliveryDelaySeconds,
-	string? DeliverySettingId);
+	string? DeliverySettingId,
+	int? MaxEnchantInGame);
 
 /// <summary>The Characters tab: player characters in the running world, their adena, and an inventory editor.</summary>
 public sealed class CharactersViewModel : ObservableObject

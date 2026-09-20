@@ -24,6 +24,9 @@ public sealed partial class WorldDatabase(string connectionString)
 	public const int AdenaItemId = 57;
 	public const string SimAccount = "$sim";
 	public const string DeliverySubject = "L2Everdream Config";
+
+	/// <summary>As high as the database column goes; the world's own enchanting stops far lower.</summary>
+	public const int MaxEnchantLevel = 65535;
 	private const string InventoryLocations = "('INVENTORY','PAPERDOLL')";
 
 	public static WorldDatabase FromServerFolder(L2Locations locations)
@@ -189,6 +192,69 @@ public sealed partial class WorldDatabase(string connectionString)
 		backup.NoteChange($"{character.Name} › {itemName}", current.ToString("N0", CultureInfo.InvariantCulture),
 			newCount == 0 ? "removed" : newCount.ToString("N0", CultureInfo.InvariantCulture));
 		return EditOutcome.Done(newCount == 0 ? $"Removed {itemName}." : $"{itemName} is now {newCount:N0}.");
+	}
+
+	/// <summary>
+	/// Changes how enchanted one item is. Like every change to an existing row this is only done while the character is
+	/// logged out, inside a transaction that locks the character and re-checks it, and the row is backed up first.
+	/// </summary>
+	public async Task<EditOutcome> SetItemEnchantAsync(PlayerCharacter character, InventoryItem item, int newEnchant, string itemName,
+		BackupSession backup, CancellationToken cancellation = default)
+	{
+		if (newEnchant < 0 || newEnchant > MaxEnchantLevel)
+		{
+			return EditOutcome.Refused($"The enchant level must be between 0 and {MaxEnchantLevel}.");
+		}
+		await using var connection = await OpenAsync(cancellation);
+		await using var tx = await connection.BeginTransactionAsync(cancellation);
+
+		if (await LockOfflineCharacterAsync(connection, tx, character.CharId, cancellation) is { } refusal)
+		{
+			return refusal;
+		}
+		var rows = await ReadRowsAsync(connection, tx,
+			$"SELECT * FROM items WHERE object_id = @object AND owner_id = @char AND loc IN {InventoryLocations} FOR UPDATE",
+			[("@object", item.ObjectId), ("@char", character.CharId)], cancellation);
+		if (rows.Count == 0)
+		{
+			return EditOutcome.Refused("The item is no longer in the character's inventory. Refresh and try again.");
+		}
+		var current = IntOr(rows[0], "enchant_level");
+		if (current != item.Enchant)
+		{
+			return EditOutcome.Refused("The item's enchant level changed since the inventory was loaded. Refresh and try again.");
+		}
+		if (current == newEnchant)
+		{
+			return EditOutcome.Refused($"{itemName} is already +{newEnchant}.");
+		}
+
+		var entry = backup.RecordRows(new DbRowsBackup
+		{
+			Database = DatabaseName,
+			Table = "items",
+			Operation = DbOperation.Update,
+			CharId = character.CharId,
+			CharName = character.Name,
+			Rows = rows,
+		}, $"{character.Name}: {itemName} enchant +{current} → +{newEnchant}");
+
+		await using var command = new MySqlCommand(
+			"UPDATE items SET enchant_level = @enchant WHERE object_id = @object AND owner_id = @char AND enchant_level = @expected",
+			connection, tx);
+		command.Parameters.AddWithValue("@enchant", newEnchant);
+		command.Parameters.AddWithValue("@object", item.ObjectId);
+		command.Parameters.AddWithValue("@char", character.CharId);
+		command.Parameters.AddWithValue("@expected", current);
+		if (await command.ExecuteNonQueryAsync(cancellation) != 1)
+		{
+			await tx.RollbackAsync(cancellation);
+			backup.Forget(entry);
+			return EditOutcome.Refused("The item changed while saving. Nothing was changed.");
+		}
+		await tx.CommitAsync(cancellation);
+		backup.NoteChange($"{character.Name} › {itemName} enchant", $"+{current}", $"+{newEnchant}");
+		return EditOutcome.Done(newEnchant == 0 ? $"{itemName} is no longer enchanted." : $"{itemName} is now +{newEnchant}.");
 	}
 
 	/// <summary>

@@ -72,6 +72,32 @@ public class WorldDatabaseIntegrationTests
 	}
 
 	[Fact]
+	public async Task ChangesAnItemsEnchantLevel()
+	{
+		if (ConnectionString is null) return;
+		var (db, backup, _, _) = await SetUpAsync();
+		var tester = await TesterAsync(db);
+		var sword = (await db.ListInventoryAsync(CharId)).Single(i => i.ItemId == 1);
+		Assert.Equal(3, sword.Enchant);
+
+		var outcome = await db.SetItemEnchantAsync(tester, sword, 8, "Short Sword", backup);
+		Assert.True(outcome.Ok, outcome.Message);
+		Assert.Equal(8, (await db.ListInventoryAsync(CharId)).Single(i => i.ItemId == 1).Enchant);
+
+		// The row as it was is in the backup.
+		var stored = new BackupLibrary(Path.GetDirectoryName(backup.Folder)!).List().Single();
+		var rows = BackupLibrary.ReadRows(stored, stored.Manifest.Entries.Single());
+		Assert.Equal("3", rows.Rows.Single()["enchant_level"]);
+
+		// The stale level it was loaded with is refused, and so is a level the column cannot hold.
+		Assert.False((await db.SetItemEnchantAsync(tester, sword, 9, "Short Sword", backup)).Ok);
+		var now = (await db.ListInventoryAsync(CharId)).Single(i => i.ItemId == 1);
+		Assert.False((await db.SetItemEnchantAsync(tester, now, 8, "Short Sword", backup)).Ok);
+		Assert.False((await db.SetItemEnchantAsync(tester, now, WorldDatabase.MaxEnchantLevel + 1, "Short Sword", backup)).Ok);
+		Assert.Equal(8, (await db.ListInventoryAsync(CharId)).Single(i => i.ItemId == 1).Enchant);
+	}
+
+	[Fact]
 	public async Task NothingChangesWhileTheCharacterIsOnline()
 	{
 		if (ConnectionString is null) return;
@@ -79,8 +105,11 @@ public class WorldDatabaseIntegrationTests
 		var tester = await TesterAsync(db);
 		var adena = (await db.ListInventoryAsync(CharId)).Single(i => i.ItemId == 57);
 
+		var sword = (await db.ListInventoryAsync(CharId)).Single(i => i.ItemId == 1);
 		Assert.False((await db.SetItemCountAsync(tester, adena, 1, "Adena", backup)).Ok);
+		Assert.False((await db.SetItemEnchantAsync(tester, sword, 10, "Short Sword", backup)).Ok);
 		Assert.False((await db.QueueDeliveryAsync(tester, items.Find(1060)!, 5, 0, limits, items, 2_000_000_000, backup)).Ok);
+		Assert.Equal(3, (await db.ListInventoryAsync(CharId)).Single(i => i.ItemId == 1).Enchant);
 		Assert.Equal(1000, (await TesterAsync(db)).Adena);
 		Assert.True(backup.IsEmpty);
 	}
