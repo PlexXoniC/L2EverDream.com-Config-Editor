@@ -146,6 +146,65 @@ public class RatesTests
 		Assert.True(tight.HitsItemLimit);
 	}
 
+	[Fact]
+	public void ReadsTheRatesAWorldIsActuallySetTo()
+	{
+		var files = new Dictionary<string, string>
+		{
+			["RateXp"] = "50",
+			["DeathDropChanceMultiplier"] = "15",
+			["DeathDropAmountMultiplier"] = "3",
+			["DropAmountMultiplierByItemId"] = "57,1;6656,2",
+			["HerbDropChanceMultiplier"] = "2",
+		};
+		var now = RateSettings.Read(key => files.GetValueOrDefault(key));
+
+		Assert.Equal(50, now.Xp);
+		Assert.Equal(45, now.DropsOverall);
+		Assert.Equal(1, now.SpoilChance);                      // missing keys count as 1
+		Assert.Equal(15, now.AdenaChance);                     // not listed by id, so the general chance
+		Assert.Equal(1, now.AdenaAmount);                      // listed by id: replaces the general amount
+		Assert.Equal(2, RateSettings.ByItemId(files["DropAmountMultiplierByItemId"], 6656));
+		Assert.Null(RateSettings.ByItemId(files["DropAmountMultiplierByItemId"], 99));
+		Assert.Equal(2, now.HerbChance);
+	}
+
+	[Fact]
+	public void AWorldWhoseAdenaIsPinnedAtOneBarelyMovesIt()
+	{
+		var catalog = SmallCatalog();
+		var mob = catalog.Find(20066)!;
+		// 15x chance and 3x amount, with adena's own amount left at 1: what L2Everdream actually ships.
+		var now = RateSettings.Read(key => key switch
+		{
+			"DeathDropChanceMultiplier" => "15",
+			"DeathDropAmountMultiplier" => "3",
+			"DropAmountMultiplierByItemId" => "57,1",
+			_ => null,
+		});
+
+		var preview = DropPreview.Between(mob, catalog, RateSettings.Retail, now);
+		var adena = preview.Drops.First(d => d.IsAdena);
+		var thread = preview.Drops.First(d => d.ItemName == "Thread");
+
+		Assert.Equal(100, adena.ChanceAfter, 3);               // 70% x 15 saturates
+		Assert.Equal(adena.AmountBefore, adena.AmountAfter);   // its own rate is 1
+		Assert.Equal(1.43, adena.RealMultiplier, 2);           // so it only gains what the chance had room for
+		Assert.True(thread.RealMultiplier > 20);               // while everything else runs away with it
+	}
+
+	[Fact]
+	public void ComparingAWorldWithItselfMovesNothing()
+	{
+		var catalog = SmallCatalog();
+		var now = RateSettings.FromPlan(new RateOptions(7, 0.5));
+
+		var preview = DropPreview.Between(catalog.Find(20066)!, catalog, now, now);
+
+		Assert.True(preview.IsSameBothWays);
+		Assert.All(preview.Drops, d => Assert.True(d.Unchanged));
+	}
+
 	[LocalInstallFact]
 	public void TheRealDatapackReadsAndPreviews()
 	{

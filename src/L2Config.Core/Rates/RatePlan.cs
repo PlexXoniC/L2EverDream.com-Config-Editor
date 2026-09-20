@@ -62,7 +62,7 @@ public sealed record RatePlan(RateOptions Options, IReadOnlyList<RateChange> Cha
 			new("Rates.ini", "DeathDropAmountMultiplier", amount, "How much they drop each time."),
 			new("Rates.ini", "DropAmountMultiplierByItemId", $"{AdenaItemId},{amount}",
 				"Adena is set on its own here, because a per-item rate replaces the general one instead of adding to it. " +
-				"L2Everdream ships this as 57,1, which is why raising the drop amount alone never changed adena."),
+				"L2Everdream ships adena at 1 here, which is why raising the drop amount on its own never changed the adena players get."),
 			new("Rates.ini", "SpoilDropChanceMultiplier", chance, "How often spoiling gives something."),
 			new("Rates.ini", "SpoilDropAmountMultiplier", amount, "How much spoiling gives."),
 			new("Rates.ini", "RaidDropChanceMultiplier", raidChance, $"Raid boss drops move less than normal drops ({Text(options.RaidRate)}x)."),

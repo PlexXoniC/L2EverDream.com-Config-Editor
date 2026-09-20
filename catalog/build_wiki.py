@@ -18,9 +18,9 @@ INDEX = "Settings-Reference"
 
 # A line added under the heading of a few category pages, pointing at the guide that covers them.
 CATEGORY_NOTES = {
-    "rates": "> **Setting these by hand is easy to get wrong.** The [Rates and drops](Rates-and-Drops) tab turns one "
-             "number into all of them, splits it between drop chance and drop amount so none of it is wasted, and shows "
-             "you what it does to a real monster.",
+    "rates": "> **Setting these by hand is easy to get wrong.** The [Rates](Rates-and-Drops) tab turns one number into "
+             "all of them and splits it between drop chance and drop amount so none of it is wasted, and the "
+             "[Drops](Rates-and-Drops#the-drops-tab) tab shows what your world really gives, monster by monster.",
 }
 
 TARGET_WORDS = {

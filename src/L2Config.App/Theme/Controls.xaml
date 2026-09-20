@@ -146,12 +146,14 @@
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="MinWidth" Value="118" />
+        <Setter Property="MinWidth" Value="100" />
+        <!-- Room to wrap onto a second line when there are more tabs than the window is wide. -->
+        <Setter Property="Margin" Value="0,3,8,3" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
                     <Border x:Name="Chrome" Background="#660C0A16" BorderBrush="{StaticResource HairBrush}" BorderThickness="1"
-                            CornerRadius="11" Padding="16,8">
+                            CornerRadius="11" Padding="14,7">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>

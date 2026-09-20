@@ -573,7 +573,7 @@
             </DataTemplate.Triggers>
         </DataTemplate>
 
-        <!-- ===== Rates tab ==================================================================== -->
+        <!-- ===== Rates and Drops tabs ========================================================= -->
         <DataTemplate DataType="{x:Type vm:DropRowViewModel}">
             <Border Margin="0,0,14,6" Padding="12,8" CornerRadius="10" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
                 <Grid>
@@ -596,8 +596,16 @@
                                 <TextBlock Text="Spoil" FontSize="9.5" FontWeight="SemiBold" Foreground="{StaticResource LabelBrush}" />
                             </Border>
                         </WrapPanel>
-                        <TextBlock Text="{Binding Note}" FontSize="11" Foreground="{StaticResource LanternBrush}" TextWrapping="Wrap"
-                                   Visibility="{Binding Note, Converter={StaticResource VisibleWhen}}" />
+                        <Grid Margin="0,1,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding OddsText}" FontSize="11.5" Foreground="{StaticResource CaptionBrush}" />
+                            <TextBlock Grid.Column="1" Text="{Binding Note}" FontSize="11" Foreground="{StaticResource LanternBrush}" Margin="10,0,0,0"
+                                       TextTrimming="CharacterEllipsis" ToolTip="{Binding Note}"
+                                       Visibility="{Binding Note, Converter={StaticResource VisibleWhen}}" />
+                        </Grid>
                     </StackPanel>
                     <StackPanel Grid.Column="2" VerticalAlignment="Center">
                         <TextBlock Text="CHANCE" Style="{StaticResource KickerText}" />
@@ -623,17 +631,23 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Name}" FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" TextTrimming="CharacterEllipsis" MaxWidth="260" />
-                        <TextBlock FontFamily="{StaticResource MonoFont}" FontSize="12" Margin="8,0,0,0" Foreground="{StaticResource EmberBrush}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Name}" FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" TextTrimming="CharacterEllipsis"
+                                   VerticalAlignment="Center" ToolTip="{Binding Name}" />
+                        <TextBlock Grid.Column="1" FontFamily="{StaticResource MonoFont}" FontSize="12" Margin="10,0,0,0" Foreground="{StaticResource EmberBrush}"
+                                   MaxWidth="150" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip="{Binding NewValue}">
                             <Run Text="{Binding OldValue, Mode=OneWay}" Foreground="{StaticResource DimLabelBrush}" /><Run Text="  →  " Foreground="{StaticResource DimLabelBrush}" /><Run Text="{Binding NewValue, Mode=OneWay}" />
                         </TextBlock>
-                    </StackPanel>
+                    </Grid>
                     <TextBlock Text="{Binding Location}" Style="{StaticResource MonoChipText}" Foreground="{StaticResource DimLabelBrush}" />
                     <TextBlock Text="{Binding Why}" FontSize="11.5" Foreground="{StaticResource CaptionBrush}" TextWrapping="Wrap" Margin="0,2,0,0" />
                 </StackPanel>
                 <Button Grid.Column="1" Style="{StaticResource LinkButton}" Content="Show →" Command="{Binding ShowCommand}" CommandParameter="{Binding SettingId}"
-                        VerticalAlignment="Top" Visibility="{Binding CanShow, Converter={StaticResource VisibleWhen}}" />
+                        VerticalAlignment="Top" Margin="14,0,0,0" Visibility="{Binding CanShow, Converter={StaticResource VisibleWhen}}" />
             </Grid>
         </DataTemplate>
 
@@ -655,13 +669,13 @@
                         <TextBlock Text="⚖" FontSize="22" Foreground="{StaticResource ArcaneBrush}" VerticalAlignment="Center" Margin="0,0,10,0" />
                         <TextBlock Text="{Binding Title}" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
                     </StackPanel>
-                    <TextBlock Text="{Binding Intro}" Style="{StaticResource CaptionText}" FontSize="13" Margin="0,4,0,0" LineHeight="19" />
+                    <TextBlock Text="{Binding Intro}" Style="{StaticResource CaptionText}" FontSize="13" Margin="0,4,0,0" LineHeight="19" MaxWidth="980" HorizontalAlignment="Left" />
                 </StackPanel>
 
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="430" />
-                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="20" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
@@ -706,15 +720,29 @@
                                                Text="A drop group is rolled once, so once it reaches 100% any extra chance is wasted. Raising the amount instead keeps working, which is why one number is split between the two." />
                                     <TextBlock Text="{Binding CurrentText}" FontSize="12" Foreground="{StaticResource DimLabelBrush}" Margin="0,10,0,0" TextWrapping="Wrap" />
                                     <Button Style="{StaticResource PrimaryButton}" Content="{Binding ApplyText}" Command="{Binding ApplyCommand}" HorizontalAlignment="Left" Margin="0,12,0,0" />
+                                    <Button Style="{StaticResource LinkButton}" Content="{Binding DropsLinkText}" Command="{Binding ShowDropsCommand}" HorizontalAlignment="Left" Margin="2,8,0,0" />
                                     <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="{StaticResource VerdanceBrush}" Margin="0,8,0,0" TextWrapping="Wrap" LineHeight="18"
                                                Visibility="{Binding Status, Converter={StaticResource VisibleWhen}}" />
                                 </StackPanel>
                             </Border>
+                        </StackPanel>
+                    </ScrollViewer>
 
-                            <TextBlock Text="WHAT THIS WRITES" Style="{StaticResource KickerText}" Margin="2,16,0,8" />
-                            <ItemsControl ItemsSource="{Binding Changes}" Margin="2,0,0,0" />
+                    <!-- Right: every setting the rate writes -->
+                    <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto" Padding="0,0,4,0">
+                        <StackPanel Margin="0,0,10,16">
+                            <TextBlock Text="WHAT THIS WRITES" Style="{StaticResource KickerText}" Margin="2,2,0,8" />
+                            <Grid Margin="2,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <ItemsControl ItemsSource="{Binding ChangesLeft}" />
+                                <ItemsControl Grid.Column="2" ItemsSource="{Binding ChangesRight}" />
+                            </Grid>
 
-                            <TextBlock Text="LEFT ALONE ON PURPOSE" Style="{StaticResource KickerText}" Margin="2,12,0,6" />
+                            <TextBlock Text="LEFT ALONE ON PURPOSE" Style="{StaticResource KickerText}" Margin="2,16,0,6" />
                             <ItemsControl ItemsSource="{Binding Untouched}" Margin="2,0,10,0">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
@@ -724,84 +752,148 @@
                             </ItemsControl>
                         </StackPanel>
                     </ScrollViewer>
+                </Grid>
+            </Grid>
+        </DataTemplate>
 
-                    <!-- Right: what it does to a real monster -->
-                    <Grid Grid.Column="2">
+        <!-- ===== Drops tab ==================================================================== -->
+        <DataTemplate DataType="{x:Type vm:DropsViewModel}">
+            <Grid Margin="24,0,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Margin="2,0,24,10">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="☠" FontSize="21" Foreground="{StaticResource ArcaneBrush}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                        <TextBlock Text="{Binding Title}" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding Intro}" Style="{StaticResource CaptionText}" FontSize="13" Margin="0,4,0,0" LineHeight="19" MaxWidth="980" HorizontalAlignment="Left" />
+                </StackPanel>
+
+                <!-- Which two sets of rates are being compared -->
+                <Border Grid.Row="1" Margin="2,0,24,12" Padding="14,10" CornerRadius="12" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <WrapPanel>
+                                <RadioButton Style="{StaticResource FilterRadio}" GroupName="DropView" Content="Retail → your world" IsChecked="{Binding IsRetailToNow, Mode=OneWay}"
+                                             Command="{Binding ComparisonCommand}" CommandParameter="RetailToNow" />
+                                <RadioButton Style="{StaticResource FilterRadio}" GroupName="DropView" Content="{Binding PlannedPillText}" IsChecked="{Binding IsNowToPlanned, Mode=OneWay}"
+                                             Command="{Binding ComparisonCommand}" CommandParameter="NowToPlanned" />
+                                <RadioButton Style="{StaticResource FilterRadio}" GroupName="DropView" Content="Retail → planned" IsChecked="{Binding IsRetailToPlanned, Mode=OneWay}"
+                                             Command="{Binding ComparisonCommand}" CommandParameter="RetailToPlanned" />
+                            </WrapPanel>
+                            <TextBlock Text="{Binding ComparisonText}" FontSize="12" Foreground="{StaticResource CaptionBrush}" Margin="2,8,0,0" TextWrapping="Wrap" LineHeight="17" />
+                        </StackPanel>
+                        <Button Grid.Column="1" Style="{StaticResource LinkButton}" Content="Change the rate →" Command="{Binding ShowRatesCommand}" VerticalAlignment="Center" Margin="12,0,0,0" />
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="280" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left: every monster in the world -->
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <Grid Margin="0,0,14,8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="260" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                        <Grid Margin="0,0,0,6">
+                            <TextBox x:Name="MonsterSearch" Style="{StaticResource SearchBox}" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=200}" AutomationProperties.Name="Search monsters" />
+                            <TextBlock Text="⌕" Margin="11,0,0,1" VerticalAlignment="Center" FontSize="15" Foreground="{StaticResource LabelBrush}" IsHitTestVisible="False" />
+                            <TextBlock Text="Search a monster…" Margin="31,0,0,0" VerticalAlignment="Center" FontSize="13" IsHitTestVisible="False" Foreground="{StaticResource DimLabelBrush}"
+                                       Visibility="{Binding Text, ElementName=MonsterSearch, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
+                        </Grid>
+                        <TextBlock Grid.Row="1" Text="{Binding MonsterCountText}" Margin="2,0,0,6" FontSize="11.5" Foreground="{StaticResource DimLabelBrush}" />
+                        <ListBox Grid.Row="2" ItemsSource="{Binding Monsters}" SelectedItem="{Binding Selected, Mode=TwoWay}" Background="Transparent" BorderThickness="0"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
+                                 Margin="0,0,0,10">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Cursor" Value="Hand" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border x:Name="Chrome" Background="Transparent" BorderBrush="Transparent" BorderThickness="2,0,0,0" CornerRadius="8" Padding="10,6" Margin="0,0,0,2">
+                                                    <ContentPresenter />
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Chrome" Property="Background" Value="{StaticResource HoverWashBrush}" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="Chrome" Property="Background" Value="{StaticResource SelectedWashBrush}" />
+                                                        <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource ArcaneBrush}" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                    </Grid>
+
+                    <!-- Right: the monster, then everything it gives -->
+                    <Grid Grid.Column="1" Margin="14,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Border Margin="0,0,14,10" Padding="14" CornerRadius="14" Background="{StaticResource CardGradientBrush}" BorderBrush="{StaticResource VioletHairBrush}" BorderThickness="1"
+                                Visibility="{Binding HasPreview, Converter={StaticResource VisibleWhen}}">
                             <Grid>
-                                <TextBox x:Name="MonsterSearch" Style="{StaticResource SearchBox}" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=200}" AutomationProperties.Name="Search monsters" />
-                                <TextBlock Text="⌕" Margin="11,0,0,1" VerticalAlignment="Center" FontSize="15" Foreground="{StaticResource LabelBrush}" IsHitTestVisible="False" />
-                                <TextBlock Text="Search a monster…" Margin="31,0,0,0" VerticalAlignment="Center" FontSize="13" IsHitTestVisible="False" Foreground="{StaticResource DimLabelBrush}"
-                                           Visibility="{Binding Text, ElementName=MonsterSearch, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}" />
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <!-- The monster itself. Until there is artwork to show, the frame carries what is known about it. -->
+                                <Border Width="104" Height="104" CornerRadius="12" Background="#59100E22" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                                    <Grid>
+                                        <Image Source="{Binding MonsterArt}" Stretch="Uniform" Margin="4"
+                                               Visibility="{Binding HasMonsterArt, Converter={StaticResource VisibleWhen}}" />
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                    Visibility="{Binding HasMonsterArt, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}">
+                                            <TextBlock Text="LEVEL" Style="{StaticResource KickerText}" HorizontalAlignment="Center" />
+                                            <TextBlock Text="{Binding MonsterLevel}" FontFamily="{StaticResource DisplayFont}" FontSize="34" FontWeight="SemiBold"
+                                                       Foreground="{StaticResource ArcaneBrush}" HorizontalAlignment="Center" Margin="0,-2,0,0" />
+                                            <TextBlock Text="{Binding MonsterKind}" FontSize="10.5" FontWeight="SemiBold" Foreground="{StaticResource LabelBrush}" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                                <StackPanel Grid.Column="1" Margin="14,2,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding MonsterName}" FontFamily="{StaticResource DisplayFont}" FontSize="21" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding MonsterHealth}" FontSize="11.5" Foreground="{StaticResource DimLabelBrush}" Margin="0,1,0,0"
+                                               Visibility="{Binding MonsterHealth, Converter={StaticResource VisibleWhen}}" />
+                                    <TextBlock Text="{Binding ExperienceText}" FontFamily="{StaticResource MonoFont}" FontSize="12.5" Foreground="{StaticResource EmberBrush}" Margin="0,6,0,0" TextWrapping="Wrap" />
+                                    <TextBlock Text="{Binding AdenaText}" FontSize="12.5" Foreground="{StaticResource SoftTextBrush}" Margin="0,3,0,0"
+                                               Visibility="{Binding AdenaText, Converter={StaticResource VisibleWhen}}" />
+                                    <TextBlock Text="{Binding SameText}" FontSize="12" Foreground="{StaticResource CaptionBrush}" Margin="0,6,0,0" TextWrapping="Wrap" LineHeight="17"
+                                               Visibility="{Binding SameText, Converter={StaticResource VisibleWhen}}" />
+                                    <TextBlock Text="{Binding LimitText}" FontSize="12" Foreground="{StaticResource LanternBrush}" Margin="0,6,0,0" TextWrapping="Wrap" LineHeight="17"
+                                               Visibility="{Binding LimitText, Converter={StaticResource VisibleWhen}}" />
+                                </StackPanel>
                             </Grid>
-                            <TextBlock Grid.Column="1" Text="{Binding MonsterCountText}" VerticalAlignment="Center" Margin="12,0,0,0" FontSize="11.5" Foreground="{StaticResource DimLabelBrush}" />
-                        </Grid>
+                        </Border>
 
-                        <Grid Grid.Row="1" Margin="0,0,14,8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="260" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="1" Margin="12,0,0,0" Visibility="{Binding HasPreview, Converter={StaticResource VisibleWhen}}">
-                                <TextBlock Text="{Binding PreviewHeader}" FontFamily="{StaticResource DisplayFont}" FontSize="19" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
-                                <TextBlock Text="{Binding ExperienceText}" FontFamily="{StaticResource MonoFont}" FontSize="12.5" Foreground="{StaticResource EmberBrush}" Margin="0,3,0,0" />
-                                <TextBlock Text="{Binding AdenaText}" FontSize="12.5" Foreground="{StaticResource SoftTextBrush}" Margin="0,2,0,0"
-                                           Visibility="{Binding AdenaText, Converter={StaticResource VisibleWhen}}" />
-                                <TextBlock Text="{Binding LimitText}" FontSize="12" Foreground="{StaticResource LanternBrush}" Margin="0,6,0,0" TextWrapping="Wrap" LineHeight="17"
-                                           Visibility="{Binding LimitText, Converter={StaticResource VisibleWhen}}" />
-                            </StackPanel>
-                        </Grid>
-
-                        <Grid Grid.Row="2">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="260" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <ListBox ItemsSource="{Binding Monsters}" SelectedItem="{Binding Selected, Mode=TwoWay}" Background="Transparent" BorderThickness="0"
-                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
-                                     Margin="0,0,0,10">
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem">
-                                        <Setter Property="Cursor" Value="Hand" />
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="ListBoxItem">
-                                                    <Border x:Name="Chrome" Background="Transparent" BorderBrush="Transparent" BorderThickness="2,0,0,0" CornerRadius="8" Padding="10,6" Margin="0,0,0,2">
-                                                        <ContentPresenter />
-                                                    </Border>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter TargetName="Chrome" Property="Background" Value="{StaticResource HoverWashBrush}" />
-                                                        </Trigger>
-                                                        <Trigger Property="IsSelected" Value="True">
-                                                            <Setter TargetName="Chrome" Property="Background" Value="{StaticResource SelectedWashBrush}" />
-                                                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource ArcaneBrush}" />
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
-                            </ListBox>
-
-                            <ListBox Grid.Column="1" ItemsSource="{Binding DropRows}" Background="Transparent" BorderThickness="0" ItemContainerStyle="{StaticResource PlainListItem}"
-                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
-                                     VirtualizingPanel.ScrollUnit="Pixel" Margin="12,0,0,10"
-                                     Visibility="{Binding HasPreview, Converter={StaticResource VisibleWhen}}" />
-                            <TextBlock Grid.Column="1" Margin="14,20,14,0" Style="{StaticResource CaptionText}" FontSize="13" TextWrapping="Wrap"
-                                       Visibility="{Binding HasPreview, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}"
-                                       Text="Pick a monster on the left to see what your rate does to its experience and drops." />
-                        </Grid>
+                        <ListBox Grid.Row="1" ItemsSource="{Binding DropRows}" Background="Transparent" BorderThickness="0" ItemContainerStyle="{StaticResource PlainListItem}"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
+                                 VirtualizingPanel.ScrollUnit="Pixel" Margin="0,0,0,10"
+                                 Visibility="{Binding HasPreview, Converter={StaticResource VisibleWhen}}" />
+                        <TextBlock Grid.Row="1" Margin="2,20,14,0" Style="{StaticResource CaptionText}" FontSize="13" TextWrapping="Wrap"
+                                   Visibility="{Binding HasPreview, Converter={StaticResource VisibleWhen}, ConverterParameter=invert}"
+                                   Text="Pick a monster on the left to see its experience, every item it drops, how often, and how much." />
+                        <TextBlock Grid.Row="1" Margin="2,20,14,0" Style="{StaticResource CaptionText}" FontSize="13" TextWrapping="Wrap" Foreground="{StaticResource LanternBrush}"
+                                   Text="{Binding Status}" Visibility="{Binding Status, Converter={StaticResource VisibleWhen}}" />
                     </Grid>
                 </Grid>
             </Grid>
@@ -1671,7 +1763,7 @@
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="84" />
+                <RowDefinition Height="Auto" MinHeight="84" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -1690,12 +1782,12 @@
                     </TextBlock>
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <WrapPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,10">
                     <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsServerTab, Mode=OneWay}"
-                                 Command="{Binding SelectTabCommand}" CommandParameter="server" WindowChrome.IsHitTestVisibleInChrome="True" Margin="0,0,8,0">
+                                 Command="{Binding SelectTabCommand}" CommandParameter="server" WindowChrome.IsHitTestVisibleInChrome="True">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Server" />
-                            <Border Margin="8,0,0,0" CornerRadius="999" Padding="6,0" Background="{StaticResource LanternWashStrongBrush}"
+                            <Border CornerRadius="999" Padding="6,0" Background="{StaticResource LanternWashStrongBrush}"
                                     Visibility="{Binding ServerTab.DirtyCount, Converter={StaticResource VisibleWhen}}">
                                 <TextBlock Text="{Binding ServerTab.DirtyCount}" FontSize="11" Foreground="{StaticResource EmberBrush}" />
                             </Border>
@@ -1705,34 +1797,39 @@
                                  Command="{Binding SelectTabCommand}" CommandParameter="client" WindowChrome.IsHitTestVisibleInChrome="True">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Client" />
-                            <Border Margin="8,0,0,0" CornerRadius="999" Padding="6,0" Background="{StaticResource LanternWashStrongBrush}"
+                            <Border CornerRadius="999" Padding="6,0" Background="{StaticResource LanternWashStrongBrush}"
                                     Visibility="{Binding ClientTab.DirtyCount, Converter={StaticResource VisibleWhen}}">
                                 <TextBlock Text="{Binding ClientTab.DirtyCount}" FontSize="11" Foreground="{StaticResource EmberBrush}" />
                             </Border>
                         </StackPanel>
                     </RadioButton>
-                    <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsRatesTab, Mode=OneWay}" Margin="8,0,0,0"
+                    <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsRatesTab, Mode=OneWay}"
                                  Command="{Binding SelectTabCommand}" CommandParameter="rates" WindowChrome.IsHitTestVisibleInChrome="True"
-                                 ToolTip="Experience and drop rates, with a preview on a real monster">
+                                 ToolTip="How fast your world is: one rate across experience, drops and rewards">
                         <TextBlock Text="Rates" />
                     </RadioButton>
-                    <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsCustomTab, Mode=OneWay}" Margin="8,0,0,0"
+                    <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsDropsTab, Mode=OneWay}"
+                                 Command="{Binding SelectTabCommand}" CommandParameter="drops" WindowChrome.IsHitTestVisibleInChrome="True"
+                                 ToolTip="What each monster gives: experience, drops and spoil at your rates">
+                        <TextBlock Text="Drops" />
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsCustomTab, Mode=OneWay}"
                                  Command="{Binding SelectTabCommand}" CommandParameter="custom" WindowChrome.IsHitTestVisibleInChrome="True"
                                  Visibility="{Binding HasCustomTab, Converter={StaticResource VisibleWhen}}"
                                  ToolTip="What L2Everdream changed compared with stock L2J Mobius">
                         <TextBlock Text="Custom Config" />
                     </RadioButton>
-                    <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsCharactersTab, Mode=OneWay}" Margin="8,0,0,0"
+                    <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsCharactersTab, Mode=OneWay}"
                                  Command="{Binding SelectTabCommand}" CommandParameter="characters" WindowChrome.IsHitTestVisibleInChrome="True"
                                  ToolTip="Player characters in your running world">
                         <TextBlock Text="Characters" />
                     </RadioButton>
-                    <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsBackupsTab, Mode=OneWay}" Margin="8,0,0,0"
+                    <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsBackupsTab, Mode=OneWay}"
                                  Command="{Binding SelectTabCommand}" CommandParameter="backups" WindowChrome.IsHitTestVisibleInChrome="True"
                                  ToolTip="Every backup, and restoring them">
                         <TextBlock Text="Backups" />
                     </RadioButton>
-                </StackPanel>
+                </WrapPanel>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,10,0,0">
                     <Button Style="{StaticResource ChromeButton}" Content="–" Click="OnMinimize" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Minimize" />

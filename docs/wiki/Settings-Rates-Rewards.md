@@ -4,7 +4,7 @@ How fast characters level and how much monsters and quests give.
 
 **50 settings** in the **Rates & Rewards** category of the Server tab. [All categories](Settings-Reference) · [How to read this page](Settings-Reference#how-to-read-these-pages)
 
-> **Setting these by hand is easy to get wrong.** The [Rates and drops](Rates-and-Drops) tab turns one number into all of them, splits it between drop chance and drop amount so none of it is wasted, and shows you what it does to a real monster.
+> **Setting these by hand is easy to get wrong.** The [Rates](Rates-and-Drops) tab turns one number into all of them and splits it between drop chance and drop amount so none of it is wasted, and the [Drops](Rates-and-Drops#the-drops-tab) tab shows what your world really gives, monster by monster.
 
 ## Experience & skill points
 

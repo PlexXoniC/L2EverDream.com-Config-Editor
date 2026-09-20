@@ -21,7 +21,7 @@ The project owner knows the user is building it.
    XML configs and `user.ini` are next. `-Dl2sp.*` JVM flags are out of scope (the launcher regenerates them each start).
 4. **Non-programmer UX.** Friendly names linked to the real `File › [Section] › Key`; grouping by type of setting, not by
    file; search across friendly and real names; a category → group section list on the left of the main window.
-5. **Separate tabs:** Server, Client, **Rates**, a read-only **Custom Config** tab (how the release differs from stock L2J Mobius),
+5. **Separate tabs:** Server, Client, **Rates**, **Drops**, a read-only **Custom Config** tab (how the release differs from stock L2J Mobius),
    **Characters** and **Backups**.
    - **Characters** edits player characters in the running world's database: adena, plus an inventory editor that changes,
      removes and adds items from the full item list. Existing rows are written only while the character is offline (the
@@ -45,9 +45,14 @@ The project owner knows the user is building it.
    - **Rates**: one number (presets 1/3/5/15/20 or typed) written across every experience and drop setting, because
      Mobius's separate chance and amount multipliers confuse players. The rate is split so that `chance x amount = rate`
      while the chance never goes past the point where it is wasted (a drop group is rolled once, so chance saturates at
-     100% and only amount keeps scaling); adena needs its own entry in `DropAmountMultiplierByItemId`. A monster preview
-     shows before/after per kill with item icons read from the player's own client. Herbs, vitality, premium, the party
-     bonus, level-gap penalties, manor and fishing are deliberately left alone.
+     100% and only amount keeps scaling); adena needs its own entry in `DropAmountMultiplierByItemId`. Herbs, vitality,
+     premium, the party bonus, level-gap penalties, manor and fishing are deliberately left alone. Applying only fills the
+     Server tab; the normal save bar writes it.
+   - **Drops** is the Rates tab's other half and follows the rate picked there: every monster with its experience, drops
+     and spoil, item icons read from the player's own client, and a choice of which two sets of rates to compare — retail
+     (what a drop table site lists), the world as it is set now, or the planned rate (`RateSettings` in Core reads all
+     three). It is where a future monster render goes; the client has only 3D meshes, so the card shows the monster's
+     details in that frame for now.
    - **Explain how settings affect each other.** Setting cards show "depends on / has no effect right now / controls /
      works with" lines from `catalog/setting-relations.tsv` plus derived rules, evaluated live.
 6. **The user chooses both folders.** No default or auto-detected server/client paths.

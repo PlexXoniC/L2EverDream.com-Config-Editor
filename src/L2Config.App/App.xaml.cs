@@ -96,12 +96,12 @@ public partial class App : Application
 					skills.SearchText = snapshot.Search ?? "";
 					window.UpdateLayout();
 				}
-				if (snapshot.Tab == "rates")
+				if (snapshot.Tab is "rates" or "drops")
 				{
-					// --tab rates: wait for the monster list, then pick a monster with --monster and a rate with --rate / --delivery.
+					// --rate / --delivery set the rate on the Rates tab; on the Drops tab --monster picks a monster and
+					// --view retail-now | now-planned | retail-planned picks which two sets of rates are compared.
 					until = DateTime.Now.AddSeconds(20);
 					var rates = viewModel.RatesTab;
-					Pump(() => rates.IsLoading);
 					if (snapshot.Rate is { } rate)
 					{
 						rates.Rate = rate;
@@ -110,13 +110,27 @@ public partial class App : Application
 					{
 						rates.Delivery = delivery;
 					}
-					if (snapshot.Monster is { } monster)
+					if (snapshot.Tab == "drops")
 					{
-						rates.SearchText = monster;
-						rates.Selected = rates.Monsters.FirstOrDefault(m => string.Equals(m.Name, monster, StringComparison.OrdinalIgnoreCase))
-							?? rates.Monsters.FirstOrDefault();
+						var drops = viewModel.DropsTab;
+						Pump(() => drops.IsLoading);
+						if (snapshot.View is { } view)
+						{
+							drops.Comparison = view switch
+							{
+								"now-planned" => DropComparison.NowToPlanned,
+								"retail-planned" => DropComparison.RetailToPlanned,
+								_ => DropComparison.RetailToNow,
+							};
+						}
+						if (snapshot.Monster is { } monster)
+						{
+							drops.SearchText = monster;
+							drops.Selected = drops.Monsters.FirstOrDefault(m => string.Equals(m.Name, monster, StringComparison.OrdinalIgnoreCase))
+								?? drops.Monsters.FirstOrDefault();
+						}
+						Pump(() => !drops.HasPreview);
 					}
-					Pump(() => !rates.HasPreview);
 					window.UpdateLayout();
 				}
 				if (snapshot.Tab == "characters")
@@ -158,7 +172,8 @@ public partial class App : Application
 	/// <summary>
 	/// Developer aid: L2EverdreamConfig.exe --snapshot out.png [--server dir] [--client dir] [--tab client] [--search text]
 	/// [--category id] [--group id] [--advanced] [--size 1280x820] [--backups dir] [--backups-mode full] [--full-backups dir]
-	/// [--compare folder|latest] [--filter changed|shipped|new|all] [--skill-durations] [--tab rates --rate 5 --delivery 1 --monster name]. Renders the window to a PNG and exits. Never saves settings.
+	/// [--compare folder|latest] [--filter changed|shipped|new|all] [--skill-durations] [--tab rates --rate 5 --delivery 1]
+	/// [--tab drops --monster name --view retail-now|now-planned|retail-planned]. Renders the window to a PNG and exits. Never saves settings.
 	/// </summary>
 	private sealed class SnapshotOptions
 	{
@@ -186,6 +201,7 @@ public partial class App : Application
 		public double? Rate { get; private set; }
 		public double? Delivery { get; private set; }
 		public string? Monster { get; private set; }
+		public string? View { get; private set; }
 
 		public static SnapshotOptions? Parse(string[] args)
 		{
@@ -220,6 +236,7 @@ public partial class App : Application
 			options.Rate = double.TryParse(Next("--rate"), System.Globalization.CultureInfo.InvariantCulture, out var rateValue) ? rateValue : null;
 			options.Delivery = double.TryParse(Next("--delivery"), System.Globalization.CultureInfo.InvariantCulture, out var deliveryValue) ? deliveryValue : null;
 			options.Monster = Next("--monster");
+			options.View = Next("--view");
 			options.Advanced = args.Contains("--advanced");
 			if (Next("--size") is { } size && size.Split('x') is [var w, var h])
 			{
@@ -231,9 +248,9 @@ public partial class App : Application
 
 		public void Apply(MainViewModel viewModel)
 		{
-			if (Tab == "rates")
+			if (Tab is "rates" or "drops")
 			{
-				viewModel.SelectedTab = viewModel.RatesTab;
+				viewModel.SelectedTab = Tab == "drops" ? viewModel.DropsTab : viewModel.RatesTab;
 				return;
 			}
 			if (Tab is "characters" or "backups")

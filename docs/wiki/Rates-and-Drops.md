@@ -3,6 +3,11 @@
 **One number for how fast your world is.** Pick 3×, 5×, 15×, 20× or type your own, and the Rates tab works out every
 experience and drop setting behind it — including the two that quietly waste a rate if you set them the obvious way.
 
+Two tabs work as a pair:
+
+- **Rates** — pick the number and apply it. It writes the settings.
+- **Drops** — pick a monster and see what it really gives. It never writes anything.
+
 ![The Rates tab](https://raw.githubusercontent.com/PlexXoniC/L2EverDream.com-Config-Editor/main/docs/images/rates.png)
 
 ## The short version
@@ -19,7 +24,7 @@ and stay there; only the rarest items keep gaining. That is the calculus players
 The Rates tab does it for you: it keeps the chance just high enough to be useful, puts the rest into the amount, and the
 two multiplied together come to the rate you asked for.
 
-## Using the tab
+## Using the Rates tab
 
 1. Open the **Rates** tab.
 2. Pick a preset — **Retail 1×**, **3×**, **5×**, **15×**, **20×** — or type any rate from 0.1 to 100.
@@ -27,31 +32,44 @@ two multiplied together come to the rate you asked for.
    - **more often** — as much as usefully possible goes into the chance, so drops appear on more kills.
    - **bigger stacks** — the chance stays at retail and everything goes into the amount, so the same kills give more.
    - Anywhere in between splits it. Whatever you pick, chance × amount is always your rate.
-4. Search for a monster to see what the change does to it.
-5. Click **Apply N× to my world**.
+4. Click **Apply N× to my world** — or first follow **See what N× does to a monster →** into the Drops tab.
 
 **Apply** does not save. It fills the values into the **Server** tab as unsaved changes, so you can look them over (the
 save bar shows the count, and **Show →** next to each line jumps to its card). Click **Save changes** as usual — and as
 usual, the old values are backed up first. The world has to be restarted for them to take effect.
 
-## What the preview shows
+## The Drops tab
 
-Pick any monster in the world and you see it before and after:
+Every monster in your world, searchable by name or id. Pick one and you get:
 
 - **Experience and skill points** per kill, and **adena per kill on average**.
 - One row per drop, with the item's **icon read from your own game client** (nothing is bundled with this program — if you
   have not chosen your client folder yet, the rows simply have no pictures).
+- **How often it drops in words**: "about 1 in 6 kills", or "every kill".
 - **Chance** before → after, **amount** before → after, and **per kill on average** with the multiplier you are really
   getting — which is the interesting number.
 - **Spoil** items are marked; they use the spoil rates.
-- **Herbs** are marked *left as it is*: they are deliberately not multiplied (see below).
+- **Herbs** are marked as having their own rate: they are deliberately not multiplied (see below).
 - A note when a drop is **already certain**, because that is where extra chance would be wasted.
 - A note when a monster has more drops than one kill can give, since a kill is capped at 2 different items (7 for raid
   bosses) however high the rates go.
 
+![The Drops tab](https://raw.githubusercontent.com/PlexXoniC/L2EverDream.com-Config-Editor/main/docs/images/drops.png)
+
+### Which two sets of rates you are comparing
+
+| Pill | Shows |
+|---|---|
+| **Retail → your world** | What a drop table site lists, against what your world gives **right now**. This is the one to check when a player asks "is this really 15×?" |
+| **N× planned** | Your world now, against the rate picked on the Rates tab. What would change if you applied it. |
+| **Retail → planned** | Retail against that planned rate, ignoring what the world is set to today. |
+
+The planned rate is whatever the Rates tab is set to, so the two tabs move together — **Change the rate →** jumps back.
+Nothing on the Drops tab writes anything.
+
 ### A real example
 
-The Ol Mahum Captain at **5×**, balanced:
+The Ol Mahum Captain at **5×**, balanced, from retail:
 
 | | Before | After | Really |
 |---|---|---|---|
@@ -63,6 +81,11 @@ Adena reaches ×4.76 rather than ×5 because its chance could only climb from 70
 with the slider: at **15×, more often** the same adena comes out at **×10.71**, while at **15×, bigger stacks** it is the
 full ×15, in fewer but larger piles. Neither is wrong — but the preview is where you see which one you are choosing,
 instead of guessing.
+
+**Retail → your world** is where this really pays off. A world set to `DeathDropChanceMultiplier = 15`,
+`DeathDropAmountMultiplier = 3` and adena pinned at 1 by `DropAmountMultiplierByItemId` looks like a 45× world — and the
+Drops tab shows its adena arriving at **×1.43** while a spoil recipe lands at ×63. That is not a bug in the server; it is
+what those three settings say. Seeing it is the point.
 
 ## What it writes
 
@@ -102,17 +125,20 @@ lock.
 
 ## Questions
 
-**Does this match l2hub?** l2hub.info lists retail (1×) values, which is what the *before* column of the preview shows. If
-a row's *before* matches l2hub, your world is at retail for that drop.
+**Does this match l2hub?** l2hub.info lists retail (1×) values, which is what the *before* column shows in the
+**Retail → your world** and **Retail → planned** views. If a row's *after* matches l2hub, your world is at retail for that
+drop.
 
-**My world says 50× experience and 45× drops — where does that come from?** The line under the slider reads your world's
-current `RateXp` and drop multipliers, whatever set them. Applying a rate replaces them.
+**My world says 50× experience and 45× drops — where does that come from?** The line under the slider, and the
+**Retail → your world** pill on the Drops tab, read your world's current `RateXp` and drop multipliers, whatever set them.
+Applying a rate replaces them.
 
 **Why is the chance never multiplied by more than 2?** Past that, ordinary drops are already certain and the extra is
 thrown away. The rate is not lost: it goes into the amount instead, where it still does something.
 
-**Can I see the monster itself?** Only its drops. The game client stores monsters as 3D models and skins, not as pictures,
-so there is no artwork to show. Item icons are real, read from your client.
+**Can I see the monster itself?** Not yet. The game client stores monsters as 3D models and skins rather than pictures, so
+there is no artwork to simply show; the frame on the monster card is where a rendered one would go. Item icons are real,
+read from your client.
 
 **Do I have to restart the world?** Yes — rate settings are read when the world starts.
 

@@ -1,6 +1,6 @@
 namespace L2Config.Core.Rates;
 
-/// <summary>One item of a monster's drop list, before and after a rate plan.</summary>
+/// <summary>One item of a monster's drop list, under two sets of rates.</summary>
 public sealed record DropRow(
 	int ItemId,
 	string ItemName,
@@ -23,14 +23,15 @@ public sealed record DropRow(
 	/// <summary>The group already drops every time, so extra chance is wasted on it.</summary>
 	public bool ChanceIsFull => ChanceAfter >= 100;
 
-	/// <summary>Left as it is by the plan (herbs).</summary>
+	/// <summary>The same either way (herbs, or anything neither set of rates touches).</summary>
 	public bool Unchanged => Math.Abs(PerKillAfter - PerKillBefore) < 1e-9;
 }
 
-/// <summary>What a rate plan does to one monster: experience, drops and spoil, with the server's own arithmetic.</summary>
+/// <summary>What one monster gives under two sets of rates: experience, drops and spoil, with the server's own arithmetic.</summary>
 public sealed record MonsterPreview(
 	Monster Monster,
-	RateOptions Options,
+	RateSettings Before,
+	RateSettings After,
 	double ExpBefore,
 	double ExpAfter,
 	double SpBefore,
@@ -46,36 +47,53 @@ public sealed record MonsterPreview(
 
 	/// <summary>The monster drops fewer different items than its list suggests, because the server caps it.</summary>
 	public bool HitsItemLimit => GroupsAtFullChance > MaxDifferentItems;
+
+	/// <summary>Nothing moves between the two sets of rates (they are the same, or nothing this monster gives is affected).</summary>
+	public bool IsSameBothWays => Math.Abs(ExpAfter - ExpBefore) < 1e-9 && Drops.Concat(Spoil).All(d => d.Unchanged);
 }
 
 /// <summary>
-/// Works out what a rate plan means for a single monster, exactly the way the game server does it:
+/// Works out what a set of rates means for a single monster, exactly the way the game server does it:
 /// each drop group rolls once against <c>groupChance × chanceMultiplier</c>, then one item in the group is chosen by
 /// weight and its count is <c>random(min,max) × amountMultiplier</c>. Per-item multipliers (adena) replace the general
-/// ones rather than adding to them, and herbs use their own rates, which a plan leaves alone.
+/// ones rather than adding to them, and herbs, spoil and raid bosses have their own.
 /// </summary>
 public static class DropPreview
 {
-	public static MonsterPreview For(Monster monster, MonsterCatalog catalog, RateOptions options, int maxDifferentItems = 2)
-	{
-		var chance = monster.IsRaid ? options.RaidChanceMultiplier : options.ChanceMultiplier;
-		var amount = monster.IsRaid ? options.RaidAmountMultiplier : options.AmountMultiplier;
+	/// <summary>Retail → what a rate plan would give.</summary>
+	public static MonsterPreview For(Monster monster, MonsterCatalog catalog, RateOptions options, int maxDifferentItems = 2) =>
+		Between(monster, catalog, RateSettings.Retail, RateSettings.FromPlan(options), maxDifferentItems);
 
-		var drops = Rows(monster.Drops, catalog, chance, amount, options, isSpoil: false).ToList();
-		var spoil = Rows(monster.Spoil, catalog, options.ChanceMultiplier, options.AmountMultiplier, options, isSpoil: true).ToList();
+	/// <summary>Any two sets of rates: retail → this world now, this world now → a planned rate, and so on.</summary>
+	public static MonsterPreview Between(Monster monster, MonsterCatalog catalog, RateSettings before, RateSettings after,
+		int maxDifferentItems = 2)
+	{
+		var drops = Rows(monster, monster.Drops, catalog, before, after, isSpoil: false).ToList();
+		var spoil = Rows(monster, monster.Spoil, catalog, before, after, isSpoil: true).ToList();
 		var adenaBefore = drops.Where(d => d.IsAdena).Sum(d => d.PerKillBefore);
 		var adenaAfter = drops.Where(d => d.IsAdena).Sum(d => d.PerKillAfter);
-		var full = monster.Drops.Count(g => Math.Min(100, g.Chance * (catalog.Herbs.Count > 0 && g.Items.All(i => catalog.Herbs.Contains(i.ItemId)) ? 1 : chance)) >= 100);
+		var full = monster.Drops.Count(g => GroupChance(g, monster, catalog, after) >= 100);
 
 		return new MonsterPreview(
-			monster, options,
-			monster.Exp, monster.Exp * options.Rate,
-			monster.Sp, monster.Sp * options.Rate,
+			monster, before, after,
+			monster.Exp * before.Xp, monster.Exp * after.Xp,
+			monster.Sp * before.Sp, monster.Sp * after.Sp,
 			drops, spoil, adenaBefore, adenaAfter, full, maxDifferentItems);
 	}
 
-	private static IEnumerable<DropRow> Rows(IReadOnlyList<DropGroup> groups, MonsterCatalog catalog, double chanceMultiplier,
-		double amountMultiplier, RateOptions options, bool isSpoil)
+	private static double GroupChance(DropGroup group, Monster monster, MonsterCatalog catalog, RateSettings rates)
+	{
+		var first = group.Items.Count > 0 ? group.Items[0] : null;
+		var (chance, _) = rates.For(
+			isHerb: first is not null && group.Items.All(i => catalog.Herbs.Contains(i.ItemId)),
+			isAdena: first?.ItemId == RatePlan.AdenaItemId,
+			isSpoil: false,
+			isRaid: monster.IsRaid);
+		return Math.Min(100, group.Chance * chance);
+	}
+
+	private static IEnumerable<DropRow> Rows(Monster monster, IReadOnlyList<DropGroup> groups, MonsterCatalog catalog,
+		RateSettings before, RateSettings after, bool isSpoil)
 	{
 		foreach (var group in groups)
 		{
@@ -84,20 +102,17 @@ public static class DropPreview
 			{
 				var isHerb = catalog.Herbs.Contains(item.ItemId);
 				var isAdena = item.ItemId == RatePlan.AdenaItemId;
-
-				// Herbs keep their own (untouched) multipliers; adena uses the per-item amount rate the plan writes.
-				var chance = isHerb ? 1 : chanceMultiplier;
-				var amount = isHerb ? 1 : isAdena ? options.AmountMultiplier : amountMultiplier;
+				var (chanceBefore, amountBefore) = before.For(isHerb, isAdena, isSpoil, monster.IsRaid);
+				var (chanceAfter, amountAfter) = after.For(isHerb, isAdena, isSpoil, monster.IsRaid);
 
 				var share = weights <= 0 ? 1 : item.Weight / weights;
-				var chanceBefore = Math.Min(100, group.Chance) * share;
-				var chanceAfter = Math.Min(100, group.Chance * chance) * share;
 				var average = (item.Min + item.Max) / 2.0;
 
 				yield return new DropRow(
 					item.ItemId, catalog.ItemName(item.ItemId),
-					chanceBefore, chanceAfter,
-					average, average * amount,
+					Math.Min(100, group.Chance * chanceBefore) * share,
+					Math.Min(100, group.Chance * chanceAfter) * share,
+					average * amountBefore, average * amountAfter,
 					isHerb, isAdena, isSpoil);
 			}
 		}
