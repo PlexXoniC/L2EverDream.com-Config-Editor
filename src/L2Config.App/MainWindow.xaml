@@ -550,12 +550,7 @@
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel>
-                                            <WrapPanel>
-                            <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                            <Border Style="{StaticResource Badge}" Background="Transparent" BorderBrush="#4D7C6FB0" Visibility="{Binding IsSpoil, Converter={StaticResource VisibleWhen}}">
-                                <TextBlock Text="Spoil" FontSize="9.5" FontWeight="SemiBold" Foreground="{StaticResource LabelBrush}" />
-                            </Border>
-                        </WrapPanel>
+                                            <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" TextTrimming="CharacterEllipsis" />
                                             <TextBlock FontSize="11" Foreground="{StaticResource CaptionBrush}" TextTrimming="CharacterEllipsis">
                                                 <Run Text="{Binding Id, StringFormat=ID {0}  ·  , Mode=OneWay}" /><Run Text="{Binding Description, Mode=OneWay}" />
                                             </TextBlock>

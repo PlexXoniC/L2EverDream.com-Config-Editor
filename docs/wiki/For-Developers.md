@@ -83,8 +83,9 @@ python catalog/build_custom_config.py "%LOCALAPPDATA%\L2Everdream"
 Renders the window to a PNG and exits, with throwaway preferences, and never saves:
 
 ```
-L2EverdreamConfig.exe --snapshot out.png --server <dir> --client <dir> --tab server|client|custom|characters|backups
+L2EverdreamConfig.exe --snapshot out.png --server <dir> --client <dir> --tab server|client|rates|drops|custom|characters|backups
   [--category id] [--group id] [--search text] [--edit Key=value] [--advanced] [--size 1280x820]
+  [--rate n --delivery 0..1] [--monster name --view retail-now|now-planned|retail-planned]
   [--inventory <character> --item-search text --item <id> --amount n]
   [--backups <dir>] [--backups-mode full] [--full-backups <dir> --compare <backup folder|latest> --filter changed|shipped|new|all]
   [--skill-durations --filter players|songs|debuffs|npc|changed|all]

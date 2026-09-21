@@ -44,7 +44,7 @@ The first time, each tab asks for a folder: your L2Everdream install (the one wi
 | **[Client settings](../../wiki/Client-Settings)** | Graphics, sound, interface and connection settings, including the encrypted `l2.ini`. |
 | **[How settings affect each other](../../wiki/How-Settings-Affect-Each-Other)** | Cards say what a setting depends on, when it has no effect right now, and what it controls. |
 | **[Custom Config](../../wiki/Custom-Config)** | A read-only view of how L2Everdream differs from stock L2J Mobius. |
-| **[Characters and inventories](../../wiki/Characters-and-Inventories)** | Adena and items of logged-out characters. New items are handed to the server to deliver, never written behind its back, and inventory limits are enforced as the server counts them. |
+| **[Characters and inventories](../../wiki/Characters-and-Inventories)** | Adena, items and enchant levels of logged-out characters. New items are handed to the server to deliver, never written behind its back, and inventory limits are enforced as the server counts them. |
 | **[Backups and restore](../../wiki/Backups-and-Restore)** | Every save, character change and restore is backed up first, and can be put back. |
 | **[Full backups](../../wiki/Full-Backups-and-Launcher-Updates)** | Back up every settings file before an L2Everdream update, then compare afterwards and tick what you want restored. |
 
@@ -86,7 +86,7 @@ dotnet run --project src/L2Config.App
 |---|---|
 | `src/L2Config.Core` | No UI: catalog, INI editing and the client ini codec, saving, backups and restore, world database, skill and item catalogs |
 | `src/L2Config.App` | The WPF app (MVVM, no UI libraries) |
-| `tests/L2Config.Core.Tests` | 112 xUnit tests |
+| `tests/L2Config.Core.Tests` | 116 xUnit tests |
 | `catalog/` | The friendly layer: curated names and relations, the Python generators, the generated catalog |
 | `docs/wiki/` | The source of the [wiki](../../wiki), including the generated settings reference |
 

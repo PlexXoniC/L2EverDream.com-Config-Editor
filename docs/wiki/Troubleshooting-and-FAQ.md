@@ -53,9 +53,12 @@ characters, keeps inventories under their limit, and backs up everything before 
 Server settings apply the next time you **start your world from the launcher**, and client settings the next time you **start Lineage 2**.
 
 **I added an item, but the character didn't get it.**
-Check the delivery notice on the inventory screen. **Deliver items queued from the database** must be **On**, the world must have been
-restarted since you turned it on, and the character must be **logged in**. The server checks the queue every 30 seconds as shipped. The item
-stays under *Waiting for the server to deliver* until it arrives.
+Look at the top of the inventory screen: while **Deliver items queued from the database** is off, a warning there says so and counts the
+deliveries that will never arrive. Turn it **On**, **Save changes**, **restart the world from the launcher**, then log the character **in**.
+The server checks the queue every 30 seconds as shipped and puts the items straight into the inventory, with a line in chat — Interlude has
+no mail window, so there is nothing to open. The item stays under *Waiting for the server to deliver* until it arrives.
+
+That setting is off as L2Everdream ships, and the launcher does not keep a protected copy of its file, so check it again after an update.
 
 **Can I make buffs last longer?**
 Yes. See [Custom skill durations](Custom-Skill-Durations).
@@ -76,7 +79,8 @@ Take a full backup first: **Backups › Full backups › Back up everything**, t
 
 **Do my changes survive a launcher update?**
 The program writes both the install copy and the launcher's protected copy, which is what the launcher keeps through updates. In the
-0.5.20 update no customised value was lost. A full backup lets you check after every update.
+0.5.20 update no customised value was lost, and the 0.5.23 update (world 1.0.146) kept them too. A full backup lets you check after every
+update.
 
 **I edited a config file by hand and a setting doesn't show its value.**
 The program reads files the way the server does, one `Key = Value` per line. A file whose lines end inconsistently (a mix of Windows and

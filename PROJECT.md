@@ -25,7 +25,7 @@ A standalone Windows desktop app (C# / WPF, one self-contained `.exe`, no instal
 | **One rate for the whole world** | The Rates tab turns a single number (3×, 5×, 15×, 20× or typed) into every experience and drop setting it needs, splitting it between drop *chance* and drop *amount* so that chance never climbs past the point where it is wasted. It fills in the Server tab; the normal save bar saves it. |
 | **Drops are their own tab** | The Drops tab is the monster browser the rate is judged by: pick any monster and see experience, every drop and spoil item, how often, how much and the average per kill, with the item icons from the player's own client. It compares any two sets of rates — retail (what a drop table site lists), the world as it is set now, and the rate planned on the Rates tab — so it shows what a world really gives, not only what a change would do. |
 | **Custom Config is read-only** | The tab shows how L2Everdream differs from stock L2J Mobius; it never writes. |
-| **Characters edit the live world carefully** | The Characters tab changes adena and inventory items of player characters in the running world's database. Existing rows change only while the character is **offline** (character row locked, `online = 0` re-checked in the same transaction). **Item rows are never inserted while the server runs** — new items are queued in `custom_mail` and the server delivers them when the character is online (needs `CustomMailManagerEnabled`, explained in the UI). The inventory limit is enforced as the server counts it, including queued deliveries. Sims are hidden. |
+| **Characters edit the live world carefully** | The Characters tab changes adena, inventory items and item enchant levels of player characters in the running world's database. Existing rows change only while the character is **offline** (character row locked, `online = 0` re-checked in the same transaction). **Item rows are never inserted while the server runs** — new items are queued in `custom_mail` and the server delivers them when the character is online (needs `CustomMailManagerEnabled`, explained in the UI). The inventory limit is enforced as the server counts it, including queued deliveries. Sims are hidden. |
 | **Settings explain each other** | Cards show what a setting depends on (and whether it currently has any effect), what it controls and what it works with. |
 | **Everything is backed up, restores never race the world** | Every save, character change and restore first backs up what it replaces (files and database rows). Files are restored only while the world is stopped (client files only while Lineage 2 is closed); database rows only for offline characters while the world runs. |
 | **Full backups before updates** | One button copies every settings file (server, launcher copies and shipped baselines, world, client) into a folder the user chooses — no default, never inside the install folder that updates replace. A full backup is compared with now **setting by setting** and ticked settings are put back one value at a time, with the same restore rules. |
@@ -55,7 +55,7 @@ dotnet test tests/L2Config.Core.Tests
 - No machine-specific paths are committed. This PC's paths live in the git-ignored `CLAUDE.local.md` and `test-paths.local.json`.
 
 **Release builds.** Both are one `L2EverdreamConfig.exe` with the catalog embedded and no side files. The version is `<Version>` in
-`src/L2Config.App/L2Config.App.csproj`, currently 1.1.0.
+`src/L2Config.App/L2Config.App.csproj`, currently 1.2.0.
 
 ```bash
 dotnet publish src/L2Config.App -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish/standalone
@@ -75,7 +75,7 @@ dotnet publish src/L2Config.App -c Release -r win-x64 --self-contained false -p:
   the exe and `LICENSE.txt`. The release notes list SHA-256 hashes (`certutil -hashfile <zip> SHA256`).
 - Both variants were verified by running the exe alone from an empty folder.
 - `README.md` is the user-facing GitHub page. Keep its numbers (settings, tests, sizes) in step with this file.
-- **Wiki:** `docs/wiki/` is the source of the GitHub wiki: 14 hand-written guide pages, 20 generated settings-reference pages
+- **Wiki:** `docs/wiki/` is the source of the GitHub wiki: 15 hand-written guide pages, 20 generated settings-reference pages
   (`Settings-<Category>.md`) plus `Settings-Reference.md` from `python catalog/build_wiki.py`, and `_Sidebar.md` / `_Footer.md`.
   Regenerate the reference after changing the catalog; never hand-edit the generated pages. Pages link to each other by
   page name and to images on the main branch (`raw.githubusercontent.com/…/main/docs/images/`). Keep it in step with the app and the README.
@@ -83,21 +83,28 @@ dotnet publish src/L2Config.App -c Release -r win-x64 --self-contained false -p:
   `https://github.com/PlexXoniC/L2EverDream.com-Config-Editor.wiki.git`, copy `docs/wiki/*.md` into it, commit and push.
 
 **README screenshots** (`docs/images/*.png`) must show no real folders, account or character names. They are made in snapshot mode
-(1280x820 at 125 % scaling). Screens that show no folder path or character (the full-backup comparison,
-`full-backup-compare.png`: `--tab backups --compare latest --filter all`) may come straight from a real install. Screens whose only
-private detail is the folder path in the folder bar may also come from a real install with that path covered by a solid black bar
-(`skill-durations.png`: `--tab server --skill-durations --edit "SkillDurationList=1085,3600;1087,3600;1354,5400"`, bar over the path at
-x 152–672, y 122–150 of the 1600×1025 image). Screens showing characters or accounts come from a demo world:
+(1280x820 at 125 % scaling). `rates.png` and `drops.png` show no folder bar and no characters, so they come from a real install
+(`--tab rates --rate 5`, `--tab drops --monster Antharas`). Everything else comes from a demo world, which keeps folder paths neutral
+and needs no black bars (a real install with the path covered by a solid black bar also works for a screen whose only private detail is
+the folder bar):
 
-1. Copy an install's `game\config`, `login\config`, `game\data\stats\items`, the data folder's `db\config` and
-   `worlds\world-profile.json`, and a client's `system\*.ini`, into a neutral tree, e.g. `D:\Games\L2Everdream`,
-   `D:\Games\L2Everdream-data` and `D:\Games\Lineage II` (a temporary `subst` drive works; remove it afterwards).
-2. Start a throwaway MariaDB (the install's `db\base\bin\mariadbd.exe --datadir=<temp> --port=33999 --skip-grant-tables`) with the
-   Mobius `characters`, `items` and `custom_mail` tables and made-up characters and items. Point the copy's `Database.ini` at it and
-   turn `CustomMailManagerEnabled` on in the copy.
+1. Copy an install's `game\config`, `login\config`, `game\data\stats\items`, `game\data\EnchantItemData.xml`, `world-release.json`,
+   the data folder's `db\config` and `worlds\world-profile.json`, and a client's `system\*.ini`, into a neutral tree, e.g.
+   `D:\Games\L2Everdream`, `D:\Games\L2Everdream-data` and `D:\Games\Lineage II` (a temporary `subst` drive works; remove it
+   afterwards). For skill durations also copy `game\data\stats\skills`, `game\data\stats\players\skillTrees` and
+   `game\data\SchemeBufferSkills.xml`.
+2. Start a throwaway MariaDB: `db\base\bin\mariadb-install-db.exe --datadir=<temp>`, then the install's
+   `db\base\bin\mariadbd.exe --no-defaults --datadir=<temp> --port=33999 --skip-grant-tables`. The install ships no game SQL, so take
+   the `characters`, `items` and `custom_mail` definitions from a world database with `SHOW CREATE TABLE` (structure only, no rows) and
+   fill them with made-up characters and items. Point both of the copy's `Database.ini` files at it, turn `CustomMailManagerEnabled`
+   on in the copy, and give the copy's `GameserverPort` (install and protected copy) an unused port, so a real world running on this
+   PC does not put "Your world is running" into the folder bar.
 3. Make demo backups into a temporary folder with the Core API (`SettingsStore.Save`, `WorldDatabase.SetItemCountAsync`,
-   `QueueDeliveryAsync`), then render each tab with `--server`, `--client` and `--backups` pointing at the demo.
-4. Stop the database and delete the demo tree.
+   `SetItemEnchantAsync`, `QueueDeliveryAsync`), and a demo full backup with `FullBackupLibrary.Create` followed by a few settings
+   edited in the demo, as an update would. Render each tab with `--server`, `--client`, `--backups` and `--full-backups` pointing at
+   the demo (`skill-durations.png`: `--tab server --skill-durations --edit "SkillDurationList=1085,3600;1087,3600;1354,5400"`;
+   `full-backup-compare.png`: `--tab backups --compare latest --filter all`).
+4. Stop the database, remove the `subst` drive and delete the demo tree.
 
 **Developer snapshot mode** (renders the window to a PNG and exits; uses throwaway preferences and never saves):
 
@@ -464,3 +471,4 @@ behaviour or adding a new file type.
 | 2026-09-20 | Drops tab: draws the monster itself, read from the model in the player's own game client (npcgrp.dat → the .ukx package → a software render); drop groups holding the same item are added up. |
 | 2026-09-20 | Monsters face the viewer, are painted with their own skins (a skin name is a Shader, so its Diffuse texture is followed) and turn on the spot; the package reader and texture decoder are now shared with the item icons. |
 | 2026-09-20 | Inventory: change an item's enchant level (offline, backed up, with the world's own ceiling noted), and a warning across the screen while item delivery is switched off. |
+| 2026-09-21 | Checked against launcher 0.5.23 / world 1.0.146: catalog byte-identical, drop code bytecode-identical, all tests pass (notes in the knowledge base). Fixed a stray "Spoil" badge on the inventory item search results (never released). Every screenshot re-taken, the character screens from a demo world. Version 1.2.0. |

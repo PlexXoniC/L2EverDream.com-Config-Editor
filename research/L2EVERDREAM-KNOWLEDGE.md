@@ -119,6 +119,19 @@ Measured with SHA-256 fingerprints of the install, `L2Everdream-data` and the wh
 Consequences for this app: compare settings by value (the full-backup comparer does), never assume comment text is
 stable, and do not regenerate catalog descriptions from a post-0.5.20 install (use `seed-data/` and upstream Mobius).
 
+### Checked after launcher 0.5.23 / world 1.0.146 (2026-09-21)
+
+The update rewrote every `game\config` and `login\config` file but kept the player's values, including
+`Custom/CustomMailManager.ini CustomMailManagerEnabled = True`, which has no protected copy. What the app depends on was re-checked:
+
+- `python catalog/build_catalog.py` against the updated install produced a **byte-identical** `catalog.json`: no setting added,
+  removed or reshaped.
+- The drop calculation in `GameServer.jar` (`NpcTemplate`) is **bytecode-identical** to the 0.5.19 copy in the pre-update
+  snapshot, and still reads the same `RatesConfig` fields, so the Rates and Drops arithmetic holds. `CustomMailManager` runs the same
+  `SELECT * FROM custom_mail` / `DELETE … WHERE date=? AND receiver=?`.
+- All tests pass against the updated install and client; the Characters tab reads the updated database. Only runtime client files
+  changed (`l2.ini` from the launcher, `Option.ini` and the shader cache from the game).
+
 ## 4. Boot sequence
 
 `LauncherApp.onStart` → patch DB/port/classmaster files → write arg files → spawn console running
