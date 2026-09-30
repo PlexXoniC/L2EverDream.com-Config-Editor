@@ -429,6 +429,15 @@ behaviour or adding a new file type.
 - XML configs (`AccessLevels.xml`, `AdminCommands.xml`, `DynamicExpRates.xml`, `SiegeSchedule.xml`, `Scripts.xml`,
   `default-ipconfig.xml`, `chatfilter.txt`) are not editable yet.
 - Client `user.ini` (key bindings) and `WindowsInfo.ini` are not in the catalog.
+- **Planned: a camera and zoom section for `user.ini`.** `user.ini` is `Lineage2Ver413`, so the existing codec already reads
+  and writes it. The one people actually want is how far the camera can zoom out: `[Engine.LineagePlayerController]
+  MaxZoomingDist` ships at 250, and the client only reads it at start-up, so the community "zoom fix" instead appends
+  `set Engine.LineagePlayerController MaxZoomingDist 65535 | set … MinZoomingDist -200` to the `RightMouse` binding in
+  `[Engine.Input]`, which re-applies the limit on every right-click (and drops the stock
+  `FixedDefaultCamera OnRelease MaxPressedTime=200.0`, the tap-right-click camera snap-back). So this is a key binding
+  carrying commands, not a plain value: offer it as a switch ("let the camera zoom right out", with the snap-back as its own
+  switch) that rewrites that one line, rather than a text box. Same file also holds the three camera presets
+  (`FixedDefaultCamera*[0..2]`), the mouse look speed and `bUseHitCheckCamera`, which suit ordinary editors.
 - Some client option numbers (texture/model detail, draw distance steps) are shown as raw values because their exact
   in-game labels are not verified.
 - About 480 server settings still use pattern or humanized names; improve them in `friendly-names.tsv`.
