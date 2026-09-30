@@ -140,6 +140,8 @@ research/
   L2EVERDREAM-KNOWLEDGE.md       how L2Everdream, the launcher, Mobius and the client work
   seed-data/                     schema extracted from the install (config keys + Java types/defaults), launcher.css, ini decoder reference
   upstream-mobius/<commit>/      stock L2J_Mobius_CT_0_Interlude config files (from GitLab) used for Custom Config
+extras/server-scripts/           datapack scripts for a local world, kept here so an update cannot take them with it.
+                                 Not part of the app: it never installs, edits or runs them (see that folder's README)
 src/L2Config.Core/               no UI: catalog model, INI editing, client ini codec, stores, validation, search, world database (MySqlConnector)
 src/L2Config.App/                WPF app (MVVM, no third-party packages)
 tests/L2Config.Core.Tests/       xUnit
@@ -481,3 +483,4 @@ behaviour or adding a new file type.
 | 2026-09-20 | Monsters face the viewer, are painted with their own skins (a skin name is a Shader, so its Diffuse texture is followed) and turn on the spot; the package reader and texture decoder are now shared with the item icons. |
 | 2026-09-20 | Inventory: change an item's enchant level (offline, backed up, with the world's own ceiling noted), and a warning across the screen while item delivery is switched off. |
 | 2026-09-21 | Checked against launcher 0.5.23 / world 1.0.146: catalog byte-identical, drop code bytecode-identical, all tests pass (notes in the knowledge base). Fixed a stray "Spoil" badge on the inventory item search results (never released). Every screenshot re-taken, the character screens from a demo world. Version 1.2.0. |
+| 2026-09-29 | Added `extras/server-scripts/` for datapack scripts kept outside the app: Vanity, the `.onfire` and `.bighead` chat commands for a local world. The app still only edits settings. |
