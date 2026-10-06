@@ -34,6 +34,7 @@ name, is grouped by what it does, and is limited to values the server accepts.
 | [How settings affect each other](How-Settings-Affect-Each-Other) | The *Depends on*, *Has no effect right now*, *Controls* and *Works with* lines |
 | [Custom Config](Custom-Config) | How L2Everdream's shipped settings differ from stock L2J Mobius |
 | [Characters and inventories](Characters-and-Inventories) | Adena, changing and removing items, adding items through server delivery, inventory limits |
+| [GM shop](GM-Shop) | A shopkeeper beside the gatekeeper in every town, selling your world's own items at your world's own prices |
 | [Backups and restore](Backups-and-Restore) | The automatic backup taken before every change, and putting it back |
 | [Full backups and launcher updates](Full-Backups-and-Launcher-Updates) | Backing up everything before an update, comparing afterwards, restoring chosen settings |
 | [Where your files are](Where-Your-Files-Are) | Which files each setting is saved to, the launcher's protected copies, values the launcher owns |

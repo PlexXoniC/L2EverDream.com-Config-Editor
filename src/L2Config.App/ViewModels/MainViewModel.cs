@@ -38,6 +38,7 @@ public sealed class MainViewModel : ObservableObject
 		DropsTab = new DropsViewModel(RatesTab, () => ServerTab.Settings, () => _store?.Locations, LoadMonstersAsync,
 			() => SelectedTab = RatesTab);
 		CharactersTab = new CharactersViewModel(BuildServerFacts, dialogs, ShowSetting);
+		ShopsTab = new ShopsViewModel(() => _store?.Locations, () => ServerTab.Settings, appSettings, dialogs, ShowSetting);
 		var fullBackups = new FullBackupsViewModel(catalog, appSettings, () => _store?.Locations, ReadRestoreConditionsAsync, dialogs, () => Reload());
 		BackupsTab = new BackupsViewModel(ReadRestoreConditionsAsync, CharactersTab, fullBackups, dialogs, () => Reload());
 		_selectedTab = TabFor(appSettings.LastTab);
@@ -63,6 +64,7 @@ public sealed class MainViewModel : ObservableObject
 	public RatesViewModel RatesTab { get; }
 	public DropsViewModel DropsTab { get; }
 	public CharactersViewModel CharactersTab { get; }
+	public ShopsViewModel ShopsTab { get; }
 	public BackupsViewModel BackupsTab { get; }
 
 	/// <summary>A <see cref="TabViewModel"/> (Server, Client), the <see cref="CustomConfigViewModel"/> or the <see cref="CharactersViewModel"/>.</summary>
@@ -79,6 +81,7 @@ public sealed class MainViewModel : ObservableObject
 				OnPropertyChanged(nameof(IsDropsTab));
 				OnPropertyChanged(nameof(IsCustomTab));
 				OnPropertyChanged(nameof(IsCharactersTab));
+				OnPropertyChanged(nameof(IsShopsTab));
 				OnPropertyChanged(nameof(IsBackupsTab));
 				_appSettings.LastTab = value switch
 				{
@@ -86,6 +89,7 @@ public sealed class MainViewModel : ObservableObject
 					RatesViewModel => "rates",
 					DropsViewModel => "drops",
 					CharactersViewModel => "characters",
+					ShopsViewModel => "shops",
 					BackupsViewModel => "backups",
 					_ => "custom",
 				};
@@ -101,6 +105,7 @@ public sealed class MainViewModel : ObservableObject
 	public bool IsDropsTab => SelectedTab == DropsTab;
 	public bool IsCustomTab => CustomTab is not null && SelectedTab == CustomTab;
 	public bool IsCharactersTab => SelectedTab == CharactersTab;
+	public bool IsShopsTab => SelectedTab == ShopsTab;
 	public bool IsBackupsTab => SelectedTab == BackupsTab;
 
 	private object TabFor(string? name) => name switch
@@ -110,6 +115,7 @@ public sealed class MainViewModel : ObservableObject
 		"drops" => DropsTab,
 		"custom" when CustomTab is not null => CustomTab,
 		"characters" => CharactersTab,
+		"shops" => ShopsTab,
 		"backups" => BackupsTab,
 		_ => ServerTab,
 	};
@@ -123,6 +129,10 @@ public sealed class MainViewModel : ObservableObject
 		else if (tab == DropsTab)
 		{
 			_ = DropsTab.LoadAsync();
+		}
+		else if (tab == ShopsTab)
+		{
+			_ = ShopsTab.LoadAsync();
 		}
 		else if (tab == CharactersTab)
 		{

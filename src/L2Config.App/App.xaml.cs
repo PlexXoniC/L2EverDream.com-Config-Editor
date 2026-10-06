@@ -134,6 +134,10 @@ public partial class App : Application
 					}
 					window.UpdateLayout();
 				}
+				if (snapshot.Tab == "shops")
+				{
+					Pump(() => viewModel.ShopsTab.Busy);
+				}
 				if (snapshot.Tab == "characters")
 				{
 					// The character list loads from the database after the first render.
@@ -258,6 +262,11 @@ public partial class App : Application
 			{
 				viewModel.SelectedTab = Tab == "backups" ? viewModel.BackupsTab : viewModel.CharactersTab;
 				viewModel.BackupsTab.IsFullMode = BackupsMode == "full" || Compare is not null;
+				return;
+			}
+			if (Tab == "shops")
+			{
+				viewModel.SelectedTab = viewModel.ShopsTab;
 				return;
 			}
 			if (Tab == "custom" && viewModel.CustomTab is not null)

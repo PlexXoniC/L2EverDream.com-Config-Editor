@@ -16,13 +16,15 @@ The project owner knows the user is building it.
 1. **Local only.** The world and client on this PC. Never the public/official L2Everdream servers. Public-server
    hardening is irrelevant (`AutoCreateAccounts=True` is correct for a local world).
 2. **Editor only.** Never start, stop or control the server, database or client — that is the launcher's job. Read-only
-   checks (is port listening, is `L2.exe` running) are fine for notices.
+   checks (is port listening, is `L2.exe` running) are fine for notices. **One exception, agreed with the user:** the
+   **GM Shop** tab adds datapack files to a world (see rule 5). It only ever writes files of its own in the folders the
+   server keeps for custom content, backs up anything it replaces, and can take every one of them out again.
 3. **Every config it can.** Server ini (game + login), `world-profile.json`, client `Option.ini` and encrypted `l2.ini`;
    XML configs and `user.ini` are next. `-Dl2sp.*` JVM flags are out of scope (the launcher regenerates them each start).
 4. **Non-programmer UX.** Friendly names linked to the real `File › [Section] › Key`; grouping by type of setting, not by
    file; search across friendly and real names; a category → group section list on the left of the main window.
 5. **Separate tabs:** Server, Client, **Rates**, **Drops**, a read-only **Custom Config** tab (how the release differs from stock L2J Mobius),
-   **Characters** and **Backups**.
+   **Characters**, **GM Shop** and **Backups**.
    - **Characters** edits player characters in the running world's database: adena, plus an inventory editor that changes,
      removes and adds items from the full item list, and sets the enchant level of weapons, armour and jewellery
      (`EnchantRules` reads the world's own ceiling from `EnchantItemData.xml`; a level above it is allowed but said so). Existing rows are written only while the character is offline (the
@@ -35,6 +37,14 @@ The project owner knows the user is building it.
      straight to an online character, then deletes the row. The launcher does not keep a protected copy of
      `Custom/CustomMailManager.ini`, so an update can reset it. The inventory limit is enforced exactly as the server counts it (`InventoryRules.cs`), including queued
      deliveries, and stacks are capped (adena by `MaxAdena`).
+   - **GM Shop**: a shopkeeper beside the gatekeeper in every town, selling the world's own items at the world's own
+     prices (`ItemCatalog` reads `price` and `icon`), with armour sets sold whole through a multisell. Everything is built
+     from the world each time — gatekeeper positions come from its spawn files, items and sets from its datapack — and
+     only the player's own choices are stored (`ShopChoices`, in the app's settings folder). It writes **new files only**,
+     in the folders the server already reads (`stats\npcs\custom\L2EverdreamConfig`, `html\merchant`,
+     `buylists\custom`, `multisell\custom`, `spawns\L2EverdreamConfig`), so an L2Everdream update leaves them alone;
+     anything replaced is backed up, Remove deletes only files it owns, and the world must be restarted from the launcher.
+     Epic boss jewels are left off by default. Needs `CustomNpcData`, `CustomBuyListLoad` and `CustomMultisellLoad`.
    - **Backups**: every settings save, character change and restore first backs up what it replaces — files, and database
      rows as they were — into one flat folder per backup (`yyyyMMdd-HHmmss-title\role__file` + `manifest.json`).
      Restores: files never while the world is running (client files never while `L2.exe` runs); database rows only for

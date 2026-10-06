@@ -36,6 +36,7 @@
 
 **Your world**
 - [Characters and inventories](Characters-and-Inventories)
+- [GM shop](GM-Shop)
 
 **Safety**
 - [Backups and restore](Backups-and-Restore)

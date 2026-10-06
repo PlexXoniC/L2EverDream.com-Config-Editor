@@ -779,6 +779,198 @@
             </Grid>
         </DataTemplate>
 
+        <!-- ===== GM Shop tab ================================================================= -->
+        <DataTemplate DataType="{x:Type vm:ShopTownViewModel}">
+            <Border Margin="0,0,10,4" Padding="10,7" CornerRadius="9" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <CheckBox Style="{StaticResource TickBox}" IsChecked="{Binding Enabled, Mode=TwoWay}" VerticalAlignment="Center" Margin="0,0,8,0"
+                              AutomationProperties.Name="{Binding Where}" />
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Where}" FontSize="12.5" Foreground="{StaticResource StarlightBrush}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding Position}" FontSize="11" FontFamily="{StaticResource MonoFont}" Foreground="{StaticResource DimLabelBrush}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBox Style="{StaticResource FieldTextBox}" Width="54" FontSize="11.5" TextAlignment="Right" ToolTip="Nudge east or west"
+                                 Text="{Binding NudgeX, UpdateSourceTrigger=PropertyChanged, Delay=400}" AutomationProperties.Name="Nudge east or west" />
+                        <TextBox Style="{StaticResource FieldTextBox}" Width="54" FontSize="11.5" TextAlignment="Right" Margin="4,0,0,0" ToolTip="Nudge north or south"
+                                 Text="{Binding NudgeY, UpdateSourceTrigger=PropertyChanged, Delay=400}" AutomationProperties.Name="Nudge north or south" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:ShopLineViewModel}">
+            <Border Margin="0,0,14,4" Padding="10,6" CornerRadius="9" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="40" />
+                        <ColumnDefinition Width="*" MinWidth="120" />
+                        <ColumnDefinition Width="128" />
+                    </Grid.ColumnDefinitions>
+                    <CheckBox Style="{StaticResource TickBox}" IsChecked="{Binding Included, Mode=TwoWay}" VerticalAlignment="Center" Margin="0,0,8,0"
+                              ToolTip="Take this off the shop's list" AutomationProperties.Name="{Binding Name}" />
+                    <Border Grid.Column="1" Width="32" Height="32" CornerRadius="6" Background="#40100E22" BorderBrush="{StaticResource SoftVioletHairBrush}" BorderThickness="1" VerticalAlignment="Center">
+                        <Image Source="{Binding Image}" Width="32" Height="32" RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                    </Border>
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="10,0,8,0">
+                        <TextBlock Text="{Binding Name}" FontSize="12.5" Foreground="{StaticResource StarlightBrush}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{StaticResource CaptionBrush}" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="3" VerticalAlignment="Center">
+                        <TextBox Style="{StaticResource FieldTextBox}" FontFamily="{StaticResource MonoFont}" FontSize="12" TextAlignment="Right"
+                                 Text="{Binding PriceText, UpdateSourceTrigger=PropertyChanged, Delay=500}" AutomationProperties.Name="Price in adena" />
+                        <TextBlock Text="{Binding OriginalText}" FontSize="10.5" Foreground="{StaticResource DimLabelBrush}" HorizontalAlignment="Right" Margin="0,2,2,0"
+                                   Visibility="{Binding IsChanged, Converter={StaticResource VisibleWhen}}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:ShopsViewModel}">
+            <Grid Margin="24,0,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Margin="2,0,24,10">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🏷" FontSize="22" Foreground="{StaticResource ArcaneBrush}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                        <TextBlock Text="{Binding Title}" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource StarlightBrush}" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding Intro}" Style="{StaticResource CaptionText}" FontSize="13" Margin="0,4,0,0" LineHeight="19" MaxWidth="1040" HorizontalAlignment="Left" />
+                </StackPanel>
+
+                <Border Grid.Row="1" Margin="2,0,24,12" Padding="14,10" CornerRadius="12" Background="{StaticResource CardGradientBrush}" BorderBrush="{StaticResource VioletHairBrush}" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="{Binding StatusText}" FontSize="12.5" Foreground="{StaticResource EmberBrush}" TextWrapping="Wrap" LineHeight="18" />
+                        <ItemsControl ItemsSource="{Binding Problems}" Margin="0,6,0,0" Visibility="{Binding HasProblems, Converter={StaticResource VisibleWhen}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding StringFormat=•  {0}}" FontSize="12" Foreground="{StaticResource LanternBrush}" TextWrapping="Wrap" LineHeight="17" Margin="0,0,0,3" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Text="{Binding Message}" FontSize="12.5" Foreground="{StaticResource VerdanceBrush}" Margin="0,6,0,0" TextWrapping="Wrap" LineHeight="18"
+                                   Visibility="{Binding Message, Converter={StaticResource VisibleWhen}}" />
+                    </StackPanel>
+                </Border>
+
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="330" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="320" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,6,0">
+                        <StackPanel Margin="2,0,8,16">
+                            <Border Padding="16,14" CornerRadius="14" Background="{StaticResource CardGradientBrush}" BorderBrush="{StaticResource VioletHairBrush}" BorderThickness="1">
+                                <StackPanel>
+                                    <TextBlock Text="THE SHOPKEEPER" Style="{StaticResource KickerText}" />
+                                    <CheckBox Style="{StaticResource TickBox}" IsChecked="{Binding Enabled, Mode=TwoWay}" Margin="0,10,0,0"
+                                              Content="Stand in the towns below" Foreground="{StaticResource SoftTextBrush}" />
+                                    <TextBlock Text="NAME" Style="{StaticResource KickerText}" Margin="0,12,0,4" />
+                                    <TextBox Style="{StaticResource FieldTextBox}" Text="{Binding ShopName, UpdateSourceTrigger=PropertyChanged, Delay=500}" AutomationProperties.Name="Shopkeeper name" />
+                                    <TextBlock Text="TITLE" Style="{StaticResource KickerText}" Margin="0,10,0,4" />
+                                    <TextBox Style="{StaticResource FieldTextBox}" Text="{Binding ShopTitle, UpdateSourceTrigger=PropertyChanged, Delay=500}" AutomationProperties.Name="Shopkeeper title" />
+                                    <TextBlock Text="LOOKS LIKE NPC" Style="{StaticResource KickerText}" Margin="0,10,0,4" />
+                                    <TextBox Style="{StaticResource FieldTextBox}" Width="110" HorizontalAlignment="Left" FontFamily="{StaticResource MonoFont}"
+                                             Text="{Binding LookId, UpdateSourceTrigger=PropertyChanged, Delay=500}" AutomationProperties.Name="Which npc the shopkeeper looks like" />
+                                    <TextBlock FontSize="11.5" Foreground="{StaticResource CaptionBrush}" Margin="0,6,0,0" TextWrapping="Wrap" LineHeight="17"
+                                               Text="Any npc your client already knows how to draw. 30001 is Lector, the merchant in Giran." />
+
+                                    <Border Height="1" Margin="0,14,0,12" Background="{StaticResource SoftVioletHairBrush}" />
+                                    <Button Style="{StaticResource PrimaryButton}" Content="Write it to my world" Command="{Binding InstallCommand}" HorizontalAlignment="Left" />
+                                    <Button Style="{StaticResource GhostButton}" Content="Take it back out" Command="{Binding RemoveCommand}" HorizontalAlignment="Left" Margin="0,8,0,0" Padding="12,6" FontSize="12.5" />
+                                    <Button Style="{StaticResource LinkButton}" Content="Save a copy of the files…" Command="{Binding ExportCommand}" HorizontalAlignment="Left" Margin="2,8,0,0" />
+                                    <TextBlock FontSize="11.5" Foreground="{StaticResource CaptionBrush}" Margin="0,10,0,0" TextWrapping="Wrap" LineHeight="17"
+                                               Text="Your world reads all of this when it starts, so restart it from the launcher after writing. Everything written is backed up first, and an L2Everdream update leaves these files alone." />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <Grid Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <StackPanel Margin="2,2,0,8">
+                            <TextBlock Text="WHERE IT STANDS" Style="{StaticResource KickerText}" />
+                            <TextBlock Text="{Binding TownsText}" FontSize="11.5" Foreground="{StaticResource DimLabelBrush}" Margin="0,3,0,0" />
+                        </StackPanel>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding Towns}" Margin="2,0,0,16" />
+                        </ScrollViewer>
+                    </Grid>
+
+                    <Grid Grid.Column="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="WHAT IT SELLS" Style="{StaticResource KickerText}" Margin="2,2,0,8" />
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding Pages}" Margin="0,0,0,10">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <RadioButton Style="{StaticResource FilterRadio}" GroupName="ShopPages" Content="{Binding PageTitle}" IsChecked="{Binding IsSelected, Mode=OneWay}"
+                                                 ToolTip="{Binding Summary}"
+                                                 Command="{Binding DataContext.SelectPageCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                 CommandParameter="{Binding}" Margin="0,0,6,6" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Grid Grid.Row="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid Margin="0,0,14,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Style="{StaticResource FieldTextBox}" Text="{Binding ItemSearch, UpdateSourceTrigger=PropertyChanged, Delay=250}"
+                                         AutomationProperties.Name="Search this page" />
+                                <TextBlock Grid.Column="1" Text="{Binding ItemsText}" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="11.5" Foreground="{StaticResource DimLabelBrush}" />
+                            </Grid>
+                            <ListBox Grid.Row="1" ItemsSource="{Binding Items}" Background="Transparent" BorderThickness="0" Focusable="False"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
+                                     Margin="0,0,0,10">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ListBoxItem">
+                                                    <ContentPresenter />
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                            </ListBox>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
         <!-- ===== Drops tab ==================================================================== -->
         <DataTemplate DataType="{x:Type vm:DropsViewModel}">
             <Grid Margin="24,0,10,0">
@@ -1846,6 +2038,11 @@
                                  Command="{Binding SelectTabCommand}" CommandParameter="characters" WindowChrome.IsHitTestVisibleInChrome="True"
                                  ToolTip="Player characters in your running world">
                         <TextBlock Text="Characters" />
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsShopsTab, Mode=OneWay}"
+                                 Command="{Binding SelectTabCommand}" CommandParameter="shops" WindowChrome.IsHitTestVisibleInChrome="True"
+                                 ToolTip="A shopkeeper beside the gatekeeper in every town">
+                        <TextBlock Text="GM Shop" />
                     </RadioButton>
                     <RadioButton Style="{StaticResource TabPill}" GroupName="Tabs" IsChecked="{Binding IsBackupsTab, Mode=OneWay}"
                                  Command="{Binding SelectTabCommand}" CommandParameter="backups" WindowChrome.IsHitTestVisibleInChrome="True"

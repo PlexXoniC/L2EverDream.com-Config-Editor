@@ -71,6 +71,8 @@ public sealed class ItemCatalog
 		private string? _grade;
 		private int _weight;
 		private string? _kind;
+		private long _price;
+		private string? _icon;
 
 		public int Id => id;
 
@@ -90,6 +92,12 @@ public sealed class ItemCatalog
 				case "weight":
 					int.TryParse(value, out _weight);
 					break;
+				case "price":
+					long.TryParse(value, out _price);
+					break;
+				case "icon":
+					_icon ??= value;
+					break;
 				case "etcitem_type" or "weapon_type" or "bodypart":
 					_kind ??= value;
 					break;
@@ -97,11 +105,12 @@ public sealed class ItemCatalog
 		}
 
 		// Weapons and armor are never stackable in Interlude, whatever the XML says.
-		public ItemTemplate Build() => new(id, name, type, type == "EtcItem" && _stackable, _quest, _grade, _weight, _kind);
+		public ItemTemplate Build() => new(id, name, type, type == "EtcItem" && _stackable, _quest, _grade, _weight, _kind, _price, _icon);
 	}
 }
 
-public sealed record ItemTemplate(int Id, string Name, string Type, bool Stackable, bool Quest, string? Grade, int Weight, string? Kind)
+/// <summary><paramref name="Price"/> is the item's own value in the datapack — what an NPC merchant charges for it.</summary>
+public sealed record ItemTemplate(int Id, string Name, string Type, bool Stackable, bool Quest, string? Grade, int Weight, string? Kind, long Price = 0, string? Icon = null)
 {
 	public string Description
 	{
