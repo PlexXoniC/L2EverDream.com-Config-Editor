@@ -49,7 +49,8 @@ The project owner knows the user is building it.
    - **Rates**: one number (presets 1/3/5/15/20 or typed) written across every experience and drop setting, because
      Mobius's separate chance and amount multipliers confuse players. The rate is split so that `chance x amount = rate`
      while the chance never goes past the point where it is wasted (a drop group is rolled once, so chance saturates at
-     100% and only amount keeps scaling); adena needs its own entry in `DropAmountMultiplierByItemId`. Herbs, vitality,
+     100% and only amount keeps scaling); adena needs its own entry in both by-item-id lists, **added to** what the world
+     already lists there rather than replacing it (L2Everdream pins the eight epic boss jewels at 1). Herbs, vitality,
      premium, the party bonus, level-gap penalties, manor and fishing are deliberately left alone. Applying only fills the
      Server tab; the normal save bar writes it.
    - **Drops** is the Rates tab's other half and follows the rate picked there: every monster with its experience, drops
@@ -132,8 +133,11 @@ under `%LOCALAPPDATA%\L2EverdreamConfig\backups`.
 - The client ships `IsL2AutoLogOn=Ture` (typo); toggles treat anything but "true" as off.
 - Rate semantics, read from the shipped `GameServer.jar`: experience is `template exp x RateXp`; `RatePartyXp` multiplies
   **only** the party-size bonus, not the experience. Drop chance and amount each follow an **else-if** chain (by item id,
-  herb, raid, death), so a per-item rate **replaces** the general one — the shipped `DropAmountMultiplierByItemId = 57,1`
-  means adena ignores the general drop amount. Each drop group is rolled once, so chance above 100% is wasted, and
+  herb, raid, death), resolved **separately for chance and for amount**, so a per-item rate **replaces** the general one:
+  the shipped `DropAmountMultiplierByItemId = 57,1;6656,1;...;8191,1` means adena and the eight epic boss jewels ignore
+  the general drop amount, and `DropChanceMultiplierByItemId = 57,15` gives adena its own chance. Spoiling has its own
+  two multipliers and never looks at those lists. Each drop group is rolled once against its **first** item's rate, so
+  chance above 100% is wasted, and
   `DropMaxOccurrencesNormal`/`Raidboss` cap how many different items one kill can give.
 - Item icons come from the player's own client (`systextures\Icon.utx`, `Lineage2Ver121` XOR by filename, then a UE2
   package with DXT1/DXT3 textures) - nothing is bundled.

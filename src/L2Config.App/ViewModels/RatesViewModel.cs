@@ -99,7 +99,10 @@ public sealed class RatesViewModel : ObservableObject
 	}
 
 	public RateOptions Options => new(Rate, Delivery);
-	public RatePlan Plan => RatePlan.Build(Options);
+	/// <summary>The plan for the rate picked here, told what this world already lists by item id so it keeps it.</summary>
+	public RatePlan Plan => RatePlan.Build(Options,
+		Find("Rates.ini", "DropChanceMultiplierByItemId")?.Value,
+		Find("Rates.ini", "DropAmountMultiplierByItemId")?.Value);
 
 	public IReadOnlyList<double> Presets => RateOptions.Presets;
 

@@ -55,8 +55,8 @@ public sealed record MonsterPreview(
 /// <summary>
 /// Works out what a set of rates means for a single monster, exactly the way the game server does it:
 /// each drop group rolls once against <c>groupChance × chanceMultiplier</c>, then one item in the group is chosen by
-/// weight and its count is <c>random(min,max) × amountMultiplier</c>. Per-item multipliers (adena) replace the general
-/// ones rather than adding to them, and herbs, spoil and raid bosses have their own.
+/// weight and its count is <c>random(min,max) × amountMultiplier</c>. An item with a multiplier of its own (adena, the
+/// epic boss jewels) replaces the general one rather than adding to it, and herbs, spoil and raid bosses have their own.
 /// </summary>
 public static class DropPreview
 {
@@ -83,10 +83,11 @@ public static class DropPreview
 
 	private static double GroupChance(DropGroup group, Monster monster, MonsterCatalog catalog, RateSettings rates)
 	{
+		// The server rolls a group against the first item's rate, whatever else is in the group.
 		var first = group.Items.Count > 0 ? group.Items[0] : null;
 		var (chance, _) = rates.For(
+			first?.ItemId ?? 0,
 			isHerb: first is not null && group.Items.All(i => catalog.Herbs.Contains(i.ItemId)),
-			isAdena: first?.ItemId == RatePlan.AdenaItemId,
 			isSpoil: false,
 			isRaid: monster.IsRaid);
 		return Math.Min(100, group.Chance * chance);
@@ -102,8 +103,8 @@ public static class DropPreview
 			{
 				var isHerb = catalog.Herbs.Contains(item.ItemId);
 				var isAdena = item.ItemId == RatePlan.AdenaItemId;
-				var (chanceBefore, amountBefore) = before.For(isHerb, isAdena, isSpoil, monster.IsRaid);
-				var (chanceAfter, amountAfter) = after.For(isHerb, isAdena, isSpoil, monster.IsRaid);
+				var (chanceBefore, amountBefore) = before.For(item.ItemId, isHerb, isSpoil, monster.IsRaid);
+				var (chanceAfter, amountAfter) = after.For(item.ItemId, isHerb, isSpoil, monster.IsRaid);
 
 				var share = weights <= 0 ? 1 : item.Weight / weights;
 				var average = (item.Min + item.Max) / 2.0;

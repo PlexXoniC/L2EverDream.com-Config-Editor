@@ -40,19 +40,34 @@ public sealed record RateChange(string File, string Key, string NewValue, string
 	public string Location => $"{File} › {Key}";
 }
 
-/// <summary>The settings a rate plan writes, and the ones it deliberately leaves alone.</summary>
-public sealed record RatePlan(RateOptions Options, IReadOnlyList<RateChange> Changes, IReadOnlyList<string> Untouched)
+/// <summary>
+/// The settings a rate plan writes, the ones it deliberately leaves alone, and the rates the world would then be on.
+/// </summary>
+public sealed record RatePlan(
+	RateOptions Options,
+	IReadOnlyList<RateChange> Changes,
+	IReadOnlyList<string> Untouched,
+	RateSettings Result)
 {
 	public const int AdenaItemId = 57;
 
-	/// <summary>Builds the plan. Nothing is written here: the app shows this, then saves it like any other change.</summary>
-	public static RatePlan Build(RateOptions options)
+	/// <summary>
+	/// Builds the plan. Nothing is written here: the app shows this, then saves it like any other change.
+	/// <para>
+	/// The two by-item-id lists are passed in as the world holds them so that the plan can <b>add</b> adena to them
+	/// rather than replace them: L2Everdream lists the epic boss jewels there at 1, and overwriting the list would let a
+	/// fast world multiply those too.
+	/// </para>
+	/// </summary>
+	public static RatePlan Build(RateOptions options, string? chanceByItemId = null, string? amountByItemId = null)
 	{
 		var rate = Text(options.Rate);
 		var chance = Text(options.ChanceMultiplier);
 		var amount = Text(options.AmountMultiplier);
 		var raidChance = Text(options.RaidChanceMultiplier);
 		var raidAmount = Text(options.RaidAmountMultiplier);
+		var chanceList = WithItemRate(chanceByItemId, AdenaItemId, chance);
+		var amountList = WithItemRate(amountByItemId, AdenaItemId, amount);
 
 		var changes = new List<RateChange>
 		{
@@ -60,9 +75,12 @@ public sealed record RatePlan(RateOptions Options, IReadOnlyList<RateChange> Cha
 			new("Rates.ini", "RateSp", rate, "Skill points from monsters."),
 			new("Rates.ini", "DeathDropChanceMultiplier", chance, "How often monsters drop something."),
 			new("Rates.ini", "DeathDropAmountMultiplier", amount, "How much they drop each time."),
-			new("Rates.ini", "DropAmountMultiplierByItemId", $"{AdenaItemId},{amount}",
+			new("Rates.ini", "DropChanceMultiplierByItemId", chanceList,
 				"Adena is set on its own here, because a per-item rate replaces the general one instead of adding to it. " +
-				"L2Everdream ships adena at 1 here, which is why raising the drop amount on its own never changed the adena players get."),
+				"Anything else already in this list keeps the rate it has."),
+			new("Rates.ini", "DropAmountMultiplierByItemId", amountList,
+				"Adena's own amount. L2Everdream ships it at 1 here, which is why raising the drop amount on its own never " +
+				"changed the adena players get. The epic boss jewels are in this list too, at 1, and are left exactly as they are."),
 			new("Rates.ini", "SpoilDropChanceMultiplier", chance, "How often spoiling gives something."),
 			new("Rates.ini", "SpoilDropAmountMultiplier", amount, "How much spoiling gives."),
 			new("Rates.ini", "RaidDropChanceMultiplier", raidChance, $"Raid boss drops move less than normal drops ({Text(options.RaidRate)}x)."),
@@ -83,8 +101,48 @@ public sealed record RatePlan(RateOptions Options, IReadOnlyList<RateChange> Cha
 			"The extra for being in a party — it multiplies the party bonus, not the experience itself, so it is left alone.",
 			"Level-difference penalties, and the most-items-per-monster limit — those shape drops, and the preview shows their effect.",
 			"Manor, fishing, lottery and other side rewards.",
+			"Anything already listed with a rate of its own by item id — the epic boss jewels, which L2Everdream pins at 1.",
 		};
-		return new RatePlan(options, changes, untouched);
+
+		// What the world would be on once these are saved. Herbs stay at retail here because the plan does not write them.
+		var result = new RateSettings(
+			options.Rate, options.Rate,
+			options.ChanceMultiplier, options.AmountMultiplier,
+			1, 1,
+			options.ChanceMultiplier, options.AmountMultiplier,
+			options.RaidChanceMultiplier, options.RaidAmountMultiplier)
+		{
+			ChanceByItemIdList = chanceList,
+			AmountByItemIdList = amountList,
+		};
+		return new RatePlan(options, changes, untouched, result);
+	}
+
+	/// <summary>
+	/// A world's own by-item-id list with one item set to a new multiplier, every other item left exactly as it is.
+	/// An item that is not listed yet is put at the front, the way L2Everdream writes adena.
+	/// </summary>
+	public static string WithItemRate(string? list, int itemId, string multiplier)
+	{
+		var entries = (list ?? "")
+			.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+			.ToList();
+		var replacement = $"{itemId},{multiplier}";
+		var listed = false;
+		for (var i = 0; i < entries.Count; i++)
+		{
+			var parts = entries[i].Split(',', StringSplitOptions.TrimEntries);
+			if (parts.Length == 2 && int.TryParse(parts[0], out var id) && id == itemId)
+			{
+				entries[i] = replacement;
+				listed = true;
+			}
+		}
+		if (!listed)
+		{
+			entries.Insert(0, replacement);
+		}
+		return string.Join(';', entries);
 	}
 
 	/// <summary>Reads a plan back from the values in the files, so the app can show which preset a world is on.</summary>

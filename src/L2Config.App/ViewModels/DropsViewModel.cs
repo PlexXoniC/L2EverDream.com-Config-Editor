@@ -92,7 +92,7 @@ public sealed class DropsViewModel : ObservableObject
 	/// <summary>The world as its settings stand, including changes that are not saved yet.</summary>
 	public RateSettings Now => RateSettings.Read(key => Find("Rates.ini", key)?.Value);
 
-	public RateSettings Planned => RateSettings.FromPlan(_rates.Options);
+	public RateSettings Planned => _rates.Plan.Result;
 
 	public RateSettings Before => Comparison == DropComparison.NowToPlanned ? Now : RateSettings.Retail;
 

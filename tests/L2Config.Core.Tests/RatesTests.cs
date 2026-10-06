@@ -98,6 +98,41 @@ public class RatesTests
 	}
 
 	[Fact]
+	public void ThePlanAddsAdenaToTheWorldsOwnListInsteadOfReplacingIt()
+	{
+		// What L2Everdream ships: adena, then the epic boss jewels pinned at 1 so a fast world does not multiply them.
+		const string shippedAmounts = "57,1;6656,1;6657,1;6658,1;6659,1;6660,1;6661,1;6662,1;8191,1";
+		var plan = RatePlan.Build(new RateOptions(50, 0.5), "57,15", shippedAmounts);
+
+		var amounts = Assert.Single(plan.Changes, c => c.Key == "DropAmountMultiplierByItemId").NewValue;
+		Assert.Equal("57,33.333;6656,1;6657,1;6658,1;6659,1;6660,1;6661,1;6662,1;8191,1", amounts);
+		Assert.Equal(1, RateSettings.ByItemId(amounts, 6660));            // the jewels keep their own rate
+		Assert.Equal(33.333, RateSettings.ByItemId(amounts, 57));         // adena takes the plan's amount
+
+		// Adena's chance is listed too, so chance x amount still comes to the rate that was asked for.
+		var chances = Assert.Single(plan.Changes, c => c.Key == "DropChanceMultiplierByItemId").NewValue;
+		Assert.Equal("57,1.5", chances);
+		Assert.Equal(50, plan.Result.AdenaChance * plan.Result.AdenaAmount, 2);
+	}
+
+	[Fact]
+	public void AnItemWithARateOfItsOwnKeepsItInThePreview()
+	{
+		var catalog = SmallCatalog();
+		var queenAnt = catalog.Find(29001)!;
+		var pinned = RatePlan.Build(new RateOptions(50, 0.5), null, "57,33.333;6660,1").Result;
+
+		var ring = Assert.Single(DropPreview.Between(queenAnt, catalog, RateSettings.Retail, pinned).Drops);
+		Assert.Equal("Ring of Queen Ant", ring.ItemName);
+		Assert.Equal(ring.AmountBefore, ring.AmountAfter);   // pinned at 1, so one ring however fast the world runs
+
+		// Take the pin away and the same ring follows the raid rate instead.
+		var unpinned = RatePlan.Build(new RateOptions(50, 0.5)).Result;
+		var multiplied = Assert.Single(DropPreview.Between(queenAnt, catalog, RateSettings.Retail, unpinned).Drops);
+		Assert.True(multiplied.AmountAfter > 10);
+	}
+
+	[Fact]
 	public void ThePreviewShowsWhatAPlanReallyDoesToAMonster()
 	{
 		var catalog = SmallCatalog();
@@ -213,7 +248,9 @@ public class RatesTests
 
 		var captain = catalog.All.First(m => m.Name == "Ol Mahum Captain");
 		Assert.Equal(25, captain.Level);
-		Assert.Equal(1052, captain.Exp);
+		// Experience as world 1.0.179 ships it. L2Everdream rebalances monsters, so this number moves with a world update
+		// (it was 1052 up to 1.0.48); the point of the check is that the value is read, not that it stays the same.
+		Assert.Equal(1263, captain.Exp);
 
 		var preview = DropPreview.For(captain, catalog, new RateOptions(5, 1));
 		Assert.Equal(5, preview.ExpAfter / preview.ExpBefore, 2);

@@ -100,7 +100,7 @@ All of these live in `Rates.ini`, and all of them appear in the **What this writ
 | `RateXp`, `RateSp` | Your rate |
 | `DeathDropChanceMultiplier` | The chance part |
 | `DeathDropAmountMultiplier` | The amount part |
-| `DropAmountMultiplierByItemId` | `57,<amount>` — adena, set on its own (see below) |
+| `DropChanceMultiplierByItemId`, `DropAmountMultiplierByItemId` | Adena, set on its own (see below), added to whatever else your world lists there |
 | `SpoilDropChanceMultiplier`, `SpoilDropAmountMultiplier` | The same split, for spoiling |
 | `RaidDropChanceMultiplier`, `RaidDropAmountMultiplier` | A gentler raid rate (see below) |
 | `RateQuestRewardXP`, `RateQuestRewardSP`, `RateQuestRewardAdena`, `RateQuestReward`, `QuestItemDropAmountMultiplier` | Your rate |
@@ -109,6 +109,11 @@ All of these live in `Rates.ini`, and all of them appear in the **What this writ
 **Adena needs its own line.** A per-item rate **replaces** the general one rather than adding to it, and L2Everdream ships
 `DropAmountMultiplierByItemId = 57,1` — item 57 is adena. That single line is why raising the drop amount on its own has
 never changed the adena players get. The tab keeps that entry in step with your rate.
+
+**Anything else on those lines is left alone.** L2Everdream also pins the eight epic boss jewels (Antharas, Valakas,
+Baium, Zaken, Queen Ant, Orfen, Core, Frintezza) at 1 there, so a fast world does not hand them out in stacks. The tab
+adds adena to the list your world already has instead of replacing it, and the Drops tab shows those jewels at the rate
+they are really pinned to.
 
 **Raid bosses move less.** A raid rate of `1 + (rate - 1) / 3` means a 20× world is not a 20× epic-drop world: at 20× the
 raid rate is 7.33×. Change it yourself afterwards if you disagree.
