@@ -19,8 +19,9 @@ The project owner knows the user is building it.
    checks (is port listening, is `L2.exe` running) are fine for notices. **One exception, agreed with the user:** the
    **GM Shop** tab adds datapack files to a world (see rule 5). It only ever writes files of its own in the folders the
    server keeps for custom content, backs up anything it replaces, and can take every one of them out again.
-3. **Every config it can.** Server ini (game + login), `world-profile.json`, client `Option.ini` and encrypted `l2.ini`;
-   XML configs and `user.ini` are next. `-Dl2sp.*` JVM flags are out of scope (the launcher regenerates them each start).
+3. **Every config it can.** Server ini (game + login), `world-profile.json`, client `Option.ini` and encrypted `l2.ini`
+   and `user.ini` (so far only the right-click binding, which is where the camera zoom limit lives); XML configs and the
+   rest of `user.ini` are next. `-Dl2sp.*` JVM flags are out of scope (the launcher regenerates them each start).
 4. **Non-programmer UX.** Friendly names linked to the real `File › [Section] › Key`; grouping by type of setting, not by
    file; search across friendly and real names; a category → group section list on the left of the main window.
 5. **Separate tabs:** Server, Client, **Rates**, **Drops**, a read-only **Custom Config** tab (how the release differs from stock L2J Mobius),
@@ -139,8 +140,17 @@ under `%LOCALAPPDATA%\L2EverdreamConfig\backups`.
 - The launcher keeps protected player copies in `L2Everdream-data\db\config\{game,login}` with `.shipped-baseline`
   copies and merges them over the install on start/update. The app writes both the install copy and the player copy.
 - Client `l2.ini`/`user.ini` are `Lineage2Ver413` (RSA blocks + zlib + CRC32 tail); `Localization.ini`/`TTFontInfo.ini`
-  are `Lineage2Ver111` (XOR 0xAC); `Option.ini` is plain. `Core/Ini/L2IniCodec.cs` reproduces the files byte-for-byte.
+  are `Lineage2Ver111` (XOR 0xAC); `Option.ini` is plain. `Core/Ini/L2IniCodec.cs` reproduces plain and `Ver111` files
+  byte-for-byte; **`Ver413` files re-encode to different bytes** (RSA blocks and zlib are not reproduced exactly) but to
+  the same text, which is what the client reads. `ClientIniFile.Save` refuses to write any client file that does not
+  decode back to the text it encoded, so that is checked on every save rather than assumed.
 - The client ships `IsL2AutoLogOn=Ture` (typo); toggles treat anything but "true" as off.
+- How far the camera zooms out is not a plain setting: the client rewrites `user.ini` when it closes and puts
+  `[Engine.LineagePlayerController] MaxZoomingDist` back to 250, so editing it does not last. What lasts is a command on
+  the `[Engine.Input] RightMouse` binding (`set Engine.LineagePlayerController MaxZoomingDist 65535`), which the client
+  runs on every right-click. That binding also carries the tap-to-snap-back camera (`FixedDefaultCamera OnRelease
+  MaxPressedTime=200.0`), which the community fix drops; `CameraBinding` keeps it as a choice and preserves anything
+  else bound to that button.
 - Rate semantics, read from the shipped `GameServer.jar`: experience is `template exp x RateXp`; `RatePartyXp` multiplies
   **only** the party-size bonus, not the experience. Drop chance and amount each follow an **else-if** chain (by item id,
   herb, raid, death), resolved **separately for chance and for amount**, so a per-item rate **replaces** the general one:

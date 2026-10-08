@@ -35955,6 +35955,36 @@
    "secret": false,
    "l2everdream": false,
    "relations": []
+  },
+  {
+   "id": "client-userini:user.ini:Engine.Input:RightMouse",
+   "target": "client-userini",
+   "file": "user.ini",
+   "section": "Engine.Input",
+   "key": "RightMouse",
+   "category": "clientgame",
+   "group": "clientgame.camera",
+   "name": "How far the camera zooms out",
+   "description": "How far the camera is allowed to zoom out, which the client stores as commands on the right mouse button rather than as a plain setting: its own zoom limit is put back to 250 every time the game closes, so the limit is re-applied on each right-click instead. Tapping right-click also snaps the camera back behind you, which the usual community fix removes — here you can keep it. Anything else you have bound to right-click is left alone.",
+   "editor": "choice",
+   "valueType": "string",
+   "options": [
+    "shipped=As the game ships it (camera stops at 250)",
+    "zoom-out=Let the camera zoom right out",
+    "zoom-out-no-snap=Zoom right out, and no snap-back on a tap",
+    "custom=Your own binding (left as it is)"
+   ],
+   "unit": null,
+   "min": null,
+   "max": null,
+   "format": null,
+   "default": "shipped",
+   "shippedValue": null,
+   "advanced": false,
+   "managedReason": null,
+   "secret": false,
+   "l2everdream": false,
+   "relations": []
   }
  ]
 }

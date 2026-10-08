@@ -14,7 +14,7 @@ accepts. It also edits your characters' adena and inventories, and backs up ever
 > **For your local world only.** It edits the world and the client **on your own computer**. It cannot touch the public L2Everdream
 > servers, and it never starts, stops or controls your world, its database or the game — that stays the launcher's job.
 >
-> **📖 [Full guides and a reference for all 1,408 settings are in the wiki](../../wiki).**
+> **📖 [Full guides and a reference for all 1,409 settings are in the wiki](../../wiki).**
 
 ## Download and run
 

@@ -585,7 +585,7 @@ def infer_limits(entry, key, desc_all, editor, value_type, unit, options):
     return None, None, None, options
 
 
-TARGET_ALIASES = {"game": "server-game", "login": "server-login", "option": "client-option", "l2ini": "client-l2ini", "world": "world-profile"}
+TARGET_ALIASES = {"game": "server-game", "login": "server-login", "option": "client-option", "l2ini": "client-l2ini", "userini": "client-userini", "world": "world-profile"}
 ONLY_IF = re.compile(r"(?:works only|only (?:works|takes effect|used)?|used only|effective only|only)\s*(?:if|when|with)\s*`?([A-Z][A-Za-z0-9]+)`?\s*(?:=|is)\s*`?(true|false|enabled)`?", re.I)
 ENABLE_LIKE = re.compile(r"^(Enable|Allow)[A-Z]|(Enable|Enabled)$")
 

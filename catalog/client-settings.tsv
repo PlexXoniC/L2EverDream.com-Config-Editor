@@ -1,5 +1,5 @@
 # Client and world-profile settings. Pipe-separated; run python catalog/build_catalog.py after editing.
-# target: client-option (system\Option.ini) | client-l2ini (system\l2.ini, encrypted) | world-profile (L2Everdream-data\worlds\world-profile.json)
+# target: client-option (system\Option.ini) | client-l2ini (system\l2.ini, encrypted) | client-userini (system\user.ini, encrypted) | world-profile (L2Everdream-data\worlds\world-profile.json)
 # editor: toggle | number | slider | choice | text | secret
 # options: value=Label;value=Label (choice editor)
 target|file|section|key|group|name|description|editor|valueType|options|unit|min|max|default|advanced|managedReason|secret
@@ -95,3 +95,5 @@ client-l2ini|l2.ini|Engine.GameEngine|CacheSizeMegs|clientgfx.detail|Engine cach
 client-l2ini|l2.ini|LanguageSet|Language|clientgame.language|Client language|0 = Korean, 1 = English, 2 = Japanese.|number|int|||0|10|0|1||0
 client-l2ini|l2.ini|FontSet|Font|clientgame.language|Interface font package||text|string||||||1||0
 client-l2ini|l2.ini|FontSet|Glyph|clientgame.language|Interface font glyph file||text|string||||||1||0
+# ---------------------------------------------------------------- user.ini [Engine.Input]
+client-userini|user.ini|Engine.Input|RightMouse|clientgame.camera|How far the camera zooms out|How far the camera is allowed to zoom out, which the client stores as commands on the right mouse button rather than as a plain setting: its own zoom limit is put back to 250 every time the game closes, so the limit is re-applied on each right-click instead. Tapping right-click also snaps the camera back behind you, which the usual community fix removes — here you can keep it. Anything else you have bound to right-click is left alone.|choice|string|shipped=As the game ships it (camera stops at 250);zoom-out=Let the camera zoom right out;zoom-out-no-snap=Zoom right out, and no snap-back on a tap;custom=Your own binding (left as it is)||||shipped|0||0

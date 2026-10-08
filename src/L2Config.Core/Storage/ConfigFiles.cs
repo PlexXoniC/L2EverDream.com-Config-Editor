@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using L2Config.Core.Backups;
+using L2Config.Core.Client;
 using L2Config.Core.Ini;
 
 namespace L2Config.Core.Storage;
@@ -142,10 +143,32 @@ public sealed class ClientIniFile : ConfigFile
 		}
 	}
 
-	public override string? Get(string? section, string key) => _document?.Get(section, key);
+	/// <summary>
+	/// The right-click binding in `user.ini` is a line of commands, not a value anyone could pick from a list, so it is
+	/// read and written as one of <see cref="CameraChoices"/>. Everything else in every client file is its own value.
+	/// </summary>
+	private bool IsCameraBinding(string? section, string key) =>
+		Path.GetFileName(_path).Equals("user.ini", StringComparison.OrdinalIgnoreCase)
+		&& string.Equals(section, CameraBinding.Section, StringComparison.OrdinalIgnoreCase)
+		&& string.Equals(key, CameraBinding.Key, StringComparison.OrdinalIgnoreCase);
 
-	public override void Set(string? section, string key, string value) =>
-		(_document ?? throw new InvalidOperationException(LoadError ?? "File is not loaded.")).Set(section, key, value);
+	public override string? Get(string? section, string key) =>
+		IsCameraBinding(section, key)
+			? CameraChoices.Of(CameraBinding.Read(_document?.Get(section, key)))
+			: _document?.Get(section, key);
+
+	public override void Set(string? section, string key, string value)
+	{
+		var document = _document ?? throw new InvalidOperationException(LoadError ?? "File is not loaded.");
+		if (IsCameraBinding(section, key))
+		{
+			// Rebuilt from whatever is on the button now, so a command someone else put there is carried over.
+			var binding = CameraChoices.Apply(value, CameraBinding.Read(document.Get(section, key)));
+			document.Set(section, key, binding.ToValue());
+			return;
+		}
+		document.Set(section, key, value);
+	}
 
 	public override void Save(BackupSession backup)
 	{

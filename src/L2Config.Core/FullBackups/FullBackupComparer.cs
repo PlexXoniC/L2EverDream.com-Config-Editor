@@ -362,7 +362,12 @@ public static partial class FullBackupComparer
 				files.Add(new FileDifference(restore, label, FileDifferenceKind.ContentChanged, [], "This file's format can't be read, so its settings can't be compared one by one."));
 				continue;
 			}
-			var target = string.Equals(name, "l2.ini", StringComparison.OrdinalIgnoreCase) ? SettingTargets.ClientL2Ini : SettingTargets.ClientOption;
+			var target = name.ToLowerInvariant() switch
+			{
+				"l2.ini" => SettingTargets.ClientL2Ini,
+				"user.ini" => SettingTargets.ClientUserIni,
+				_ => SettingTargets.ClientOption,
+			};
 			var before = settings.Count;
 			AddIniDifferences(settings, restore, label, target, name, lookup, backupText, currentText, null, null);
 			if (settings.Count == before)

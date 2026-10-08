@@ -25,7 +25,7 @@ name, is grouped by what it does, and is limited to values the server accepts.
 
 | Page | What it covers |
 |---|---|
-| [Settings reference](Settings-Reference) | Every one of the 1,408 settings: what it does, its default, allowed values and related settings |
+| [Settings reference](Settings-Reference) | Every one of the 1,409 settings: what it does, its default, allowed values and related settings |
 | [Installation and first run](Installation-and-First-Run) | Which download to pick, Windows SmartScreen, choosing the server and client folders, updating the program |
 | [Server settings](Server-Settings) | The section list, search, filters, setting cards, valid values, saving, when changes take effect |
 | [Rates and drops](Rates-and-Drops) | One number for how fast your world is, why drop chance and drop amount are not the same thing, and a monster-by-monster view of what your world really gives |

@@ -2,7 +2,7 @@
 
 Names above heads, chat, camera and interface options.
 
-**30 settings** in the **Gameplay & Interface** category of the Client tab. [All categories](Settings-Reference) · [How to read this page](Settings-Reference#how-to-read-these-pages)
+**31 settings** in the **Gameplay & Interface** category of the Client tab. [All categories](Settings-Reference) · [How to read this page](Settings-Reference#how-to-read-these-pages)
 
 ## Names shown
 
@@ -136,6 +136,15 @@ Names above heads, chat, camera and interface options.
 
 - **Default:** On
 - **Allowed:** On or Off
+
+### How far the camera zooms out (RightMouse)
+
+`user.ini › [Engine.Input] › RightMouse` · choice
+
+How far the camera is allowed to zoom out, which the client stores as commands on the right mouse button rather than as a plain setting: its own zoom limit is put back to 250 every time the game closes, so the limit is re-applied on each right-click instead. Tapping right-click also snaps the camera back behind you, which the usual community fix removes — here you can keep it. Anything else you have bound to right-click is left alone.
+
+- **Default:** `shipped` (As the game ships it (camera stops at 250))
+- **Allowed:** one of `shipped` (As the game ships it (camera stops at 250)), `zoom-out` (Let the camera zoom right out), `zoom-out-no-snap` (Zoom right out, and no snap-back on a tap), `custom` (Your own binding (left as it is))
 
 ## Interface
 

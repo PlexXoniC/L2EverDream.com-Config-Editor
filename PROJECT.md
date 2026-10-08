@@ -157,7 +157,8 @@ tests/L2Config.Core.Tests/       xUnit
 | `Catalog/SettingSearch.cs` | Search: every word must match name, key, file, section, group or description; ranking prefers exact key, then name/key hits, then shorter keys. |
 | `Catalog/CustomConfig.cs` | Model for `custom-config.json`. |
 | `Ini/IniDocument.cs` | Line-preserving INI editor: comments, spacing, order, line endings and BOM survive; missing keys/sections are appended. |
-| `Ini/L2IniCodec.cs` | Client ini formats: `Lineage2Ver413` (RSA-1024 blocks + zlib + CRC32 tail), `Lineage2Ver111` (XOR 0xAC), plain. Verified byte-for-byte against the shipped client. |
+| `Client/CameraBinding.cs` | The right mouse button's binding in `user.ini`, which is where how far the camera zooms out really lives: the client puts `MaxZoomingDist` back to 250 whenever it closes, so the limit is re-applied by a command on the binding instead. Reads and writes the three states the editor offers (shipped, zoom out, zoom out without the tap-to-snap-back) and carries over anything else bound to that button. |
+| `Ini/L2IniCodec.cs` | Client ini formats: `Lineage2Ver413` (RSA-1024 blocks + zlib + CRC32 tail), `Lineage2Ver111` (XOR 0xAC), plain. Plain and `Ver111` files come back byte-for-byte; a `Ver413` file re-encodes to different bytes but to the same text (the client reads the text), so every client save decodes what it encoded and refuses to write if it differs. |
 | `Storage/L2Locations.cs` | The two chosen folders and every path derived from them; folder validation. |
 | `Storage/ConfigFiles.cs` | `ServerIniFile` (install copy + launcher player copy), `ClientIniFile` (re-verifies encoding before writing), `WorldProfileFile` (keeps JSON types and unknown fields). Atomic writes. |
 | `Storage/SettingsStore.cs` | Loads every file the catalog uses; validates **all** changes before writing any; backs up, then saves. |
@@ -238,7 +239,7 @@ tests/L2Config.Core.Tests/       xUnit
 
 ## 5. The catalog
 
-`catalog/catalog.json` is the single source of what the UI shows. **Current contents: 1,408 settings** in
+`catalog/catalog.json` is the single source of what the UI shows. **Current contents: 1,409 settings** in
 20 categories (16 server, 4 client).
 
 | Target | Settings |
@@ -446,16 +447,8 @@ behaviour or adding a new file type.
 
 - XML configs (`AccessLevels.xml`, `AdminCommands.xml`, `DynamicExpRates.xml`, `SiegeSchedule.xml`, `Scripts.xml`,
   `default-ipconfig.xml`, `chatfilter.txt`) are not editable yet.
-- Client `user.ini` (key bindings) and `WindowsInfo.ini` are not in the catalog.
-- **Planned: a camera and zoom section for `user.ini`.** `user.ini` is `Lineage2Ver413`, so the existing codec already reads
-  and writes it. The one people actually want is how far the camera can zoom out: `[Engine.LineagePlayerController]
-  MaxZoomingDist` ships at 250, and the client only reads it at start-up, so the community "zoom fix" instead appends
-  `set Engine.LineagePlayerController MaxZoomingDist 65535 | set … MinZoomingDist -200` to the `RightMouse` binding in
-  `[Engine.Input]`, which re-applies the limit on every right-click (and drops the stock
-  `FixedDefaultCamera OnRelease MaxPressedTime=200.0`, the tap-right-click camera snap-back). So this is a key binding
-  carrying commands, not a plain value: offer it as a switch ("let the camera zoom right out", with the snap-back as its own
-  switch) that rewrites that one line, rather than a text box. Same file also holds the three camera presets
-  (`FixedDefaultCamera*[0..2]`), the mouse look speed and `bUseHitCheckCamera`, which suit ordinary editors.
+- Client `user.ini` is in the catalog for one setting (how far the camera zooms out); its other key bindings, and
+  `WindowsInfo.ini`, are not.
 - Some client option numbers (texture/model detail, draw distance steps) are shown as raw values because their exact
   in-game labels are not verified.
 - About 480 server settings still use pattern or humanized names; improve them in `friendly-names.tsv`.
@@ -503,3 +496,4 @@ behaviour or adding a new file type.
 | 2026-10-06 | Checked against launcher 0.5.29 / world 1.0.179: settings keys unchanged (1,322), catalog byte-identical, drop and party-bonus bytecode unchanged, mail SQL unchanged. L2Everdream has rebalanced monster experience (1,762 of 2,579 changed since 1.0.48), so a test that pinned one monster's experience was refreshed. Fixed: applying a rate overwrote `DropAmountMultiplierByItemId`, wiping the pins L2Everdream keeps on the eight epic boss jewels — it now adds adena to the world's own list and writes adena's chance as well; and the Drops preview read by-item-id rates for adena only, so pins on any other item were invisible. |
 | 2026-10-06 | New **GM Shop** tab: a shopkeeper beside the gatekeeper in every town, selling the world's own items at the world's own prices, with armour sets sold whole. It writes only new files, in the folders the server keeps for custom content, so an L2Everdream update leaves them alone; anything replaced is backed up and Remove takes every one of them out. This is the one place the app adds content to a world rather than editing a setting (rule 2 amended with the user). |
 | 2026-10-08 | Version 1.3.0. Eight tabs fit one row again (the pills are a little tighter). A snapshot run no longer reads or writes the player's own GM Shop choices, so it starts from the defaults the way the rest of snapshot mode does. Every screenshot re-taken from a demo world, plus a new `gm-shop.png`; the demo now also needs `stats\npcs`, `stats\armorsets` and `spawns` for that tab. The GM Shop tab now says which part of the datapack is missing when the server folder is not a world, and will not write a shop until it is. |
+| 2026-10-08 | Client `user.ini` joins the catalog with its first setting: how far the camera zooms out. The client puts `MaxZoomingDist` back to 250 every time it closes, so the limit lives as a command on the `RightMouse` binding — one card on that real key offers the shipped binding, the zoom-out fix, or the fix without the tap-to-snap-back, and anything else bound to that button is carried over. Corrected the claim that the ini codec is byte-for-byte: `Ver413` files re-encode to different bytes but the same text, which every client save already checks. |

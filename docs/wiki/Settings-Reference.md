@@ -1,6 +1,6 @@
 # Settings reference
 
-Every setting the program can change: **1408** in **20** categories, generated from the same
+Every setting the program can change: **1409** in **20** categories, generated from the same
 catalog the program itself uses, so the names, defaults and limits here are exactly what you see in the app. The value
 your own world uses may differ: the app shows it, and marks it *Changed* when it is not the default.
 
@@ -35,7 +35,7 @@ search box at the top of the page.
 |---|---|---|
 | [Graphics](Settings-Graphics) | 40 | Resolution, detail, draw distance and effects in the game client. |
 | [Sound](Settings-Sound) | 5 | Volume levels in the game client. |
-| [Gameplay & Interface](Settings-Gameplay-Interface) | 30 | Names above heads, chat, camera and interface options. |
+| [Gameplay & Interface](Settings-Gameplay-Interface) | 31 | Names above heads, chat, camera and interface options. |
 | [Connection & Login](Settings-Connection-Login) | 6 | Where the client connects and automatic login. |
 
 ## How to read these pages

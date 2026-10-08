@@ -52,7 +52,7 @@ Release process:
 
 ## The settings catalog
 
-Everything the Server and Client tabs show comes from `catalog/catalog.json`: 1,408 settings in 20 categories, each with name,
+Everything the Server and Client tabs show comes from `catalog/catalog.json`: 1,409 settings in 20 categories, each with name,
 description, editor, type, limits, format, default and relations.
 
 ```

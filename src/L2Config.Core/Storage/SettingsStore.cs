@@ -93,7 +93,7 @@ public sealed class SettingsStore
 			"login", file,
 			Path.Combine(Locations.LoginConfigDir, file),
 			Path.Combine(Locations.PlayerLoginConfigDir, file)),
-		SettingTargets.ClientOption or SettingTargets.ClientL2Ini => new ClientIniFile(
+		SettingTargets.ClientOption or SettingTargets.ClientL2Ini or SettingTargets.ClientUserIni => new ClientIniFile(
 			$"client/system/{file}",
 			Path.Combine(Locations.ClientSystemDir ?? "", file)),
 		SettingTargets.WorldProfile => new WorldProfileFile("worlds/world-profile.json", Locations.WorldProfilePath),

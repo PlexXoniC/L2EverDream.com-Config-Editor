@@ -138,6 +138,7 @@ public static class SettingTargets
 	public const string ServerLogin = "server-login";
 	public const string ClientOption = "client-option";
 	public const string ClientL2Ini = "client-l2ini";
+	public const string ClientUserIni = "client-userini";
 	public const string WorldProfile = "world-profile";
 
 	public static bool IsClient(string target) => target.StartsWith("client-", StringComparison.Ordinal);
