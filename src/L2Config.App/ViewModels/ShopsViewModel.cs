@@ -30,6 +30,7 @@ public sealed class ShopsViewModel : ObservableObject
 	private ItemCatalog? _items;
 	private IconLibrary? _icons;
 	private ShopStatus? _status;
+	private IReadOnlyList<string> _missingSources = [];
 	private ShopPageViewModel? _selectedPage;
 	private string _itemSearch = "";
 	private string? _message;
@@ -92,6 +93,7 @@ public sealed class ShopsViewModel : ObservableObject
 			_items = items;
 			_defaults = defaults;
 			_icons = icons;
+			_missingSources = ShopSources.Missing(server);
 			Rebuild();
 		}
 		finally
@@ -337,11 +339,14 @@ public sealed class ShopsViewModel : ObservableObject
 
 	public bool Installed => _status is not null && _status.State != ShopState.NotInstalled;
 
-	public bool HasProblems => _status is { Problems.Count: > 0 };
+	public bool HasProblems => Problems.Count > 0;
 
-	public IReadOnlyList<string> Problems => _status?.Problems ?? [];
+	/// <summary>Anything that would stop the shop working: parts of the world that are not there, then settings that are off.</summary>
+	public IReadOnlyList<string> Problems => [.. _missingSources, .. _status?.Problems ?? []];
 
-	public string StatusText => _status?.State switch
+	public string StatusText => _missingSources.Count > 0
+		? "This folder does not look like an L2Everdream world, so there is nothing to build a shop from. Check it on the Server tab."
+		: _status?.State switch
 	{
 		null => "Choose your server folder in the Server tab first.",
 		ShopState.NotInstalled => "Not in your world yet. Nothing has been written.",
@@ -363,7 +368,7 @@ public sealed class ShopsViewModel : ObservableObject
 		private set => Set(ref _message, value);
 	}
 
-	private bool CanWrite => HasServer && Shop is not null && !Busy;
+	private bool CanWrite => HasServer && Shop is not null && !Busy && _missingSources.Count == 0;
 
 	public RelayCommand InstallCommand { get; }
 	public RelayCommand RemoveCommand { get; }

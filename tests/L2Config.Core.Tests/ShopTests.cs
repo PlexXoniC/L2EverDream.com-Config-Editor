@@ -167,3 +167,37 @@ public class ShopFileTests
 		Assert.False(status.Works);
 	}
 }
+
+public class ShopSourceTests
+{
+	[Fact]
+	public void AFolderThatIsNotAWorldSaysWhichPartsAreMissing()
+	{
+		var root = Path.Combine(Path.GetTempPath(), "l2config-tests", Guid.NewGuid().ToString("N"));
+		Directory.CreateDirectory(Path.Combine(root, "game", "data", "stats", "items"));
+		File.WriteAllText(Path.Combine(root, "game", "data", "stats", "items", "items.xml"), "<list />");
+
+		var missing = ShopSources.Missing(root);
+
+		// Items are there; the gatekeepers, their spawns and the armour sets are not.
+		Assert.Equal(3, missing.Count);
+		Assert.DoesNotContain(missing, m => m.Contains(@"stats\items", StringComparison.Ordinal));
+		Assert.Contains(missing, m => m.Contains(@"stats\npcs", StringComparison.Ordinal));
+		Assert.Contains(missing, m => m.Contains("spawns", StringComparison.Ordinal));
+		Assert.All(missing, m => Assert.EndsWith(".", m, StringComparison.Ordinal));
+		Assert.DoesNotContain(missing, m => m.Contains("where where", StringComparison.Ordinal));
+	}
+
+	[Fact]
+	public void NoServerFolderIsNotAProblemToReport()
+	{
+		Assert.Empty(ShopSources.Missing(null));
+		Assert.Empty(ShopSources.Missing("  "));
+	}
+
+	[LocalInstallFact]
+	public void ARealWorldHasEverythingAShopNeeds()
+	{
+		Assert.Empty(ShopSources.Missing(TestPaths.RealLocations.ServerRoot!));
+	}
+}
