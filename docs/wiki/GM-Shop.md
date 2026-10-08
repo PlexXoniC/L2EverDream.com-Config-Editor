@@ -68,6 +68,26 @@ A shop that sells top-grade gear for adena changes what your world is for: drops
 anything can be bought. That may be exactly what you want on a world you run for yourself and a few friends. If it is
 not, a shop that only sells supplies and low grades is a couple of unticks away.
 
+## If the tab says it cannot find your world
+
+Everything the shop is made of comes out of your world's own game data, so the tab is only as good as the folder you pointed the app
+at. If that folder is not really an L2Everdream install — the wrong one picked, or an install that did not finish — you will see:
+
+> This folder does not look like an L2Everdream world, so there is nothing to build a shop from. Check it on the Server tab.
+
+with a line for each part it could not read:
+
+| Folder | What the shop needs it for |
+|---|---|
+| `game\data\stats\items` | The items a shop would sell, and what they are worth |
+| `game\data\stats\npcs` | The gatekeepers a shopkeeper stands beside |
+| `game\data\spawns` | The place each gatekeeper stands in |
+| `game\data\stats\armorsets` | The armour sets a shop sells whole |
+
+A normal install has all four, so there is nothing to copy in or set up — go to the **Server** tab and check the folder. With the
+official launcher it is `%LOCALAPPDATA%\L2Everdream`, the folder that contains `game` and `login`. Until it is a world, **Write it to my
+world** stays switched off, so a half-built shop can never be written.
+
 ## Saving a copy
 
 **Save a copy of the files…** writes the same files into a folder you choose, laid out the way they sit under

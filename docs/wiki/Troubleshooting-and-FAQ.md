@@ -12,6 +12,11 @@ The folder has no `system\l2.ini`. Choose your Lineage 2 folder or its `system` 
 **"This folder no longer contains game\config\Server.ini."**
 The folder was moved or the install was removed. Click **Change folder…**.
 
+**"This folder does not look like an L2Everdream world"** on the GM Shop tab
+The folder has a `game\config` but not the game data a shop is built from. The tab lists which part is missing — items, npcs,
+spawns or armour sets. A normal install has all of them, so check the folder on the **Server** tab rather than copying anything in.
+See [GM shop](GM-Shop#if-the-tab-says-it-cannot-find-your-world).
+
 **"Check this value"** when saving
 One of your edits isn't allowed. You're taken to the setting, and the card explains the allowed values. Nothing was saved.
 
