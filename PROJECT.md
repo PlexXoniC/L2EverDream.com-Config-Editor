@@ -55,7 +55,7 @@ dotnet test tests/L2Config.Core.Tests
 - No machine-specific paths are committed. This PC's paths live in the git-ignored `CLAUDE.local.md` and `test-paths.local.json`.
 
 **Release builds.** Both are one `L2EverdreamConfig.exe` with the catalog embedded and no side files. The version is `<Version>` in
-`src/L2Config.App/L2Config.App.csproj`, currently 1.2.0.
+`src/L2Config.App/L2Config.App.csproj`, currently 1.3.0.
 
 ```bash
 dotnet publish src/L2Config.App -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish/standalone
@@ -501,3 +501,4 @@ behaviour or adding a new file type.
 | 2026-09-29 | Added `extras/server-scripts/` for datapack scripts kept outside the app: Vanity, the `.onfire` and `.bighead` chat commands for a local world. The app still only edits settings. |
 | 2026-10-06 | Checked against launcher 0.5.29 / world 1.0.179: settings keys unchanged (1,322), catalog byte-identical, drop and party-bonus bytecode unchanged, mail SQL unchanged. L2Everdream has rebalanced monster experience (1,762 of 2,579 changed since 1.0.48), so a test that pinned one monster's experience was refreshed. Fixed: applying a rate overwrote `DropAmountMultiplierByItemId`, wiping the pins L2Everdream keeps on the eight epic boss jewels — it now adds adena to the world's own list and writes adena's chance as well; and the Drops preview read by-item-id rates for adena only, so pins on any other item were invisible. |
 | 2026-10-06 | New **GM Shop** tab: a shopkeeper beside the gatekeeper in every town, selling the world's own items at the world's own prices, with armour sets sold whole. It writes only new files, in the folders the server keeps for custom content, so an L2Everdream update leaves them alone; anything replaced is backed up and Remove takes every one of them out. This is the one place the app adds content to a world rather than editing a setting (rule 2 amended with the user). |
+| 2026-10-08 | Version 1.3.0. Eight tabs fit one row again (the pills are a little tighter). A snapshot run no longer reads or writes the player's own GM Shop choices, so it starts from the defaults the way the rest of snapshot mode does. Every screenshot re-taken from a demo world, plus a new `gm-shop.png`; the demo now also needs `stats\npcs`, `stats\armorsets` and `spawns` for that tab. |

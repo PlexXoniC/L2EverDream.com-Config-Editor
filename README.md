@@ -45,12 +45,15 @@ The first time, each tab asks for a folder: your L2Everdream install (the one wi
 | **[How settings affect each other](../../wiki/How-Settings-Affect-Each-Other)** | Cards say what a setting depends on, when it has no effect right now, and what it controls. |
 | **[Custom Config](../../wiki/Custom-Config)** | A read-only view of how L2Everdream differs from stock L2J Mobius. |
 | **[Characters and inventories](../../wiki/Characters-and-Inventories)** | Adena, items and enchant levels of logged-out characters. New items are handed to the server to deliver, never written behind its back, and inventory limits are enforced as the server counts them. |
+| **[GM shop](../../wiki/GM-Shop)** | A shopkeeper beside the gatekeeper in every town, selling your world's own items at your world's own prices. It writes files of its own that an L2Everdream update leaves alone, and takes every one of them back out when you want it gone. |
 | **[Backups and restore](../../wiki/Backups-and-Restore)** | Every save, character change and restore is backed up first, and can be put back. |
 | **[Full backups](../../wiki/Full-Backups-and-Launcher-Updates)** | Back up every settings file before an L2Everdream update, then compare afterwards and tick what you want restored. |
 
 ![The Rates tab](docs/images/rates.png)
 
 ![The Drops tab](docs/images/drops.png)
+
+![The GM Shop tab](docs/images/gm-shop.png)
 
 ![Comparing a full backup with the files after an L2Everdream update](docs/images/full-backup-compare.png)
 

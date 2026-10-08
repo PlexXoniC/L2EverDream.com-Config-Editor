@@ -71,7 +71,8 @@ public sealed class ShopsViewModel : ObservableObject
 		Busy = true;
 		try
 		{
-			_choices = ShopChoices.Load(AppSettings.Folder);
+			// A snapshot run uses throwaway preferences, so it starts from the defaults and never writes the player's own.
+			_choices = _appSettings.Transient ? new ShopChoices() : ShopChoices.Load(AppSettings.Folder);
 			var clientSystem = _locations()?.ClientSystemDir;
 			var (items, defaults, icons) = await Task.Run(() =>
 			{
@@ -96,6 +97,15 @@ public sealed class ShopsViewModel : ObservableObject
 		finally
 		{
 			Busy = false;
+		}
+	}
+
+	/// <summary>Remembers the choices, unless this is a snapshot run, which never writes anything.</summary>
+	private void SaveChoices()
+	{
+		if (!_appSettings.Transient)
+		{
+			_choices.Save(AppSettings.Folder);
 		}
 	}
 
@@ -141,7 +151,7 @@ public sealed class ShopsViewModel : ObservableObject
 		{
 			_choices.Remember(placement);
 		}
-		_choices.Save(AppSettings.Folder);
+		SaveChoices();
 		Look();
 		OnPropertyChanged(nameof(TownsText));
 	}
@@ -170,7 +180,7 @@ public sealed class ShopsViewModel : ObservableObject
 			if (_choices.Name != value)
 			{
 				_choices.Name = value;
-				_choices.Save(AppSettings.Folder);
+				SaveChoices();
 				OnPropertyChanged();
 				Look();
 			}
@@ -185,7 +195,7 @@ public sealed class ShopsViewModel : ObservableObject
 			if (_choices.Title != value)
 			{
 				_choices.Title = value;
-				_choices.Save(AppSettings.Folder);
+				SaveChoices();
 				OnPropertyChanged();
 				Look();
 			}
@@ -200,7 +210,7 @@ public sealed class ShopsViewModel : ObservableObject
 			if (_choices.Enabled != value)
 			{
 				_choices.Enabled = value;
-				_choices.Save(AppSettings.Folder);
+				SaveChoices();
 				OnPropertyChanged();
 				Look();
 			}
@@ -216,7 +226,7 @@ public sealed class ShopsViewModel : ObservableObject
 			if (int.TryParse(value, out var id) && id > 0 && id != _choices.DisplayId)
 			{
 				_choices.DisplayId = id;
-				_choices.Save(AppSettings.Folder);
+				SaveChoices();
 				OnPropertyChanged();
 				Look();
 			}
@@ -310,7 +320,7 @@ public sealed class ShopsViewModel : ObservableObject
 	{
 		_choices.RememberPrice(line.PageTitle, line.ItemId, line.Price, line.Original);
 		_choices.RememberRemoved(line.PageTitle, line.ItemId, !line.Included);
-		_choices.Save(AppSettings.Folder);
+		SaveChoices();
 		foreach (var page in Pages)
 		{
 			if (page.PageTitle == line.PageTitle && Shop?.Pages.FirstOrDefault(p => p.Title == line.PageTitle) is { } fresh)
